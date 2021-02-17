@@ -10,24 +10,21 @@ requirements:
 
 # State
 
-We need a class ActivatedRoute that holds the information about the currently navigated route:
+We need a class ActivatedRoute that holds the information about the currently navigated url :
   - params
+  - matching route
 
 We need a class RouterState that holds the following information:
-
   - ActivatedRoute current route
   - ActivatedRoute target route
-  - Dynamic state of guards / resolvers ,
-
-
+  - Dynamic state of resolvers
 
 # Classes
 
 From the API document we can see that we need:
   - Router
   - Route
-  - RouteGroup
-  - Guard
+  - Resolver
 
 From the state section above:
   - ActivatedRoute
@@ -48,10 +45,6 @@ Main entry point of the implementation, once initialized with routes we can use 
 ## Route
 
 A route path that can be navigated to '/products/:id'
-
-## RouteGroup
-
-Groups multiple routes
 
 ## RouteGuard
 
@@ -75,6 +68,7 @@ converts url into a class representing the active route (TBD)
 
 
 # Implementation
+
 
 
 
