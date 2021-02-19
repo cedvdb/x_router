@@ -1,3 +1,4 @@
+/// represent the current displayed route
 class XActivatedRoute {
   /// the path of the route
   final String path;

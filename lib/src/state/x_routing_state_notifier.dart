@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:x_router/src/state/x_activated_route.dart';
-import 'package:x_router/src/state/x_activated_route_state.dart';
+import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/state/x_routing_state.dart';
 
-class XActivatedRouteNotifier extends ValueNotifier<XActivatedRouteState> {
-  XActivatedRouteNotifier() : super(XActivatedRouteState.initial());
+class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
+  final int maxHistorySize;
+
+  XRoutingStateNotifier({this.maxHistorySize}) : super(XRoutingState.initial());
 
   startNavigation(String target) {
     value = value.copyWith(status: XStatus.resolving_start, target: target);
