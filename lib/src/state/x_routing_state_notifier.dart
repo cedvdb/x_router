@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/state/x_routing_state.dart';
+import '../route/x_activated_route.dart';
+import '../state/x_routing_state.dart';
 
 class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
   final int maxHistorySize;
@@ -29,7 +29,11 @@ class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
 
   display() {
     value = value.copyWith(
-      status: XStatus.displayed,
+      status: XStatus.navigation_end,
     );
+  }
+
+  fail(String reason) {
+    value
   }
 }

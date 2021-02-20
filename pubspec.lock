@@ -81,6 +81,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  route_parser:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "23f69fdfe6dd5de7ef7b153a82b5bf7eab66c09b"
+      url: "https://github.com/cedvdb/route_parser.git"
+    source: git
+    version: "0.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

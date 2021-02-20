@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:x_router/src/activated_route/x_activated_route.dart';
+import '../route/x_activated_route.dart';
 
 enum XStatus {
   initializing,
   resolving_start,
   build_start,
   display_start,
-  displayed
+  navigation_end,
+  failure
 }
 
 class XRoutingState {

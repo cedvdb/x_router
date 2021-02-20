@@ -1,12 +1,12 @@
-/// represent the current displayed route
+/// represent the currently displayed route
 class XActivatedRoute {
-  /// the path of the route
+  /// the path of the route. eg: `/route/123`
   final String path;
 
-  /// the path of the route matched onto
+  /// the path of the route matched onto. eg: `/route/:id`
   final String matcherRoutePath;
 
-  /// paramters found in the route
+  /// parameters found in the route
   final Map<String, String> parameters;
 
   /// the parents matching routes (the upstack)
