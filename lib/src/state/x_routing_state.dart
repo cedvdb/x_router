@@ -3,11 +3,11 @@ import '../route/x_activated_route.dart';
 
 enum XStatus {
   initializing,
+  direction_start,
   resolving_start,
   build_start,
   display_start,
   navigation_end,
-  failure
 }
 
 class XRoutingState {

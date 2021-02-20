@@ -23,7 +23,7 @@ class XRouterResolver {
   }
 
   _onActivatedRouteChanges() async {
-    final routingState = routingStateNotifier.value;
+    final routingState = routingStateNotifier.state;
     if (routingState.status != XStatus.resolving_start) {
       return;
     }

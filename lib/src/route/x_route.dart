@@ -58,16 +58,28 @@ class XRoute {
     this.path,
     this.builder,
     this.redirectTo,
-    this.matchType,
+    this.matchType = MatchType.partial,
   }) : _parser = RouteParser(path);
 
   /// matches a path against this route
-  match(String path) {
+  /// the [path] is the path to be matched against this route
+  /// if [matchType] isn't specified the matchType of this route is used, which is partial by default
+  /// {@macro matchType}
+  match(String path, [MatchType matchType]) {
+    if (matchType == null) {
+      matchType = this.matchType;
+    }
     _parser.match(path, matchType);
   }
 
   /// parses a path against this route
-  parse(String path) {
+  /// the [path] is the path to be matched against this route
+  /// if [matchType] isn't specified the matchType of this route is used, which is partial by default
+  /// {@macro matchType}
+  parse(String path, [MatchType matchType]) {
+    if (matchType == null) {
+      matchType = this.matchType;
+    }
     _parser.parse(path, MatchType.exact);
   }
 

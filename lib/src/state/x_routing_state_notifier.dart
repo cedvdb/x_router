@@ -5,35 +5,35 @@ import '../state/x_routing_state.dart';
 class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
   final int maxHistorySize;
 
+  /// the current state
+  XRoutingState get state => value;
+  set state(XRoutingState state) => value = state;
+
   XRoutingStateNotifier({this.maxHistorySize}) : super(XRoutingState.initial());
 
   startNavigation(String target) {
-    value = value.copyWith(status: XStatus.resolving_start, target: target);
+    state = state.copyWith(status: XStatus.resolving_start, target: target);
   }
 
   resolve(String resolved) {
-    value = value.copyWith(
+    state = state.copyWith(
       status: XStatus.build_start,
       resolved: resolved,
     );
   }
 
   build(XActivatedRoute route) {
-    value = value.copyWith(
+    state = state.copyWith(
       status: XStatus.display_start,
       // on init current could be null
-      history: value.current != null ? [value.current, ...value.history] : [],
+      history: state.current != null ? [state.current, ...state.history] : [],
       current: route,
     );
   }
 
   display() {
-    value = value.copyWith(
+    state = state.copyWith(
       status: XStatus.navigation_end,
     );
-  }
-
-  fail(String reason) {
-    value
   }
 }
