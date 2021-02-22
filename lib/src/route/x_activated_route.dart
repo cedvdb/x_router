@@ -9,18 +9,18 @@ class XActivatedRoute {
   /// parameters found in the route
   final Map<String, String> parameters;
 
-  /// the parents matching routes (the upstack)
+  /// the parents matching routes
   final List<XActivatedRoute> parents;
 
   XActivatedRoute({
     this.path,
     this.matcherRoutePath,
     this.parameters,
-    this.parents,
+    this.parents = const [],
   });
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, matcherRoutePath: $matcherRoutePath, parameters: $parameters, parents: $parents)';
+    return 'XActivatedRoute(path: $path, matcherRoutePath: $matcherRoutePath, parameters: $parameters, upstack.length: ${parents.length})';
   }
 }

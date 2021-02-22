@@ -3,6 +3,7 @@ import 'package:route_parser/route_parser.dart';
 
 typedef XPageBuilder = Widget Function(
     BuildContext context, Map<String, String> params);
+typedef XRedirect = String Function(String target);
 
 /// An XRoute represents a route that can be accessed by the user
 ///
@@ -17,9 +18,9 @@ typedef XPageBuilder = Widget Function(
 /// {@endtemplate}
 ///
 /// {@template redirectTo}
-/// If [redirectTo] is specified, accessing the route [path] will redirect to another route.
+/// If [redirect] is specified, accessing the route [path] will redirect to another route.
 /// That other route path must be a valid [Route].
-/// If [redirectTo] is specified, the [builder] has no effects. Only the builder of the target
+/// If [redirect] is specified, the [builder] has no effects. Only the builder of the target
 /// route will be used to build the page.
 /// {@endtemplate}
 ///
@@ -47,7 +48,7 @@ class XRoute {
   final XPageBuilder builder;
 
   /// {@macro redirectTo}
-  final String redirectTo;
+  final XRedirect redirect;
 
   /// {@macro matchType}
   final MatchType matchType;
@@ -57,9 +58,12 @@ class XRoute {
   XRoute({
     this.path,
     this.builder,
-    this.redirectTo,
+    this.redirect,
     this.matchType = MatchType.partial,
   }) : _parser = RouteParser(path);
+
+  XRoute.notFound(String target)
+      : this(builder: (ctx, target) => Text('route $target not found'));
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
@@ -85,6 +89,6 @@ class XRoute {
 
   @override
   String toString() {
-    return 'XRoute(path: $path, redirectTo: $redirectTo, mathType: $matchType, $builder: ${builder.runtimeType})';
+    return 'XRoute(path: $path, redirectTo: $redirect, mathType: $matchType, $builder: ${builder.runtimeType})';
   }
 }

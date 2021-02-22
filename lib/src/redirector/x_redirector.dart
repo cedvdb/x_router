@@ -9,20 +9,28 @@ import 'package:x_router/src/state/x_routing_state_notifier.dart';
 class XRedirector {
   XRoutingStateNotifier routingStateNotifier;
   List<XRoute> routes;
+  XRoute notFoundRoute;
 
   XRedirector({this.routes, this.routingStateNotifier}) {
     routingStateNotifier.addListener(_listenToDirectionStart);
   }
 
   _listenToDirectionStart() {
-    if (routingStateNotifier.state.status == XStatus.direction_start) {
-      _redirect(routingStateNotifier.state.target);
+    if (routingStateNotifier.state.status == XStatus.redirection_start) {
+      final dir = _findDirection(routingStateNotifier.state.target);
+      routingStateNotifier.redirect(dir);
     }
   }
 
-  _redirect(String target) {
-    final found =
+  String _findDirection(String target) {
+    var maybeFound =
         routes.firstWhere((route) => route.match(target, MatchType.exact));
-    // todo
+    if (maybeFound == null) {
+      maybeFound = notFoundRoute;
+    }
+    if (maybeFound.redirect != null) {
+      return _findDirection(maybeFound.redirect(target));
+    }
+    return target;
   }
 }
