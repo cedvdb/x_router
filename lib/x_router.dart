@@ -1,7 +1,7 @@
 library x_router;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+/// library for flutter navigation, documentation is available in the readme
+
+export 'src/x_router.dart';
+export 'src/route/x_route.dart';
+export 'src/resolver/x_route_resolver.dart';

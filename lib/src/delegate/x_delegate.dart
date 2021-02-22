@@ -8,7 +8,6 @@ import 'package:x_router/src/state/x_routing_state_notifier.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
-  final Map<String, XRoute> routes;
   final XRoutingStateNotifier routingStateNotifier;
   XRoutingState get state => routingStateNotifier.state;
   String currentConfiguration;
@@ -16,12 +15,8 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
 
-  XRouterDelegate({this.routingStateNotifier, List<XRoute> routes})
-      : routes = Map.fromIterable(
-          routes,
-          key: (route) => route.path,
-        ) {
-    routingStateNotifier.addListener(_onRoutingStateChanges());
+  XRouterDelegate({this.routingStateNotifier}) {
+    routingStateNotifier.addListener(_onRoutingStateChanges);
   }
 
   _onRoutingStateChanges() {
@@ -35,17 +30,20 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      pages: [
-        // parents
-        ...state.current.parents.map((r) => _buildPage(context, r)),
-        // top
-        _buildPage(context, state.current)
-      ],
+      onPopPage: (route, res) => route.didPop(res),
+      pages: state.current != null
+          ? [
+              // parents
+              ...state.current.parents.map((r) => _buildPage(context, r)),
+              // top
+              _buildPage(context, state.current)
+            ]
+          : [MaterialPage(child: Text('splah'))],
     );
   }
 
   _buildPage(BuildContext context, XActivatedRoute activatedRoute) {
-    final builder = routes[activatedRoute.matcherRoutePath].builder;
+    final builder = activatedRoute.matcherRoute.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 

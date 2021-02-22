@@ -71,11 +71,11 @@ class XRoute {
   /// the [path] is the path to be matched against this route
   /// if [matchType] isn't specified the matchType of this route is used, which is partial by default
   /// {@macro matchType}
-  match(String path, [MatchType matchType]) {
+  bool match(String path, [MatchType matchType]) {
     if (matchType == null) {
       matchType = this.matchType;
     }
-    _parser.match(path, matchType);
+    return _parser.match(path, matchType);
   }
 
   /// parses a path against this route
@@ -86,7 +86,7 @@ class XRoute {
     if (matchType == null) {
       matchType = this.matchType;
     }
-    _parser.parse(path, MatchType.exact);
+    return _parser.parse(path, MatchType.exact);
   }
 
   @override

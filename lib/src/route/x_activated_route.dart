@@ -1,10 +1,12 @@
+import '../../x_router.dart';
+
 /// represent the currently displayed route
 class XActivatedRoute {
   /// the path of the route. eg: `/route/123`
   final String path;
 
-  /// the path of the route matched onto. eg: `/route/:id`
-  final String matcherRoutePath;
+  /// the route matching onto. eg: `Route(path: '/route/:id')`
+  final XRoute matcherRoute;
 
   /// parameters found in the route
   final Map<String, String> parameters;
@@ -14,13 +16,13 @@ class XActivatedRoute {
 
   XActivatedRoute({
     this.path,
-    this.matcherRoutePath,
+    this.matcherRoute,
     this.parameters,
     this.parents = const [],
   });
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, matcherRoutePath: $matcherRoutePath, parameters: $parameters, upstack.length: ${parents.length})';
+    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matcherRoute.path}, parameters: $parameters, upstack.length: ${parents.length})';
   }
 }

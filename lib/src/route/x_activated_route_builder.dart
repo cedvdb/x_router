@@ -40,21 +40,24 @@ class XActivatedRouteBuilder {
 
     return XActivatedRoute(
       path: path,
-      matcherRoutePath: top.path,
+      matcherRoute: top,
       parameters: top.parse(path).parameters,
       parents: matchings
           .map(
             (route) => XActivatedRoute(
-                matcherRoutePath: route.path, parameters: params, path: path),
+              matcherRoute: route,
+              parameters: params,
+              path: path,
+            ),
           )
           .toList(),
     );
   }
 
   List<XRoute> _getOrderedMatchingRoutes(String path) {
-    routes
-        .where((route) => route.match(path))
+    return routes
+        .where((route) => route.builder != null && route.match(path))
         .toList()
-        .sort((a, b) => a.path.length.compareTo(b.path.length));
+          ..sort((a, b) => a.path.length.compareTo(b.path.length));
   }
 }
