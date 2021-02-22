@@ -9,7 +9,8 @@ class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
   XRoutingState get state => value;
   set state(XRoutingState state) => value = state;
 
-  XRoutingStateNotifier({this.maxHistorySize}) : super(XRoutingState.initial());
+  XRoutingStateNotifier({this.maxHistorySize = 10})
+      : super(XRoutingState.initial());
 
   startNavigation(String target) {
     state = state.copyWith(status: XStatus.resolving_start, target: target);

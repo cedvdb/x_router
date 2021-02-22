@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:route_parser/route_parser.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_routing_state.dart';
@@ -11,7 +12,10 @@ class XRedirector {
   List<XRoute> routes;
   XRoute notFoundRoute;
 
-  XRedirector({this.routes, this.routingStateNotifier}) {
+  XRedirector(
+      {@required this.routes,
+      @required this.routingStateNotifier,
+      @required this.notFoundRoute}) {
     routingStateNotifier.addListener(_listenToDirectionStart);
   }
 

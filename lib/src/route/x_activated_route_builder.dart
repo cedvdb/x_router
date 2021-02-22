@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:route_parser/route_parser.dart';
 import 'package:x_router/src/route/x_activated_route.dart';
 import 'package:x_router/src/state/x_routing_state.dart';
@@ -11,8 +12,11 @@ class XActivatedRouteBuilder {
   final XRoute notFoundRoute;
   final XRoutingStateNotifier routingStateNotifier;
 
-  XActivatedRouteBuilder(
-      {this.routes, this.routingStateNotifier, this.notFoundRoute}) {
+  XActivatedRouteBuilder({
+    @required this.routes,
+    @required this.routingStateNotifier,
+    @required this.notFoundRoute,
+  }) {
     routingStateNotifier.addListener(_onRoutingStateChanges);
   }
 

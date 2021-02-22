@@ -1,1 +1,46 @@
-class XRouter {}
+import 'package:flutter/widgets.dart';
+import 'package:x_router/src/delegate/x_delegate.dart';
+import 'package:x_router/src/delegate/x_parser.dart';
+import 'package:x_router/src/redirector/x_redirector.dart';
+import 'package:x_router/src/resolver/x_route_resolver.dart';
+import 'package:x_router/src/resolver/x_router_resolver.dart';
+import 'package:x_router/src/route/x_activated_route_builder.dart';
+import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/state/x_routing_state_notifier.dart';
+
+class XRouter {
+  XRouterDelegate delegate;
+  XRouteInformationParser parser;
+  XRoutingStateNotifier routingStateNotifier;
+  XRouterResolver _routerResolver;
+  XRedirector _redirector;
+  XActivatedRouteBuilder _activatedRouteBuilder;
+
+  XRouter({
+    @required List<XRoute> routes,
+    List<XRouteResolver> resolvers = const [],
+    XRoute notFound,
+  }) {
+    notFound = notFound ?? XRoute.notFound();
+    routingStateNotifier = XRoutingStateNotifier();
+    parser = XRouteInformationParser();
+    delegate = XRouterDelegate(
+      routes: routes,
+      routingStateNotifier: routingStateNotifier,
+    );
+    _routerResolver = XRouterResolver(
+      resolvers: resolvers,
+      routingStateNotifier: routingStateNotifier,
+    );
+    _redirector = XRedirector(
+      routes: routes,
+      routingStateNotifier: routingStateNotifier,
+      notFoundRoute: notFound,
+    );
+    _activatedRouteBuilder = XActivatedRouteBuilder(
+      routes: routes,
+      routingStateNotifier: routingStateNotifier,
+      notFoundRoute: notFound,
+    );
+  }
+}

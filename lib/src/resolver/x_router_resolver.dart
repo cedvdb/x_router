@@ -1,12 +1,16 @@
-import 'package:x_router/src/resolver/x_resolver.dart';
+import 'package:flutter/widgets.dart';
+import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/state/x_routing_state_notifier.dart';
 import 'package:x_router/src/state/x_routing_state.dart';
 
 class XRouterResolver {
-  final List<RouteResolver> resolvers;
+  final List<XRouteResolver> resolvers;
   final XRoutingStateNotifier routingStateNotifier;
 
-  XRouterResolver({this.resolvers, this.routingStateNotifier}) {
+  XRouterResolver({
+    @required this.resolvers,
+    @required this.routingStateNotifier,
+  }) {
     // when the state of routing change to a resolving start, we resolve
     routingStateNotifier.addListener(_onActivatedRouteChanges);
     // when the state of any resolver changes we resolve the current route

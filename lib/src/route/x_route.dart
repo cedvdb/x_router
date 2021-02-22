@@ -62,8 +62,10 @@ class XRoute {
     this.matchType = MatchType.partial,
   }) : _parser = RouteParser(path);
 
-  XRoute.notFound(String target)
-      : this(builder: (ctx, target) => Text('route $target not found'));
+  XRoute.notFound()
+      : this(
+            path: '/not-found',
+            builder: (ctx, target) => Text('route $target not found'));
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
