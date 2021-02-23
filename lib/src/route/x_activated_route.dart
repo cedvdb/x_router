@@ -17,12 +17,12 @@ class XActivatedRoute {
   XActivatedRoute({
     this.path,
     this.matcherRoute,
-    this.parameters,
+    this.parameters = const {},
     this.parents = const [],
   });
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matcherRoute.path}, parameters: $parameters, upstack.length: ${parents.length})';
+    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matcherRoute.path}, parameters: $parameters, parents.length: ${parents.length})';
   }
 }

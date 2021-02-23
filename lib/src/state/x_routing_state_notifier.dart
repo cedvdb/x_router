@@ -30,7 +30,7 @@ class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
 
   build(XActivatedRoute route) {
     state = state.copyWith(
-      status: XStatus.display_start,
+      status: XStatus.navigation_end,
       // on init current could be null
       history: state.current != null ? [state.current, ...state.history] : [],
       current: route,

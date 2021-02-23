@@ -27,13 +27,13 @@ class XRedirector {
   }
 
   String _findDirection(String target) {
-    var maybeFound =
-        routes.firstWhere((route) => route.match(target, MatchType.exact));
-    if (maybeFound == null) {
-      maybeFound = notFoundRoute;
-    }
-    if (maybeFound.redirect != null) {
-      return _findDirection(maybeFound.redirect(target));
+    var found = routes.firstWhere(
+      (route) => route.match(target, MatchType.exact),
+      orElse: () => notFoundRoute,
+    );
+
+    if (found.redirect != null) {
+      return _findDirection(found.redirect(target));
     }
     return target;
   }

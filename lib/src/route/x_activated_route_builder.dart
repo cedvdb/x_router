@@ -30,13 +30,12 @@ class XActivatedRouteBuilder {
 
   XActivatedRoute buildActivatedRoute(String path) {
     var matchings = _getOrderedMatchingRoutes(path);
-    var isFound = matchings.first.match(path, MatchType.exact);
+    var isFound =
+        matchings.length > 0 && matchings.first.match(path, MatchType.exact);
     if (!isFound) {
       matchings = [notFoundRoute, ...matchings];
     }
     final top = matchings.removeLast();
-    // shortcut is taken here to not parse the route for each parent
-    final params = top.parse(path).parameters;
 
     return XActivatedRoute(
       path: path,
@@ -46,7 +45,7 @@ class XActivatedRouteBuilder {
           .map(
             (route) => XActivatedRoute(
               matcherRoute: route,
-              parameters: params,
+              parameters: route.parse(path).parameters,
               path: path,
             ),
           )

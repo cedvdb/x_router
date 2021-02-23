@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:route_parser/route_parser.dart';
 
@@ -56,7 +57,7 @@ class XRoute {
   final RouteParser _parser;
 
   XRoute({
-    this.path,
+    @required this.path,
     this.builder,
     this.redirect,
     this.matchType = MatchType.partial,
@@ -65,7 +66,15 @@ class XRoute {
   XRoute.notFound()
       : this(
             path: '/not-found',
-            builder: (ctx, target) => Text('route $target not found'));
+            builder: (ctx, params) =>
+                Text('route not found, consider using redirection'));
+  XRoute.splash()
+      : this(
+          path: '/splash',
+          builder: (ctx, params) => Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route

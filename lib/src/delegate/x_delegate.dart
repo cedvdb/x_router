@@ -31,14 +31,12 @@ class XRouterDelegate extends RouterDelegate<String>
   Widget build(BuildContext context) {
     return Navigator(
       onPopPage: (route, res) => route.didPop(res),
-      pages: state.current != null
-          ? [
-              // parents
-              ...state.current.parents.map((r) => _buildPage(context, r)),
-              // top
-              _buildPage(context, state.current)
-            ]
-          : [MaterialPage(child: Text('splah'))],
+      pages: [
+        // parents
+        ...state.current.parents.map((r) => _buildPage(context, r)),
+        // top
+        _buildPage(context, state.current)
+      ],
     );
   }
 

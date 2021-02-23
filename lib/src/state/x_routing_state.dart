@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../x_router.dart';
 import '../route/x_activated_route.dart';
 
 enum XStatus {
@@ -29,7 +30,11 @@ class XRoutingState {
   });
 
   XRoutingState.initial()
-      : this._(status: XStatus.initializing, history: const []);
+      : this._(
+          status: XStatus.initializing,
+          current: XActivatedRoute(matcherRoute: XRoute.splash()),
+          history: const [],
+        );
 
   XRoutingState copyWith({
     @required XStatus status,
