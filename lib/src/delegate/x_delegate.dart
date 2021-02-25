@@ -8,7 +8,7 @@ import 'package:x_router/src/state/x_routing_state_notifier.dart';
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   final XRoutingStateNotifier routingStateNotifier;
-  XRoutingState get state => routingStateNotifier.state;
+  XRoutingState get state => routingStateNotifier.value;
   String currentConfiguration;
 
   @override
@@ -21,7 +21,7 @@ class XRouterDelegate extends RouterDelegate<String>
   _onRoutingStateChanges() {
     if (state.status == XStatus.navigation_end) {
       // this will make the build method rerun and change the url if needed
-      currentConfiguration = routingStateNotifier.state.current.path;
+      currentConfiguration = state.current.path;
       notifyListeners();
     }
   }

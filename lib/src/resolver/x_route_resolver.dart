@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:state_notifier/state_notifier.dart';
 
 abstract class XRouteResolver<T> extends ValueNotifier<T> {
-  T get state => value;
-  set state(T state) => value = state;
-
   XRouteResolver(T initialState) : super(initialState);
 
   /// resolve a route with the current state

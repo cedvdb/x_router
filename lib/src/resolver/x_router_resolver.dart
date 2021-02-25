@@ -27,7 +27,7 @@ class XRouterResolver {
   }
 
   _onActivatedRouteChanges() {
-    final routingState = routingStateNotifier.state;
+    final routingState = routingStateNotifier.value;
     if (routingState.status != XStatus.resolving_start) {
       return;
     }
@@ -38,11 +38,5 @@ class XRouterResolver {
   _onResolversStateChanged() {
     final currentRoute = routingStateNotifier.value.current.path;
     resolve(currentRoute);
-  }
-
-  dispose() {
-    routingStateNotifier.removeListener(_onActivatedRouteChanges);
-    resolvers.forEach(
-        (resolver) => resolver.removeListener(_onResolversStateChanged));
   }
 }

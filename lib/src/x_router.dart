@@ -24,7 +24,7 @@ class XRouter {
   }) {
     notFound = notFound ?? XSpecialRoutes.notFoundRoute;
     routingStateNotifier = XRoutingStateNotifier();
-    routingStateNotifier.addListener(() => print(routingStateNotifier.state));
+    routingStateNotifier.addListener(() => print(routingStateNotifier.value));
     parser = XRouteInformationParser();
     delegate = XRouterDelegate(
       routingStateNotifier: routingStateNotifier,

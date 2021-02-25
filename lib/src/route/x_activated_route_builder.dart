@@ -21,9 +21,9 @@ class XActivatedRouteBuilder {
   }
 
   _onRoutingStateChanges() {
-    if (routingStateNotifier.state.status == XStatus.build_start) {
+    if (routingStateNotifier.value.status == XStatus.build_start) {
       final activatedRoute =
-          buildActivatedRoute(routingStateNotifier.state.directedTo);
+          buildActivatedRoute(routingStateNotifier.value.directedTo);
       routingStateNotifier.build(activatedRoute);
     }
   }

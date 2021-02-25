@@ -21,8 +21,9 @@ class XRedirector {
   }
 
   _listenToDirectionStart() {
-    if (routingStateNotifier.state.status == XStatus.redirection_start) {
-      final dir = _findDirection(routingStateNotifier.state.target);
+    final routingState = routingStateNotifier.value;
+    if (routingState.status == XStatus.redirection_start) {
+      final dir = _findDirection(routingState.target);
       routingStateNotifier.redirect(dir);
     }
   }
