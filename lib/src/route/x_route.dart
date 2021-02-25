@@ -63,19 +63,6 @@ class XRoute {
     this.matchType = MatchType.partial,
   }) : _parser = RouteParser(path);
 
-  XRoute.notFound()
-      : this(
-            path: '/not-found',
-            builder: (ctx, params) =>
-                Text('route not found, consider using redirection'));
-  XRoute.splash()
-      : this(
-          path: '/splash',
-          builder: (ctx, params) => Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
   /// if [matchType] isn't specified the matchType of this route is used, which is partial by default
@@ -91,7 +78,7 @@ class XRoute {
   /// the [path] is the path to be matched against this route
   /// if [matchType] isn't specified the matchType of this route is used, which is partial by default
   /// {@macro matchType}
-  parse(String path, [MatchType matchType]) {
+  ParsingResult parse(String path, [MatchType matchType]) {
     if (matchType == null) {
       matchType = this.matchType;
     }

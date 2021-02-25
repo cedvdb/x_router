@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/src/route/x_activated_route.dart';
-import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_routing_state.dart';
 import 'package:x_router/src/state/x_routing_state_notifier.dart';
 
@@ -30,19 +29,26 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      onPopPage: (route, res) => route.didPop(res),
       pages: [
         // parents
-        ...state.current.parents.map((r) => _buildPage(context, r)),
+        ...state.current.upstack.map((r) => _buildPage(context, r)),
         // top
         _buildPage(context, state.current)
       ],
+      onPopPage: (route, res) {
+        _goUp();
+        return route.didPop(res);
+      },
     );
   }
 
   _buildPage(BuildContext context, XActivatedRoute activatedRoute) {
     final builder = activatedRoute.matcherRoute.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
+  }
+
+  _goUp() {
+    setNewRoutePath(state.current.upstack.last.matchingPath);
   }
 
   @override

@@ -23,37 +23,40 @@ class XActivatedRouteBuilder {
   _onRoutingStateChanges() {
     if (routingStateNotifier.state.status == XStatus.build_start) {
       final activatedRoute =
-          buildActivatedRoute(routingStateNotifier.state.redirection);
+          buildActivatedRoute(routingStateNotifier.state.directedTo);
       routingStateNotifier.build(activatedRoute);
     }
   }
 
   XActivatedRoute buildActivatedRoute(String path) {
-    var matchings = _getOrderedMatchingRoutes(path);
+    var matchings = _getOrderedPartiallyMatchingRoutes(path);
     var isFound =
-        matchings.length > 0 && matchings.first.match(path, MatchType.exact);
+        matchings.length > 0 && matchings.last.match(path, MatchType.exact);
     if (!isFound) {
       matchings = [notFoundRoute, ...matchings];
     }
-    final top = matchings.removeLast();
+    final topRoute = matchings.removeLast();
+    final upstack =
+        matchings.map((route) => _toActivatedRoute(path, route)).toList();
+    return _toActivatedRoute(path, topRoute, upstack);
+  }
 
+  XActivatedRoute _toActivatedRoute(
+    String path,
+    XRoute route, [
+    List<XActivatedRoute> upstack = const [],
+  ]) {
+    final parsed = route.parse(path);
     return XActivatedRoute(
       path: path,
-      matcherRoute: top,
-      parameters: top.parse(path).parameters,
-      parents: matchings
-          .map(
-            (route) => XActivatedRoute(
-              matcherRoute: route,
-              parameters: route.parse(path).parameters,
-              path: path,
-            ),
-          )
-          .toList(),
+      matcherRoute: route,
+      matchingPath: parsed.matchingPath,
+      parameters: parsed.parameters,
+      upstack: upstack,
     );
   }
 
-  List<XRoute> _getOrderedMatchingRoutes(String path) {
+  List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {
     return routes
         .where((route) => route.builder != null && route.match(path))
         .toList()

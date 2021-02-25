@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:x_router/x_router.dart';
-import 'pages/dashboard_page.dart';
-
-final router = XRouter(routes: [
-  XRoute(path: '/', redirect: (target) => '/dashboard'),
-  XRoute(path: '/dashboard', builder: (ctx, params) => DashboardPage())
-]);
+import 'router.dart';
 
 void main() {
   runApp(MyApp());

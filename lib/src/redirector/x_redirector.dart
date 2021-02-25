@@ -5,17 +5,18 @@ import 'package:x_router/src/state/x_routing_state.dart';
 import 'package:x_router/src/state/x_routing_state_notifier.dart';
 
 /// The redirector redirects if:
-/// - a route specifies a redirectTo property
+/// - a route specifies a redirect property
 /// - a route is not found
 class XRedirector {
   XRoutingStateNotifier routingStateNotifier;
   List<XRoute> routes;
   XRoute notFoundRoute;
 
-  XRedirector(
-      {@required this.routes,
-      @required this.routingStateNotifier,
-      @required this.notFoundRoute}) {
+  XRedirector({
+    @required this.routes,
+    @required this.routingStateNotifier,
+    @required this.notFoundRoute,
+  }) {
     routingStateNotifier.addListener(_listenToDirectionStart);
   }
 
@@ -26,6 +27,8 @@ class XRedirector {
     }
   }
 
+  // finds the direction when we have a target, we check recursively if the target route
+  // has redirection
   String _findDirection(String target) {
     var found = routes.firstWhere(
       (route) => route.match(target, MatchType.exact),

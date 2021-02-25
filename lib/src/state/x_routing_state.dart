@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:x_router/src/route/x_special_routes.dart';
 
-import '../../x_router.dart';
 import '../route/x_activated_route.dart';
 
 enum XStatus {
@@ -14,15 +14,15 @@ enum XStatus {
 
 class XRoutingState {
   final XStatus status;
-  final String redirection;
-  final String resolved;
   final String target;
+  final String resolved;
+  final String directedTo;
   final XActivatedRoute current;
   final List<XActivatedRoute> history;
 
   XRoutingState._({
     this.status,
-    this.redirection,
+    this.directedTo,
     this.resolved,
     this.target,
     this.current,
@@ -32,7 +32,14 @@ class XRoutingState {
   XRoutingState.initial()
       : this._(
           status: XStatus.initializing,
-          current: XActivatedRoute(matcherRoute: XRoute.splash()),
+          // even though we don't have yet an activated route
+          // the build method of the delegate wants a widget to build
+          // so to satifsy that we provide a matcher route it is going to use to build
+          current: XActivatedRoute(
+            matcherRoute: XSpecialRoutes.initializationRoute,
+            matchingPath: null,
+            path: null,
+          ),
           history: const [],
         );
 
@@ -47,7 +54,7 @@ class XRoutingState {
     return XRoutingState._(
       status: status ?? this.status,
       resolved: resolved ?? this.resolved,
-      redirection: redirection ?? this.redirection,
+      directedTo: redirection ?? this.directedTo,
       target: target ?? this.target,
       current: current ?? this.current,
       history: history ?? this.history,
@@ -56,6 +63,6 @@ class XRoutingState {
 
   @override
   String toString() {
-    return 'XRoutingState(status: $status, redirection: $redirection, resolved: $resolved, target: $target, current: $current, history: $history)';
+    return 'XRoutingState(status: $status, target: $target, resolved: $resolved, redirection: $directedTo, current: $current, history.length: ${history.length})';
   }
 }

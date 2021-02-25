@@ -14,7 +14,7 @@ class SignInPage extends StatelessWidget {
         child: Center(
           child: ElevatedButton(
             child: Text('sign in'),
-            onPressed: () => AuthService.signIn(),
+            onPressed: () => AuthService.instance.signIn(),
           ),
         ),
       ),

@@ -13,17 +13,17 @@ class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
       : super(XRoutingState.initial());
 
   startNavigation(String target) {
-    state = state.copyWith(status: XStatus.resolving_start, target: target);
+    state = state.copyWith(status: XStatus.redirection_start, target: target);
   }
 
   redirect(String redirection) {
-    state =
-        state.copyWith(status: XStatus.build_start, redirection: redirection);
+    state = state.copyWith(
+        status: XStatus.resolving_start, redirection: redirection);
   }
 
   resolve(String resolved) {
     state = state.copyWith(
-      status: XStatus.redirection_start,
+      status: XStatus.build_start,
       resolved: resolved,
     );
   }

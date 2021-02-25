@@ -18,20 +18,20 @@ class XRouterResolver {
         .forEach((resolver) => resolver.addListener(_onResolversStateChanged));
   }
 
-  Future<String> resolve(String target) async {
+  String resolve(String target) {
     var resolved = target;
     for (var resolver in resolvers) {
-      resolved = await resolver.resolve(resolved);
+      resolved = resolver.resolve(resolved);
     }
     return resolved;
   }
 
-  _onActivatedRouteChanges() async {
+  _onActivatedRouteChanges() {
     final routingState = routingStateNotifier.state;
     if (routingState.status != XStatus.resolving_start) {
       return;
     }
-    final resolved = await resolve(routingState.target);
+    final resolved = resolve(routingState.directedTo);
     routingStateNotifier.resolve(resolved);
   }
 
