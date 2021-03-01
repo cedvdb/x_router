@@ -14,8 +14,11 @@ class XRouterResolver {
     // when the state of routing change to a resolving start, we resolve
     routingStateNotifier.addListener(_onActivatedRouteChanges);
     // when the state of any resolver changes we resolve the current route
-    resolvers
-        .forEach((resolver) => resolver.addListener(_onResolversStateChanged));
+    resolvers.forEach((resolver) {
+      if (resolver is ChangeNotifier) {
+        (resolver as ChangeNotifier).addListener(_onResolversStateChanged);
+      }
+    });
   }
 
   String resolve(String target) {
@@ -36,7 +39,7 @@ class XRouterResolver {
   }
 
   _onResolversStateChanged() {
-    final currentRoute = routingStateNotifier.value.current.path;
-    resolve(currentRoute);
+    routingStateNotifier
+        .startNavigation(routingStateNotifier.value.current.path);
   }
 }

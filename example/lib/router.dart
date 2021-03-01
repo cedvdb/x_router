@@ -30,11 +30,15 @@ final router = XRouter(
 
 class AuthResolver extends XRouteResolver {
   AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatus$.listen((status) => value = status);
+    AuthService.instance.authStatus$.listen((status) {
+      print('authstate changed');
+      value = status;
+    });
   }
 
   @override
   String resolve(String target) {
+    print(value);
     switch (value) {
       case AuthStatus.authenticated:
         return '/';
