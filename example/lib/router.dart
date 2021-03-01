@@ -1,5 +1,6 @@
 import 'package:example/pages/loading_page.dart';
 import 'package:example/services/auth_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';
 import 'pages/dashboard_page.dart';
 import 'pages/product_details_page.dart';
@@ -14,9 +15,12 @@ class AppRoutes {
 }
 
 final router = XRouter(
-  resolvers: [AuthResolver()],
+  resolvers: [
+    XNotFoundResolver(redirectTo: '/'),
+    AuthResolver(),
+    XRedirectResolver(from: '/', to: '/dashboard'),
+  ],
   routes: [
-    XRoute(path: AppRoutes.home, redirect: (target) => '/dashboard'),
     XRoute(
         path: AppRoutes.dashboard, builder: (ctx, params) => DashboardPage()),
     XRoute(path: AppRoutes.products, builder: (ctx, params) => ProductsPage()),
@@ -28,7 +32,7 @@ final router = XRouter(
   ],
 );
 
-class AuthResolver extends XRouteResolver {
+class AuthResolver extends ValueNotifier with XRouteResolver {
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.instance.authStatus$.listen((status) {
       print('authstate changed');
@@ -37,7 +41,7 @@ class AuthResolver extends XRouteResolver {
   }
 
   @override
-  String resolve(String target) {
+  String resolve(String target, List<XRoute> routes) {
     print(value);
     switch (value) {
       case AuthStatus.authenticated:
