@@ -19,7 +19,7 @@ class AuthService {
 
   AuthService._() {
     // setting the status to unauthenticated after 1sec
-    Future.delayed(Duration(seconds: 4),
+    Future.delayed(Duration(seconds: 1),
         () => _authStateSubj$.add(AuthStatus.unautenticated));
   }
 
