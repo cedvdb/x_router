@@ -38,11 +38,10 @@ class XRouterResolver {
       return;
     }
     final resolved = resolve(routingState.target);
-    routingStateNotifier.resolve(resolved);
+    routingStateNotifier.endResolving(resolved);
   }
 
   _onResolversStateChanged() {
-    routingStateNotifier
-        .startNavigation(routingStateNotifier.value.current.path);
+    routingStateNotifier.startResolving();
   }
 }

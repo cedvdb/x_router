@@ -24,7 +24,7 @@ class XActivatedRouteBuilder {
     if (routingStateNotifier.value.status == XStatus.build_start) {
       final activatedRoute =
           buildActivatedRoute(routingStateNotifier.value.resolved);
-      routingStateNotifier.build(activatedRoute);
+      routingStateNotifier.endBuild(activatedRoute);
     }
   }
 
@@ -48,8 +48,8 @@ class XActivatedRouteBuilder {
     final parsed = route.parse(path);
     return XActivatedRoute(
       path: path,
-      matcherRoute: route,
-      matchingPath: parsed.matchingPath,
+      matchingRoute: route,
+      effectivePath: parsed.matchingPath,
       parameters: parsed.parameters,
       upstack: upstack,
     );

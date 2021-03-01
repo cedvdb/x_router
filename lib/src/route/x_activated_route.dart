@@ -8,10 +8,10 @@ class XActivatedRoute {
   final String path;
 
   /// the route matching onto. eg: `Route(path: '/team/:id')`
-  final XRoute matcherRoute;
+  final XRoute matchingRoute;
 
   /// the part of the path that is matching. eg: `/team/123`
-  final String matchingPath;
+  final String effectivePath;
 
   /// parameters found in the route
   final Map<String, String> parameters;
@@ -21,14 +21,14 @@ class XActivatedRoute {
 
   XActivatedRoute({
     @required this.path,
-    @required this.matcherRoute,
-    @required this.matchingPath,
+    @required this.matchingRoute,
+    @required this.effectivePath,
     this.parameters = const {},
     this.upstack = const [],
   });
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matcherRoute.path}, parameters: $parameters, parents.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matchingRoute.path}, parameters: $parameters, parents.length: ${upstack.length})';
   }
 }

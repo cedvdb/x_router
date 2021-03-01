@@ -43,12 +43,12 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   _buildPage(BuildContext context, XActivatedRoute activatedRoute) {
-    final builder = activatedRoute.matcherRoute.builder;
+    final builder = activatedRoute.matchingRoute.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 
   _goUp() {
-    setNewRoutePath(state.current.upstack.last.matchingPath);
+    setNewRoutePath(state.current.upstack.last.effectivePath);
   }
 
   @override
