@@ -30,8 +30,7 @@ class XActivatedRouteBuilder {
 
   XActivatedRoute buildActivatedRoute(String path) {
     var matchings = _getOrderedPartiallyMatchingRoutes(path);
-    var isFound =
-        matchings.length > 0 && matchings.last.match(path, MatchType.exact);
+    var isFound = matchings.length > 0;
     if (!isFound) {
       matchings = [notFoundRoute, ...matchings];
     }

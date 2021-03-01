@@ -86,7 +86,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0a184f2825ac8c4944f2215c26f9ef6551612b0c"
+      resolved-ref: "0422a0aa36643292c75a8917d9174e15f347959c"
       url: "https://github.com/cedvdb/route_parser.git"
     source: git
     version: "0.0.0"

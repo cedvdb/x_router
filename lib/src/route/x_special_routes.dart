@@ -13,22 +13,25 @@ class XSpecialRoutes {
     ),
   );
 
-  static final notFoundRoute = XRoute(path: '/not-found', redirect: (_) => '/');
+  // static final notFoundRoute = XRoute(path: '/not-found', redirect: (_) => '/');
 
-  // static final notFoundRoute = XRoute(
-  //     path: '/not-found',
-  //     builder: (ctx, params) => Scaffold(
-  //           appBar: AppBar(),
-  //           body: Text('''
-  //                 route not found, consider using redirection to get the user to a known page.
-  //                 You can achieve it with:
+  static final notFoundRoute = XRoute(
+    path: '/not-found',
+    builder: (ctx, params) => Text('''
 
-  //                 XRouter(
-  //                   notFound: XRoute(redirect: (_) => '/dashboard'),
-  //                   routes: [
-  //                     XRoute(path: '/dashboard', builder: (_, __) => DashboardPage())
-  //                   ]
-  //                 )
-  //                 '''),
-  //         ));
+        Route path not found. 
+        Consider using a XNotFoundResolver resolver to get the user to a known page.
+        You can achieve it with:
+
+        XRouter(
+          resolvers: [XNotFoundResolver(redirectTo: '/dashboard')],
+          routes: [
+            XRoute(path: '/dashboard', builder: (_, __) => DashboardPage())
+          ]
+        )
+
+        If you are using XNotFoundResolver and still see this message it means
+        that another resolver down the pipeline is resolving to a wrong path.
+      '''),
+  );
 }
