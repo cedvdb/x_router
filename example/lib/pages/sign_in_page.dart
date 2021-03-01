@@ -11,11 +11,17 @@ class SignInPage extends StatelessWidget {
         title: Text('sign in page'),
       ),
       body: Container(
-        child: Center(
-          child: ElevatedButton(
-            child: Text('sign in'),
-            onPressed: () => AuthService.instance.signIn(),
-          ),
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('sign in to access the app'),
+            ElevatedButton(
+              child: Text('sign in'),
+              onPressed: () => AuthService.instance.signIn(),
+            ),
+          ],
         ),
       ),
     );

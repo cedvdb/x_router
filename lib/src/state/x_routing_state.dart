@@ -5,7 +5,6 @@ import '../route/x_activated_route.dart';
 
 enum XStatus {
   initializing,
-  redirection_start,
   resolving_start,
   build_start,
   display_start,
@@ -16,13 +15,11 @@ class XRoutingState {
   final XStatus status;
   final String target;
   final String resolved;
-  final String directedTo;
   final XActivatedRoute current;
   final List<XActivatedRoute> history;
 
   XRoutingState._({
     this.status,
-    this.directedTo,
     this.resolved,
     this.target,
     this.current,
@@ -54,7 +51,6 @@ class XRoutingState {
     return XRoutingState._(
       status: status ?? this.status,
       resolved: resolved ?? this.resolved,
-      directedTo: redirection ?? this.directedTo,
       target: target ?? this.target,
       current: current ?? this.current,
       history: history ?? this.history,
@@ -63,6 +59,6 @@ class XRoutingState {
 
   @override
   String toString() {
-    return 'XRoutingState(status: $status, target: $target, resolved: $resolved, redirection: $directedTo, current: $current, history.length: ${history.length})';
+    return 'XRoutingState(status: $status, target: $target, resolved: $resolved, current: $current, history.length: ${history.length})';
   }
 }

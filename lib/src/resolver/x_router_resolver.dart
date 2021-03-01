@@ -15,7 +15,7 @@ class XRouterResolver {
     @required this.routingStateNotifier,
   }) {
     // when the state of routing change to a resolving start, we resolve
-    routingStateNotifier.addListener(_onActivatedRouteChanges);
+    routingStateNotifier.addListener(_onRoutingStateChanges);
     // when the state of any resolver changes we resolve the current route
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
@@ -32,12 +32,12 @@ class XRouterResolver {
     return resolved;
   }
 
-  _onActivatedRouteChanges() {
+  _onRoutingStateChanges() {
     final routingState = routingStateNotifier.value;
     if (routingState.status != XStatus.resolving_start) {
       return;
     }
-    final resolved = resolve(routingState.directedTo);
+    final resolved = resolve(routingState.target);
     routingStateNotifier.resolve(resolved);
   }
 

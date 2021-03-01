@@ -21,17 +21,7 @@ class XSpecialRoutes {
 
         Route path not found. 
         Consider using a XNotFoundResolver resolver to get the user to a known page.
-        You can achieve it with:
-
-        XRouter(
-          resolvers: [XNotFoundResolver(redirectTo: '/dashboard')],
-          routes: [
-            XRoute(path: '/dashboard', builder: (_, __) => DashboardPage())
-          ]
-        )
-
-        If you are using XNotFoundResolver and still see this message it means
-        that another resolver down the pipeline is resolving to a wrong path.
+        Read the documentation for more info.
       '''),
   );
 }

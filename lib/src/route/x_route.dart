@@ -18,8 +18,7 @@ typedef XPageBuilder = Widget Function(
 /// {@endtemplate}
 ///
 /// {@template matchChildren}
-/// The [matchChildren] whether the path will match the children.
-///
+/// The [matchChildren] whether the path will match the child paths.
 ///
 /// By default matchChildren is true, meaning that when we go to:
 /// `/products/:id`, the routes `/`, `/products` and `/products/:id` will be in the navigator
@@ -50,7 +49,7 @@ class XRoute {
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
-  /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
+  /// if [matchChildren] isn't specified the matchChildren of property this route is used, which is true by default
   /// {@macro matchType}
   bool match(String path, {bool matchChildren}) {
     if (matchChildren == null) {

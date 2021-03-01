@@ -1,4 +1,5 @@
 import 'package:example/pages/loading_page.dart';
+import 'package:example/pages/sign_in_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';
@@ -12,6 +13,7 @@ class AppRoutes {
   static final String products = '/products';
   static final String productDetail = '/products/:id';
   static final String loading = '/loading';
+  static final String signIn = '/sign-in';
 }
 
 final router = XRouter(
@@ -22,13 +24,25 @@ final router = XRouter(
   ],
   routes: [
     XRoute(
-        path: AppRoutes.dashboard, builder: (ctx, params) => DashboardPage()),
-    XRoute(path: AppRoutes.products, builder: (ctx, params) => ProductsPage()),
+      path: AppRoutes.dashboard,
+      builder: (ctx, params) => DashboardPage(),
+    ),
+    XRoute(
+      path: AppRoutes.products,
+      builder: (ctx, params) => ProductsPage(),
+    ),
     XRoute(
       path: AppRoutes.productDetail,
       builder: (ctx, params) => ProductDetailsPage(params['id']),
     ),
-    XRoute(path: AppRoutes.loading, builder: (ctx, params) => LoadingPage())
+    XRoute(
+      path: AppRoutes.loading,
+      builder: (ctx, params) => LoadingPage(),
+    ),
+    XRoute(
+      path: AppRoutes.signIn,
+      builder: (ctx, params) => SignInPage(),
+    )
   ],
 );
 
