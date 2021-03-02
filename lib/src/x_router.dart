@@ -20,13 +20,10 @@ class XRouter {
     @required List<XRoute> routes,
     List<XRouteResolver> resolvers = const [],
     XRoute notFound,
+    Function(XRoutingState) onRoutingStateChanges,
   }) {
     notFound = notFound ?? XSpecialRoutes.notFoundRoute;
     routingStateNotifier = XRoutingStateNotifier();
-    routingStateNotifier.addListener(() {
-      print(routingStateNotifier.value);
-      print('');
-    });
     parser = XRouteInformationParser();
     delegate = XRouterDelegate(
       routingStateNotifier: routingStateNotifier,
@@ -42,6 +39,11 @@ class XRouter {
       notFoundRoute: notFound,
     );
     routingStateNotifier.addListener(_onRoutingStateChanges);
+    if (onRoutingStateChanges != null) {
+      routingStateNotifier.addListener(() {
+        onRoutingStateChanges(routingStateNotifier.value);
+      });
+    }
   }
 
   _onRoutingStateChanges() {
