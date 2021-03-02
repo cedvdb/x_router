@@ -49,17 +49,17 @@ final router = XRouter(
 class AuthResolver extends ValueNotifier with XRouteResolver {
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.instance.authStatus$.listen((status) {
-      print('authstate changed');
       value = status;
     });
   }
 
   @override
   String resolve(String target, List<XRoute> routes) {
-    print(value);
     switch (value) {
       case AuthStatus.authenticated:
-        return '/';
+        if (target.startsWith('/sign-in') || target.startsWith('/loading'))
+          return '/';
+        return target;
       case AuthStatus.unautenticated:
         return '/sign-in';
       case AuthStatus.unknown:

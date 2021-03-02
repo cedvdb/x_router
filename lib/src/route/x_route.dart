@@ -43,8 +43,8 @@ class XRoute {
 
   XRoute({
     @required this.path,
+    @required this.builder,
     this.matchChildren = true,
-    this.builder,
   }) : _parser = RouteParser(path);
 
   /// matches a path against this route

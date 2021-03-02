@@ -21,7 +21,7 @@ class XRouterDelegate extends RouterDelegate<String>
   _onRoutingStateChanges() {
     if (state.status == XStatus.navigation_end) {
       // this will make the build method rerun and change the url if needed
-      currentConfiguration = state.current.path;
+      currentConfiguration = state.current.effectivePath;
       notifyListeners();
     }
   }

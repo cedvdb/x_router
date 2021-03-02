@@ -16,7 +16,7 @@ class XRoutingStateNotifier extends ValueNotifier<XRoutingState> {
     value = value.copyWith(
       status: XStatus.navigation_start,
       target: target,
-      resolved: null,
+      resolved: '',
     );
   }
 

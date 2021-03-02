@@ -29,6 +29,6 @@ class XActivatedRoute {
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, matcherRoutePath: ${matchingRoute.path}, parameters: $parameters, parents.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $path, matchingRoute.path: ${matchingRoute.path}, effectivePath: $effectivePath, parameters: $parameters, upstack.length: ${upstack.length})';
   }
 }
