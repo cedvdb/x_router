@@ -57,6 +57,9 @@ class XRouter {
 // for the testing we can test that
 // the activatedbuilder and resolver do resolve and build
 // and that we eventually have navigation start, then navigation end
+
+// in the case where the state is done here
+//
   _onNavigationStart() {
     if (routerState.status == XStatus.navigation_start) {
       var resolved;
@@ -79,7 +82,7 @@ class XRouter {
   }
 
   static goTo(String target) {
-    _routerStateNotifier.startResolving(target);
+    _routerStateNotifier.startNavigation(target);
   }
 
   dispose() {
