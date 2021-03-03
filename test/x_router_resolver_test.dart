@@ -64,7 +64,7 @@ void main() {
     test('XRouter resolver should resolve in chain', () {
       final routingStateNotifier = XRoutingStateNotifier(
         initialState: XRoutingState(
-          status: XStatus.navigation_start,
+          status: XStatus.resolving,
           target: '/',
         ),
       );
@@ -75,7 +75,7 @@ void main() {
           XNotFoundResolver(redirectTo: '/dashboard'),
         ],
         routes: routes,
-        routingStateNotifier: routingStateNotifier,
+        routerStateNotifier: routingStateNotifier,
       );
       routingStateNotifier.startResolving();
       expect(routingStateNotifier.value.status, equals(XStatus.resolving_end));
@@ -87,7 +87,7 @@ void main() {
       () {
         final routingStateNotifier = XRoutingStateNotifier(
           initialState: XRoutingState(
-            status: XStatus.navigation_start,
+            status: XStatus.resolving,
             target: '/',
           ),
         );
@@ -99,7 +99,7 @@ void main() {
         XRouterResolver(
           resolvers: [resolver],
           routes: routes,
-          routingStateNotifier: routingStateNotifier,
+          routerStateNotifier: routingStateNotifier,
         );
         routingStateNotifier.startResolving();
         expect(

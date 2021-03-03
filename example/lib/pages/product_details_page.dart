@@ -13,7 +13,7 @@ class ProductDetailsPage extends StatelessWidget {
           path: '/products/:id/comments',
           builder: (_, __) => ProductComments()),
     ],
-    onRoutingStateChanges: (state) => print(state),
+    onRouterStateChanges: (state) => print(state),
   );
 
   @override

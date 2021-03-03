@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:x_router/src/route/x_activated_route.dart';
-import 'package:x_router/src/state/x_routing_state.dart';
-import 'package:x_router/src/state/x_routing_state_notifier.dart';
+import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/state/x_router_state.dart';
+import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
-  final XRoutingStateNotifier routingStateNotifier;
-  XRoutingState get state => routingStateNotifier.value;
+  final XRouterStateNotifier routingStateNotifier;
+  XRouterState get state => routingStateNotifier.value;
   String currentConfiguration;
 
   @override
@@ -19,9 +19,9 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   _onRoutingStateChanges() {
-    if (state.status == XStatus.navigation_end) {
+    if (state.status == XStatus.resolved) {
       // this will make the build method rerun and change the url if needed
-      currentConfiguration = state.current.path;
+      currentConfiguration = state.resolved;
       notifyListeners();
     }
   }
@@ -53,7 +53,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String target) {
-    routingStateNotifier.startNavigation(target);
+    routingStateNotifier.startResolving(target);
     return SynchronousFuture(null);
   }
 }

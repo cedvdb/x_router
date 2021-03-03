@@ -3,63 +3,86 @@ import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/route/x_activated_route_builder.dart';
+import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
-import 'package:x_router/src/state/x_routing_state.dart';
-import 'package:x_router/src/state/x_routing_state_notifier.dart';
+import 'package:x_router/src/state/x_router_state.dart';
+import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouter {
   XRouterDelegate delegate;
   XRouteInformationParser parser;
-  XRoutingStateNotifier routingStateNotifier;
-  XRouterResolver _routerResolver;
   XActivatedRouteBuilder _activatedRouteBuilder;
+  // those static members are common for the root router and child routers
+  static XRouterResolver _routerResolver;
+  static XRouterStateNotifier _routerStateNotifier = XRouterStateNotifier();
+  String name = '/';
 
   XRouter({
     @required List<XRoute> routes,
     List<XRouteResolver> resolvers = const [],
     XRoute notFound,
-    Function(XRoutingState) onRoutingStateChanges,
+    // Function(XRouterState) onRouterStateChanges,
   }) {
-    notFound = notFound ?? XSpecialRoutes.notFoundRoute;
-    routingStateNotifier = XRoutingStateNotifier();
-    parser = XRouteInformationParser();
-    delegate = XRouterDelegate(
-      routingStateNotifier: routingStateNotifier,
-    );
+    _routerStateNotifier = XRouterStateNotifier();
     _routerResolver = XRouterResolver(
       resolvers: resolvers,
       routes: routes,
-      routingStateNotifier: routingStateNotifier,
+      routerStateNotifier: _routerStateNotifier,
     );
-    _activatedRouteBuilder = XActivatedRouteBuilder(
-      routes: routes,
-      routingStateNotifier: routingStateNotifier,
-      notFoundRoute: notFound,
-    );
-    routingStateNotifier.addListener(_onRoutingStateChanges);
-    if (onRoutingStateChanges != null) {
-      routingStateNotifier.addListener(() {
-        onRoutingStateChanges(routingStateNotifier.value);
-      });
-    }
+    parser = XRouteInformationParser();
+    delegate = XRouterDelegate();
   }
+
+  XRouter.child({
+    @required List<XRoute> routes,
+  });
 
   _onRoutingStateChanges() {
-    final routingState = routingStateNotifier.value;
-    if (routingState.status == XStatus.navigation_start) {
+    final routerState = _routerStateNotifier.value;
+    if (routerState.status == XStatus.navigation_start) {
       return routingStateNotifier.startResolving();
     }
-    if (routingState.status == XStatus.resolving_end) {
+    if (routerState.status == XStatus.resolving_end) {
       return routingStateNotifier.startBuild();
     }
-    if (routingState.status == XStatus.build_end) {
-      return routingStateNotifier.endNavigation();
+    if (routerState.status == XStatus.build_end) {
+      return routingStateNotifier.endMavigation();
+    }
+  }
+// pros of having the state accessed at the top,
+// easier to dispose of the listeners
+// easy to get an overview of what happens in the router class
+
+// for the testing we can test that
+// the activatedbuilder and resolver do resolve and build
+// and that we eventually have navigation start, then navigation end
+  _onNavigationStart() {
+    if (routerState.status == XStatus.navigation_start) {
+      var resolved;
+      for (var resolver in resolvers) {
+        resolved = resolver.resolve(resolved, routes);
+      }
+      routerState.resolve(resolved);
     }
   }
 
-  goTo(String target) {
-    routingStateNotifier.startNavigation(target);
+  _onRouteResolved() {
+    if (routerState.status == XStatus.resolved) {
+      final activatedRoute = _activatedRouteBuilder(_activatedRouteBuilder);
+      routerState.setActivatedRoute(name, activatedRoute);
+    }
+  }
+
+  _onNavigationEnd() {
+    delegate.initBuild();
+  }
+
+  static goTo(String target) {
+    _routerStateNotifier.startResolving(target);
+  }
+
+  dispose() {
+    _routerStateNotifier.dispose();
   }
 }

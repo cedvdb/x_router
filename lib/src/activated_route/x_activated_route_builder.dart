@@ -1,38 +1,22 @@
 import 'package:flutter/widgets.dart';
-import 'package:route_parser/route_parser.dart';
-import 'package:x_router/src/route/x_activated_route.dart';
-import 'package:x_router/src/state/x_routing_state.dart';
-import 'package:x_router/src/state/x_routing_state_notifier.dart';
+import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/route/x_special_routes.dart';
 
-import 'x_route.dart';
+import '../route/x_route.dart';
 
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {
   final List<XRoute> routes;
-  final XRoute notFoundRoute;
-  final XRoutingStateNotifier routingStateNotifier;
 
   XActivatedRouteBuilder({
     @required this.routes,
-    @required this.routingStateNotifier,
-    @required this.notFoundRoute,
-  }) {
-    routingStateNotifier.addListener(_onRoutingStateChanges);
-  }
-
-  _onRoutingStateChanges() {
-    if (routingStateNotifier.value.status == XStatus.build_start) {
-      final activatedRoute =
-          buildActivatedRoute(routingStateNotifier.value.resolved);
-      routingStateNotifier.endBuild(activatedRoute);
-    }
-  }
+  });
 
   XActivatedRoute buildActivatedRoute(String path) {
     var matchings = _getOrderedPartiallyMatchingRoutes(path);
     var isFound = matchings.length > 0;
     if (!isFound) {
-      matchings = [notFoundRoute, ...matchings];
+      matchings = [XSpecialRoutes.notFoundRoute, ...matchings];
     }
     final topRoute = matchings.removeLast();
     final upstack =

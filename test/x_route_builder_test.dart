@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:x_router/src/route/x_activated_route_builder.dart';
+import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/state/x_routing_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
