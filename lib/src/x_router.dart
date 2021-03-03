@@ -31,16 +31,19 @@ class XRouter {
       routerStateNotifier: _routerStateNotifier,
     );
     parser = XRouteInformationParser();
-    delegate = XRouterDelegate();
+    delegate = XRouterDelegate(onNewRoute: (path) => _startNavigation(path));
+    _routerStateNotifier.onResolvingStateChanges();
   }
 
   XRouter.child({
     @required List<XRoute> routes,
-  });
+  }) {
+    _routerStateNotifier
+  }
 
   _onRoutingStateChanges() {
     final routerState = _routerStateNotifier.value;
-    if (routerState.status == XStatus.navigation_start) {
+    if (routerState.status == XStatus.navigation_start && name == '/') {
       return routingStateNotifier.startResolving();
     }
     if (routerState.status == XStatus.resolving_end) {
@@ -60,14 +63,26 @@ class XRouter {
 
 // in the case where the state is done here
 //
-  _onNavigationStart() {
-    if (routerState.status == XStatus.navigation_start) {
-      var resolved;
-      for (var resolver in resolvers) {
-        resolved = resolver.resolve(resolved, routes);
-      }
-      routerState.resolve(resolved);
+
+  _onRouterStateChanges() {
+    final status = _routerStateNotifier.value.status;
+    if (status == XStatus.resolving_start) {
+      return _resolveRoute();
     }
+    if (status == XStatus.build_start) {
+      return _buildRoute();
+    }
+    if (status == XStatus.navigation_end) {
+      delegate.initBuild();
+    }
+  }
+
+  _resolveRoute() {
+    var resolved;
+    for (var resolver in resolvers) {
+      resolved = resolver.resolve(resolved, routes);
+    }
+    routerState.resolve(resolved);
   }
 
   _onRouteResolved() {
@@ -82,7 +97,7 @@ class XRouter {
   }
 
   static goTo(String target) {
-    _routerStateNotifier.startNavigation(target);
+    _routerStateNotifier.startResolving(target);
   }
 
   dispose() {

@@ -26,6 +26,11 @@ class XRouterDelegate extends RouterDelegate<String>
     }
   }
 
+  initBuild(String path) {
+    currentConfiguration = path;
+    notifyListeners();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Navigator(
