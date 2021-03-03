@@ -43,10 +43,12 @@ void main() {
         'NotFoundResolver should resolve to the route specified when not found',
         () {
       final notFoundResolver = XNotFoundResolver(redirectTo: '/redirected');
+      // found
       expect(
         notFoundResolver.resolve('/dashboard', routes),
         equals('/dashboard'),
       );
+      // not found
       expect(
         notFoundResolver.resolve('/', routes),
         equals('/redirected'),

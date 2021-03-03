@@ -7,8 +7,6 @@ import 'package:x_router/x_router.dart';
 void main() {
   group('Activated Route Builder', () {
     final routeBuilder = XActivatedRouteBuilder(
-      notFoundRoute:
-          XRoute(path: '/not-found', builder: (_, __) => Container()),
       routes: [
         XRoute(
             path: '/', builder: (_, __) => Container(), matchChildren: false),
@@ -17,6 +15,8 @@ void main() {
       ],
       routingStateNotifier: XRoutingStateNotifier(),
     );
+
+    test('should start build when routing state says so', () {});
 
     test(
       'should build activated route',
