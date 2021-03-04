@@ -67,11 +67,17 @@ class XRouter {
     if (params != null) {
       target = RouteParser(target).reverse(params);
     }
+    // relative to current route
+    if (target.startsWith('./')) {
+      var resolved = _routerStateNotifier.value.resolved.split('/');
+      resolved.removeLast();
+      target = resolved.join('/') + target.substring(1);
+    }
     _routerStateNotifier.startResolving(target);
   }
 
   dispose() {
-    _resolver.dispose();
-    _routerStateNotifier.dispose();
+    // _routerStateNotifier.removeListener(_onRouterStateChanges);
+    // delegate.dispose();
   }
 }
