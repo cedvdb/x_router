@@ -10,7 +10,20 @@ class DashboardPage extends StatelessWidget {
       ),
       drawer: AppDrawer(),
       body: Center(
-        child: Text('pretty graphs'),
+        child: Column(
+          children: [
+            Text(
+              'Content of the example:',
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            Text(
+                '- Authentication resolver: When logging out via the drawer we are redirected'),
+            Text('- Child / nested router in products details page'),
+            Text('- Passing parameters in product details page'),
+            Text('- When route is not found we are redirected to home'),
+            Text('- Redirection of home route towards /dashboard'),
+          ],
+        ),
       ),
     );
   }

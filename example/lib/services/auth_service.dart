@@ -1,8 +1,10 @@
+import 'package:hive/hive.dart';
 import 'package:rxdart/rxdart.dart';
 
 enum AuthStatus { unknown, authenticated, unautenticated }
 
 class AuthService {
+  Box _authBox;
   BehaviorSubject<AuthStatus> _authStateSubj$ =
       BehaviorSubject<AuthStatus>.seeded(AuthStatus.unknown);
   get authStatus$ => _authStateSubj$.stream;
@@ -18,9 +20,33 @@ class AuthService {
   // singleton
 
   AuthService._() {
-    // setting the status to unauthenticated after 1sec
-    Future.delayed(Duration(seconds: 1),
-        () => _authStateSubj$.add(AuthStatus.unautenticated));
+    init();
+  }
+
+  init() async {
+    _authBox = await Hive.openBox('authBox');
+    // listen for auth changes and saves it in storage
+    _authStateSubj$.stream.listen((state) {
+      if (state == AuthStatus.unknown) {
+        return;
+      }
+      final isAuthenticated = state == AuthStatus.authenticated;
+      _authBox.put('authenticated', isAuthenticated);
+    });
+
+    // setting the status to what it was before after 1sec
+    Future.delayed(Duration(seconds: 1), () {
+      final bool wasAuthenticated = _authBox.get('authenticated');
+      if (wasAuthenticated == null) {
+        _authStateSubj$.add(AuthStatus.unautenticated);
+      } else {
+        _authStateSubj$.add(
+          wasAuthenticated
+              ? AuthStatus.authenticated
+              : AuthStatus.unautenticated,
+        );
+      }
+    });
   }
 
   static final AuthService instance = AuthService._();

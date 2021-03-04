@@ -7,7 +7,7 @@ import 'package:x_router/src/route/x_special_routes.dart';
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
-  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// maintains the url
   String? currentConfiguration;
@@ -40,13 +40,15 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      // parents
+      ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
+      // top
+      _buildPage(context, _activatedRoute)
+    ];
+
     return Navigator(
-      pages: [
-        // parents
-        ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
-        // top
-        _buildPage(context, _activatedRoute)
-      ],
+      pages: pages,
       onPopPage: (route, res) {
         _goUp();
         return route.didPop(res);
@@ -54,7 +56,8 @@ class XRouterDelegate extends RouterDelegate<String>
     );
   }
 
-  _buildPage(BuildContext context, XActivatedRoute activatedRoute) {
+  MaterialPage _buildPage(
+      BuildContext context, XActivatedRoute activatedRoute) {
     final builder = activatedRoute.matchingRoute.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }

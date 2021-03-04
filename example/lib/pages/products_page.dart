@@ -1,4 +1,4 @@
-import 'package:example/router.dart';
+import 'package:example/router/routes.dart';
 import 'package:example/services/products_service.dart';
 import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,8 @@ class ProductsPage extends StatelessWidget {
             ListTile(
               title: Text(product.name),
               subtitle: Text('\$ ' + product.price.toString()),
-              onTap: () => XRouter.goTo(AppRoutes.products, {'id': product.id}),
+              onTap: () => XRouter.goTo(AppRoutes.productDetail,
+                  params: {'id': product.id}),
             )
         ],
       ),
