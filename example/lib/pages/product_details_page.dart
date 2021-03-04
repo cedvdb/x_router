@@ -24,12 +24,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   );
 
   @override
-  void dispose() {
-    xRouter.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('product details (Nested routing)')),
@@ -68,7 +62,7 @@ class ProductComments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('comments'),
+      child: Text('comments (in nested router)'),
     );
   }
 }
@@ -77,7 +71,7 @@ class ProductInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('info'),
+      child: Text('info (in nested router)'),
     );
   }
 }

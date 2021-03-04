@@ -11,7 +11,6 @@ class AuthResolver extends ValueNotifier with XRouteResolver {
 
   @override
   String resolve(String target, List<XRoute> routes) {
-    print(target);
     switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith('/sign-in')) return '/';

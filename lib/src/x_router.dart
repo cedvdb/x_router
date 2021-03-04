@@ -18,6 +18,7 @@ class XRouter {
   late final XRouterDelegate delegate = XRouterDelegate(
     onNewRoute: (path) => goTo(path),
     isRoot: _isRoot,
+    onDispose: dispose,
   );
   final List<XRoute> routes;
   late final XActivatedRouteBuilder _activatedRouteBuilder =
@@ -60,7 +61,13 @@ class XRouter {
 
     if (status == XStatus.resolved) {
       final activatedRoute = _activatedRouteBuilder.build(state.resolved);
-      delegate.initBuild(activatedRoute);
+      if (_isRoot)
+        delegate.initBuild(activatedRoute);
+      else {
+        print(activatedRoute.matchingRoute.path);
+        if (activatedRoute.matchingRoute.path.startsWith('/products/:id/'))
+          delegate.initBuild(activatedRoute);
+      }
     }
   }
 
@@ -79,6 +86,5 @@ class XRouter {
 
   dispose() {
     _routerStateNotifier.removeListener(_onRouterStateChanges);
-    delegate.dispose();
   }
 }

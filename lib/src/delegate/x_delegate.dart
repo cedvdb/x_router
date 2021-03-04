@@ -4,16 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
 
+final GlobalKey<NavigatorState> _nestedNavigatorKey =
+    GlobalKey<NavigatorState>(); // THIS IS THE IMPORTANT PART
+
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> get navigatorKey =>
+      isRoot ? GlobalKey<NavigatorState>() : _nestedNavigatorKey;
 
   /// maintains the url
   String? currentConfiguration;
 
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
+  final Function onDispose;
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute(
@@ -28,6 +33,7 @@ class XRouterDelegate extends RouterDelegate<String>
   XRouterDelegate({
     required this.onNewRoute,
     required this.isRoot,
+    required this.onDispose,
   });
 
   initBuild(XActivatedRoute activatedRoute) {
@@ -53,6 +59,7 @@ class XRouterDelegate extends RouterDelegate<String>
         _goUp();
         return route.didPop(res);
       },
+      key: navigatorKey,
     );
   }
 
@@ -72,5 +79,11 @@ class XRouterDelegate extends RouterDelegate<String>
   Future<void> setNewRoutePath(String target) {
     onNewRoute(target);
     return SynchronousFuture(null);
+  }
+
+  @override
+  void dispose() {
+    onDispose();
+    super.dispose();
   }
 }
