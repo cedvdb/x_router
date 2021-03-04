@@ -12,9 +12,9 @@ class XNotFoundResolver with XRouteResolver {
       routes.firstWhere(
         (r) => r.match(target),
       );
-      return redirectTo;
-    } catch (e) {
       return target;
+    } catch (e) {
+      return redirectTo;
     }
   }
 }

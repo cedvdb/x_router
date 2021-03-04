@@ -1,3 +1,4 @@
+import 'package:route_parser/route_parser.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
@@ -34,11 +35,11 @@ class XRouter {
       routes: routes,
       onStateChanges: () => goTo(_routerStateNotifier.value.resolved),
     );
-    _routerStateNotifier.addListener(_onRouterStateChanges);
     if (onRouterStateChanges != null) {
       _routerStateNotifier
           .addListener(() => onRouterStateChanges(_routerStateNotifier.value));
     }
+    _routerStateNotifier.addListener(_onRouterStateChanges);
   }
 
   XRouter.child({
@@ -62,7 +63,10 @@ class XRouter {
     }
   }
 
-  static goTo(String target) {
+  static goTo(String target, {Map<String, String>? params}) {
+    if (params != null) {
+      target = RouteParser(target).reverse(params);
+    }
     _routerStateNotifier.startResolving(target);
   }
 

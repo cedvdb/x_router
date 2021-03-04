@@ -1,4 +1,5 @@
 import 'package:example/services/products_service.dart';
+import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
@@ -19,6 +20,7 @@ class ProductDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('product details')),
+      drawer: AppDrawer(),
       body: Column(
         children: [
           product != null ? Text(product.name) : Text('product not found'),

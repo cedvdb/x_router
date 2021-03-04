@@ -1,3 +1,4 @@
+import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -7,6 +8,7 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Dashboard page'),
       ),
+      drawer: AppDrawer(),
       body: Center(
         child: Text('pretty graphs'),
       ),

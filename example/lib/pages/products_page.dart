@@ -1,8 +1,8 @@
+import 'package:example/router.dart';
 import 'package:example/services/products_service.dart';
+import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
-
-import '../router.dart';
 
 class ProductsPage extends StatelessWidget {
   @override
@@ -11,13 +11,14 @@ class ProductsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('products page'),
       ),
+      drawer: AppDrawer(),
       body: ListView(
         children: [
           for (var product in ProductsService.products)
             ListTile(
               title: Text(product.name),
               subtitle: Text('\$ ' + product.price.toString()),
-              onTap: () => XRouter.goTo('/products/${product.id}'),
+              onTap: () => XRouter.goTo(AppRoutes.products, {'id': product.id}),
             )
         ],
       ),

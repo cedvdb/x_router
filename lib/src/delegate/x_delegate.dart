@@ -33,7 +33,7 @@ class XRouterDelegate extends RouterDelegate<String>
   initBuild(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
     if (isRoot) {
-      currentConfiguration = _activatedRoute!.path;
+      currentConfiguration = _activatedRoute.path;
     }
     notifyListeners();
   }
