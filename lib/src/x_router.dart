@@ -46,6 +46,7 @@ class XRouter {
     required this.routes,
   }) : _isRoot = false {
     _onRouterStateChanges();
+    _routerStateNotifier.addListener(_onRouterStateChanges);
   }
 
   _onRouterStateChanges() {
@@ -77,7 +78,7 @@ class XRouter {
   }
 
   dispose() {
-    // _routerStateNotifier.removeListener(_onRouterStateChanges);
-    // delegate.dispose();
+    _routerStateNotifier.removeListener(_onRouterStateChanges);
+    delegate.dispose();
   }
 }

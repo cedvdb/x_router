@@ -33,6 +33,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('product details (Nested routing)')),
+      drawer: AppDrawer(),
       body: Column(
         children: [
           widget.product != null
