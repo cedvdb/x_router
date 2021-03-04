@@ -21,9 +21,9 @@ void main() {
     test(
       'should build activated route',
       () {
-        final activated = routeBuilder.buildActivatedRoute('/');
-        final activated2 = routeBuilder.buildActivatedRoute('/products');
-        final activated3 = routeBuilder.buildActivatedRoute('/products/123');
+        final activated = routeBuilder.build('/');
+        final activated2 = routeBuilder.build('/products');
+        final activated3 = routeBuilder.build('/products/123');
 
         expect(activated.effectivePath, equals('/'));
         expect(activated2.effectivePath, equals('/products'));
@@ -35,9 +35,8 @@ void main() {
     );
 
     test('should build activated route with not found', () {
-      final notFound1 = routeBuilder.buildActivatedRoute('/not-found');
-      final shouldFindChild =
-          routeBuilder.buildActivatedRoute('/products/123/not-found');
+      final notFound1 = routeBuilder.build('/not-found');
+      final shouldFindChild = routeBuilder.build('/products/123/not-found');
 
       expect(notFound1.effectivePath, equals('/not-found'));
       expect(shouldFindChild.effectivePath, equals('/products/123'));

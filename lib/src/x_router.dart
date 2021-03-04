@@ -13,10 +13,10 @@ class XRouter {
   XRouterDelegate delegate;
   XRouteInformationParser parser;
   XActivatedRouteBuilder _activatedRouteBuilder;
-  // those static members are common for the root router and child routers
-  static XRouterResolver _routerResolver;
+  XRouterResolver _resolver;
   static XRouterStateNotifier _routerStateNotifier = XRouterStateNotifier();
-  String name = '/';
+  // whether this router is the root resolver and not a child / nested
+  bool _isRoot;
 
   XRouter({
     @required List<XRoute> routes,
@@ -24,76 +24,42 @@ class XRouter {
     XRoute notFound,
     // Function(XRouterState) onRouterStateChanges,
   }) {
+    _isRoot = true;
     _routerStateNotifier = XRouterStateNotifier();
-    _routerResolver = XRouterResolver(
+    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
+    _resolver = XRouterResolver(
       resolvers: resolvers,
       routes: routes,
-      routerStateNotifier: _routerStateNotifier,
+      //
     );
     parser = XRouteInformationParser();
-    delegate = XRouterDelegate(onNewRoute: (path) => _startNavigation(path));
-    _routerStateNotifier.onResolvingStateChanges();
+    delegate = XRouterDelegate(
+      onNewRoute: (path) => goTo(path),
+    );
+    _routerStateNotifier.addListener(_onRouterStateChanges);
   }
 
   XRouter.child({
     @required List<XRoute> routes,
   }) {
-    _routerStateNotifier
+    _isRoot = false;
+    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
+    delegate = XRouterDelegate();
   }
-
-  _onRoutingStateChanges() {
-    final routerState = _routerStateNotifier.value;
-    if (routerState.status == XStatus.navigation_start && name == '/') {
-      return routingStateNotifier.startResolving();
-    }
-    if (routerState.status == XStatus.resolving_end) {
-      return routingStateNotifier.startBuild();
-    }
-    if (routerState.status == XStatus.build_end) {
-      return routingStateNotifier.endMavigation();
-    }
-  }
-// pros of having the state accessed at the top,
-// easier to dispose of the listeners
-// easy to get an overview of what happens in the router class
-
-// for the testing we can test that
-// the activatedbuilder and resolver do resolve and build
-// and that we eventually have navigation start, then navigation end
-
-// in the case where the state is done here
-//
 
   _onRouterStateChanges() {
-    final status = _routerStateNotifier.value.status;
-    if (status == XStatus.resolving_start) {
-      return _resolveRoute();
-    }
-    if (status == XStatus.build_start) {
-      return _buildRoute();
-    }
-    if (status == XStatus.navigation_end) {
-      delegate.initBuild();
-    }
-  }
+    final state = _routerStateNotifier.value;
+    final status = state.status;
 
-  _resolveRoute() {
-    var resolved;
-    for (var resolver in resolvers) {
-      resolved = resolver.resolve(resolved, routes);
+    if (status == XStatus.resolving && _isRoot) {
+      final resolved = _resolver.resolve(state.target);
+      _routerStateNotifier.endResolving(resolved);
     }
-    routerState.resolve(resolved);
-  }
 
-  _onRouteResolved() {
-    if (routerState.status == XStatus.resolved) {
-      final activatedRoute = _activatedRouteBuilder(_activatedRouteBuilder);
-      routerState.setActivatedRoute(name, activatedRoute);
+    if (status == XStatus.resolved) {
+      final activatedRoute = _activatedRouteBuilder.build(state.resolved);
+      delegate.initBuild(activatedRoute);
     }
-  }
-
-  _onNavigationEnd() {
-    delegate.initBuild();
   }
 
   static goTo(String target) {

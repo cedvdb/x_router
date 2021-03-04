@@ -12,7 +12,7 @@ class XActivatedRouteBuilder {
     @required this.routes,
   });
 
-  XActivatedRoute buildActivatedRoute(String path) {
+  XActivatedRoute build(String path) {
     var matchings = _getOrderedPartiallyMatchingRoutes(path);
     var isFound = matchings.length > 0;
     if (!isFound) {

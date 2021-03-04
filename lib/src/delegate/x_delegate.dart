@@ -2,32 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/state/x_router_state.dart';
-import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
-  final XRouterStateNotifier routingStateNotifier;
-  XRouterState get state => routingStateNotifier.value;
-  String currentConfiguration;
-
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+  // maintains the url
+  String currentConfiguration;
+  // callback called when the os receive a new route
+  final Function(String) onNewRoute;
+  // the routes that we need to display
+  XActivatedRoute _activatedRoute;
 
-  XRouterDelegate({this.routingStateNotifier}) {
-    routingStateNotifier.addListener(_onRoutingStateChanges);
-  }
+  XRouterDelegate({this.onNewRoute});
 
-  _onRoutingStateChanges() {
-    if (state.status == XStatus.resolved) {
-      // this will make the build method rerun and change the url if needed
-      currentConfiguration = state.resolved;
-      notifyListeners();
-    }
-  }
-
-  initBuild(String path) {
-    currentConfiguration = path;
+  initBuild(XActivatedRoute activatedRoute) {
+    _activatedRoute = activatedRoute;
+    currentConfiguration = _activatedRoute.path;
     notifyListeners();
   }
 
@@ -36,9 +27,9 @@ class XRouterDelegate extends RouterDelegate<String>
     return Navigator(
       pages: [
         // parents
-        ...state.current.upstack.map((r) => _buildPage(context, r)),
+        ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
         // top
-        _buildPage(context, state.current)
+        _buildPage(context, _activatedRoute)
       ],
       onPopPage: (route, res) {
         _goUp();
@@ -53,12 +44,12 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   _goUp() {
-    setNewRoutePath(state.current.upstack.last.effectivePath);
+    setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
   }
 
   @override
   Future<void> setNewRoutePath(String target) {
-    routingStateNotifier.startResolving(target);
+    onNewRoute(target);
     return SynchronousFuture(null);
   }
 }
