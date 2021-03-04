@@ -2,23 +2,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/route/x_special_routes.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
-  // maintains the url
-  String currentConfiguration;
-  // callback called when the os receive a new route
-  final Function(String) onNewRoute;
-  // the routes that we need to display
-  XActivatedRoute _activatedRoute;
 
-  XRouterDelegate({this.onNewRoute});
+  /// maintains the url
+  String? currentConfiguration;
+
+  /// callback called when the os receive a new route
+  final Function(String) onNewRoute;
+
+  /// the routes that we need to display
+  XActivatedRoute _activatedRoute = XActivatedRoute(
+    matchingRoute: XSpecialRoutes.initializationRoute,
+    path: '',
+    effectivePath: '',
+  );
+
+  /// whether this is the root delegate
+  final bool isRoot;
+
+  XRouterDelegate({
+    required this.onNewRoute,
+    required this.isRoot,
+  });
 
   initBuild(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
-    currentConfiguration = _activatedRoute.path;
+    if (isRoot) {
+      currentConfiguration = _activatedRoute!.path;
+    }
     notifyListeners();
   }
 
@@ -44,7 +60,9 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   _goUp() {
-    setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
+    if (_activatedRoute.upstack.length > 1) {
+      setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
+    }
   }
 
   @override

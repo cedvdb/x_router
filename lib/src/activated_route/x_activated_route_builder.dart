@@ -9,7 +9,7 @@ class XActivatedRouteBuilder {
   final List<XRoute> routes;
 
   XActivatedRouteBuilder({
-    @required this.routes,
+    required this.routes,
   });
 
   XActivatedRoute build(String path) {

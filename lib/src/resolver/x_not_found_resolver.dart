@@ -8,13 +8,13 @@ class XNotFoundResolver with XRouteResolver {
 
   @override
   String resolve(String target, List<XRoute> routes) {
-    final found = routes.firstWhere(
-      (r) => r.match(target),
-      orElse: () => null,
-    );
-    if (found != null) {
+    try {
+      routes.firstWhere(
+        (r) => r.match(target),
+      );
+      return redirectTo;
+    } catch (e) {
       return target;
     }
-    return redirectTo;
   }
 }

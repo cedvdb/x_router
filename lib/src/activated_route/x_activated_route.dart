@@ -20,9 +20,9 @@ class XActivatedRoute {
   final List<XActivatedRoute> upstack;
 
   XActivatedRoute({
-    @required this.path,
-    @required this.matchingRoute,
-    @required this.effectivePath,
+    required this.path,
+    required this.matchingRoute,
+    required this.effectivePath,
     this.parameters = const {},
     this.upstack = const [],
   });

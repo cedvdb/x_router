@@ -42,8 +42,8 @@ class XRoute {
   final RouteParser _parser;
 
   XRoute({
-    @required this.path,
-    @required this.builder,
+    required this.path,
+    required this.builder,
     this.matchChildren = true,
   }) : _parser = RouteParser(path);
 
@@ -51,7 +51,7 @@ class XRoute {
   /// the [path] is the path to be matched against this route
   /// if [matchChildren] isn't specified the matchChildren of property this route is used, which is true by default
   /// {@macro matchType}
-  bool match(String path, {bool matchChildren}) {
+  bool match(String path, {bool? matchChildren}) {
     if (matchChildren == null) {
       matchChildren = this.matchChildren;
     }
@@ -62,7 +62,7 @@ class XRoute {
   /// the [path] is the path to be matched against this route
   /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
   /// {@macro matchType}
-  ParsingResult parse(String path, {bool matchChildren}) {
+  ParsingResult parse(String path, {bool? matchChildren}) {
     if (matchChildren == null) {
       matchChildren = this.matchChildren;
     }

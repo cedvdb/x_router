@@ -10,16 +10,16 @@ class XRouterState {
   final String resolved;
 
   XRouterState({
-    this.status,
-    this.resolved,
-    this.target,
+    required this.status,
+    required this.resolved,
+    required this.target,
   });
 
   XRouterState.initial()
       : this(
           status: XStatus.initializing,
-          target: null,
-          resolved: null,
+          target: '',
+          resolved: '',
         );
 
   @override
@@ -27,10 +27,9 @@ class XRouterState {
       'XRoutingState(status: $status, target: $target, resolved: $resolved)';
 
   XRouterState copyWith({
-    XStatus status,
-    String target,
-    String resolved,
-    List<String> history,
+    XStatus? status,
+    String? target,
+    String? resolved,
   }) {
     return XRouterState(
       status: status ?? this.status,

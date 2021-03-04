@@ -5,12 +5,12 @@ import 'package:x_router/src/route/x_route.dart';
 class XRouterResolver {
   final List<XRouteResolver> resolvers;
   final List<XRoute> routes;
-  final Function onStateChanges;
+  final Function() onStateChanges;
 
   XRouterResolver({
-    @required this.resolvers,
-    @required this.routes,
-    @required this.onStateChanges,
+    required this.resolvers,
+    required this.routes,
+    required this.onStateChanges,
   }) {
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {

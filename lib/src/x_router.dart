@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
@@ -9,26 +8,27 @@ import 'package:x_router/src/state/x_router_state.dart';
 import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouter {
+  // responsible of notifying when a new route needs to be resolved
   static final XRouterStateNotifier _routerStateNotifier =
       XRouterStateNotifier();
-  final XRouterDelegate delegate = XRouterDelegate(
-    onNewRoute: (path) => goTo(path),
-  );
-  final XRouteInformationParser parser = XRouteInformationParser();
-  XActivatedRouteBuilder _activatedRouteBuilder;
   // responsible of resolving a string path to (maybe) another
-  XRouterResolver _resolver;
+  static late final XRouterResolver _resolver;
+  final XRouteInformationParser parser = XRouteInformationParser();
+  late final XRouterDelegate delegate = XRouterDelegate(
+    onNewRoute: (path) => goTo(path),
+    isRoot: _isRoot,
+  );
+  final List<XRoute> routes;
+  late final XActivatedRouteBuilder _activatedRouteBuilder =
+      XActivatedRouteBuilder(routes: routes);
   // whether this router is the root resolver and not a child / nested
-  bool _isRoot;
+  final bool _isRoot;
 
   XRouter({
-    @required List<XRoute> routes,
+    required this.routes,
     List<XRouteResolver> resolvers = const [],
-    XRoute notFound,
-    Function(XRouterState) onRouterStateChanges,
-  }) {
-    _isRoot = true;
-    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
+    Function(XRouterState)? onRouterStateChanges,
+  }) : _isRoot = true {
     _resolver = XRouterResolver(
       resolvers: resolvers,
       routes: routes,
@@ -42,10 +42,8 @@ class XRouter {
   }
 
   XRouter.child({
-    @required List<XRoute> routes,
-  }) {
-    _isRoot = false;
-    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
+    required this.routes,
+  }) : _isRoot = false {
     _onRouterStateChanges();
   }
 
