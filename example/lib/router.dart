@@ -44,6 +44,7 @@ final router = XRouter(
       builder: (ctx, params) => SignInPage(),
     )
   ],
+  onRouterStateChanges: (s) => print(s),
 );
 
 class AuthResolver extends ValueNotifier with XRouteResolver {

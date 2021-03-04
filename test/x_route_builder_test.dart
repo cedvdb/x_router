@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
-import 'package:x_router/src/state/x_routing_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
 void main() {
@@ -13,7 +12,6 @@ void main() {
         XRoute(path: '/products', builder: (_, __) => Container()),
         XRoute(path: '/products/:id', builder: (_, __) => Container())
       ],
-      routingStateNotifier: XRoutingStateNotifier(),
     );
 
     test('should start build when routing state says so', () {});

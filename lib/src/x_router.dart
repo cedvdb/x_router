@@ -5,16 +5,19 @@ import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/route/x_route.dart';
-import 'package:x_router/src/route/x_special_routes.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouter {
-  XRouterDelegate delegate;
-  XRouteInformationParser parser;
+  static final XRouterStateNotifier _routerStateNotifier =
+      XRouterStateNotifier();
+  final XRouterDelegate delegate = XRouterDelegate(
+    onNewRoute: (path) => goTo(path),
+  );
+  final XRouteInformationParser parser = XRouteInformationParser();
   XActivatedRouteBuilder _activatedRouteBuilder;
+  // responsible of resolving a string path to (maybe) another
   XRouterResolver _resolver;
-  static XRouterStateNotifier _routerStateNotifier = XRouterStateNotifier();
   // whether this router is the root resolver and not a child / nested
   bool _isRoot;
 
@@ -22,21 +25,20 @@ class XRouter {
     @required List<XRoute> routes,
     List<XRouteResolver> resolvers = const [],
     XRoute notFound,
-    // Function(XRouterState) onRouterStateChanges,
+    Function(XRouterState) onRouterStateChanges,
   }) {
     _isRoot = true;
-    _routerStateNotifier = XRouterStateNotifier();
     _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
     _resolver = XRouterResolver(
       resolvers: resolvers,
       routes: routes,
-      //
-    );
-    parser = XRouteInformationParser();
-    delegate = XRouterDelegate(
-      onNewRoute: (path) => goTo(path),
+      onStateChanges: () => goTo(_routerStateNotifier.value.resolved),
     );
     _routerStateNotifier.addListener(_onRouterStateChanges);
+    if (onRouterStateChanges != null) {
+      _routerStateNotifier
+          .addListener(() => onRouterStateChanges(_routerStateNotifier.value));
+    }
   }
 
   XRouter.child({
@@ -44,7 +46,7 @@ class XRouter {
   }) {
     _isRoot = false;
     _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
-    delegate = XRouterDelegate();
+    _onRouterStateChanges();
   }
 
   _onRouterStateChanges() {
@@ -67,6 +69,7 @@ class XRouter {
   }
 
   dispose() {
+    _resolver.dispose();
     _routerStateNotifier.dispose();
   }
 }

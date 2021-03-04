@@ -6,14 +6,13 @@ import 'package:x_router/x_router.dart';
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
   ProductDetailsPage(String id) : product = ProductsService.getById(id);
-  final xRouter = XRouter(
+  final xRouter = XRouter.child(
     routes: [
       XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
       XRoute(
           path: '/products/:id/comments',
           builder: (_, __) => ProductComments()),
     ],
-    onRouterStateChanges: (state) => print(state),
   );
 
   @override
@@ -26,10 +25,10 @@ class ProductDetailsPage extends StatelessWidget {
           Row(
             children: [
               ElevatedButton(
-                  onPressed: () => xRouter.goTo('/products/:id/comments'),
+                  onPressed: () => XRouter.goTo('/products/:id/comments'),
                   child: Text('comments')),
               ElevatedButton(
-                  onPressed: () => xRouter.goTo('/products/:id/info'),
+                  onPressed: () => XRouter.goTo('/products/:id/info'),
                   child: Text('info')),
             ],
           ),
