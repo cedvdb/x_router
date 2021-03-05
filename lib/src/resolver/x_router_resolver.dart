@@ -1,22 +1,42 @@
 import 'package:flutter/widgets.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/state/x_router_state.dart';
+import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouterResolver {
   final List<XRouteResolver> resolvers;
   final List<XRoute> routes;
-  final Function() onStateChanges;
+  final XRouterStateNotifier stateNotifier;
 
   XRouterResolver({
     required this.resolvers,
     required this.routes,
-    required this.onStateChanges,
+    required this.stateNotifier,
   }) {
+    stateNotifier.addListener(_onRouterStateChanges);
+
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).addListener(onStateChanges);
+        // when changes happen we trigger resolving with the currently
+        // resolved path
+        (resolver as ChangeNotifier).addListener(_onResolverStateChanges);
       }
     });
+  }
+
+  void _onRouterStateChanges() {
+    final state = stateNotifier.value;
+    final status = state.status;
+
+    if (status == XStatus.resolving) {
+      final resolved = resolve(state.target);
+      stateNotifier.endResolving(resolved);
+    }
+  }
+
+  void _onResolverStateChanges() {
+    stateNotifier.startResolving(stateNotifier.value.resolved);
   }
 
   String resolve(String target) {
@@ -28,9 +48,10 @@ class XRouterResolver {
   }
 
   dispose() {
+    stateNotifier.removeListener(_onRouterStateChanges);
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).removeListener(onStateChanges);
+        (resolver as ChangeNotifier).removeListener(_onResolverStateChanges);
       }
     });
   }

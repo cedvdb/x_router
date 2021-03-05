@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/state/x_routing_state.dart';
-import 'package:x_router/src/state/x_routing_state_notifier.dart';
+import 'package:x_router/src/state/x_router_state.dart';
+import 'package:x_router/src/state/x_router_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends ValueNotifier<bool> with XRouteResolver {
   String onFalse;
   String onTrue;
-  ReactiveResolver({this.onFalse, this.onTrue}) : super(false);
+  ReactiveResolver({
+    required this.onFalse,
+    required this.onTrue,
+  }) : super(false);
 
   @override
   String resolve(String target, List<XRoute> routes) {
@@ -64,12 +67,7 @@ void main() {
     });
 
     test('XRouter resolver should resolve in chain', () {
-      final routingStateNotifier = XRoutingStateNotifier(
-        initialState: XRoutingState(
-          status: XStatus.resolving,
-          target: '/',
-        ),
-      );
+      final stateNotifier = XRouterStateNotifier();
       XRouterResolver(
         resolvers: [
           XRedirectResolver(from: '/', to: '/other'),
@@ -77,22 +75,17 @@ void main() {
           XNotFoundResolver(redirectTo: '/dashboard'),
         ],
         routes: routes,
-        routerStateNotifier: routingStateNotifier,
+        stateNotifier: stateNotifier,
       );
-      routingStateNotifier.startResolving();
-      expect(routingStateNotifier.value.status, equals(XStatus.resolving_end));
-      expect(routingStateNotifier.value.resolved, equals('/dashboard'));
+      stateNotifier.startResolving('/');
+      expect(stateNotifier.value.status, equals(XStatus.resolved));
+      expect(stateNotifier.value.resolved, equals('/dashboard'));
     });
 
     test(
       'Router Resolver should run resolve when resolver state changes',
       () {
-        final routingStateNotifier = XRoutingStateNotifier(
-          initialState: XRoutingState(
-            status: XStatus.resolving,
-            target: '/',
-          ),
-        );
+        final stateNotifier = XRouterStateNotifier();
         final resolver = ReactiveResolver(
           onTrue: '/true',
           onFalse: '/false',
@@ -101,14 +94,13 @@ void main() {
         XRouterResolver(
           resolvers: [resolver],
           routes: routes,
-          routerStateNotifier: routingStateNotifier,
+          stateNotifier: stateNotifier,
         );
-        routingStateNotifier.startResolving();
-        expect(
-            routingStateNotifier.value.status, equals(XStatus.resolving_end));
-        expect(routingStateNotifier.value.resolved, equals('/false'));
+        stateNotifier.startResolving('/');
+        expect(stateNotifier.value.status, equals(XStatus.resolved));
+        expect(stateNotifier.value.resolved, equals('/false'));
         resolver.value = true;
-        expect(routingStateNotifier.value.resolved, equals('/true'));
+        expect(stateNotifier.value.resolved, equals('/true'));
       },
     );
   });

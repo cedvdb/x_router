@@ -31,15 +31,17 @@ class XRouter {
     List<XRouteResolver> resolvers = const [],
     Function(XRouterState)? onRouterStateChanges,
   }) : _isRoot = true {
+    // the resolver will change the router state
     _resolver = XRouterResolver(
       resolvers: resolvers,
       routes: routes,
-      onStateChanges: () => goTo(_routerStateNotifier.value.resolved),
+      stateNotifier: _routerStateNotifier,
     );
     if (onRouterStateChanges != null) {
       _routerStateNotifier
           .addListener(() => onRouterStateChanges(_routerStateNotifier.value));
     }
+    // when the resolver has modified the states this runs
     _routerStateNotifier.addListener(_onRouterStateChanges);
   }
 
@@ -54,20 +56,9 @@ class XRouter {
     final state = _routerStateNotifier.value;
     final status = state.status;
 
-    if (status == XStatus.resolving && _isRoot) {
-      final resolved = _resolver.resolve(state.target);
-      _routerStateNotifier.endResolving(resolved);
-    }
-
     if (status == XStatus.resolved) {
       final activatedRoute = _activatedRouteBuilder.build(state.resolved);
-      if (_isRoot)
-        delegate.initBuild(activatedRoute);
-      else {
-        print(activatedRoute.matchingRoute.path);
-        if (activatedRoute.matchingRoute.path.startsWith('/products/:id/'))
-          delegate.initBuild(activatedRoute);
-      }
+      delegate.initBuild(activatedRoute);
     }
   }
 
