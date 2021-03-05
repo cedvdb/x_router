@@ -187,3 +187,20 @@ class AuthResolver extends ValueNotifier with XRouteResolver {
 }
 
 ```
+
+
+# Child Router 
+
+To create a child router use the XRouter.child property:
+
+```
+XRouter.child(
+    routes: [
+      XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
+      XRoute(
+        path: '/products/:id/comments',
+        builder: (_, __) => ProductComments(),
+      ),
+    ],
+  )
+```
