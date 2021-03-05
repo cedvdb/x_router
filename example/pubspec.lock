@@ -305,15 +305,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  route_parser:
-    dependency: transitive
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: da93b50361eb505622a8b332b0ff4665a26a6231
-      url: "https://github.com/cedvdb/route_parser.git"
-    source: git
-    version: "0.0.0"
   rxdart:
     dependency: "direct main"
     description:

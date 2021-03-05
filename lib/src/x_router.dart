@@ -1,6 +1,6 @@
-import 'package:route_parser/route_parser.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
+import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
@@ -64,7 +64,7 @@ class XRouter {
 
   static goTo(String target, {Map<String, String>? params}) {
     if (params != null) {
-      target = RouteParser(target).reverse(params);
+      target = XRouteParser(target).reverse(params);
     }
     // relative to current route
     if (target.startsWith('./')) {

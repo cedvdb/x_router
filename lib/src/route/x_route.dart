@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:route_parser/route_parser.dart';
+import 'package:x_router/src/parser/x_parsing_result.dart';
+import 'package:x_router/src/parser/x_route_parser.dart';
 
 typedef XPageBuilder = Widget Function(
     BuildContext context, Map<String, String> params);
@@ -39,13 +40,13 @@ class XRoute {
   /// {@macro matchChildren}
   final bool matchChildren;
 
-  final RouteParser _parser;
+  final XRouteParser _parser;
 
   XRoute({
     required this.path,
     required this.builder,
     this.matchChildren = true,
-  }) : _parser = RouteParser(path);
+  }) : _parser = XRouteParser(path);
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
@@ -62,7 +63,7 @@ class XRoute {
   /// the [path] is the path to be matched against this route
   /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
   /// {@macro matchType}
-  ParsingResult parse(String path, {bool? matchChildren}) {
+  XParsingResult parse(String path, {bool? matchChildren}) {
     if (matchChildren == null) {
       matchChildren = this.matchChildren;
     }
