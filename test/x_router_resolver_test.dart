@@ -5,7 +5,7 @@ import 'package:x_router/src/state/x_router_state.dart';
 import 'package:x_router/src/state/x_router_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
-class ReactiveResolver extends ValueNotifier<bool> with XRouteResolver {
+class ReactiveResolver extends ValueNotifier<bool> with XResolver {
   String onFalse;
   String onTrue;
   ReactiveResolver({
@@ -34,6 +34,16 @@ void main() {
         path: '/redirected',
         builder: (context, params) => Container(),
       ),
+      XRoute(
+          path: '/route-resolvers',
+          builder: (context, params) => Container(),
+          resolvers: [
+            XSimpleResolver((target, __) {
+              return target.startsWith('/route-resolvers')
+                  ? '/route-resolvers/success'
+                  : '/route-resolvers/failure';
+            }),
+          ])
     ];
 
     test('RedirectResolver', () {
@@ -101,6 +111,29 @@ void main() {
         expect(stateNotifier.value.resolved, equals('/false'));
         resolver.value = true;
         expect(stateNotifier.value.resolved, equals('/true'));
+      },
+    );
+
+    test(
+      'Routes Resolvers should run only on their path',
+      () {
+        final stateNotifier = XRouterStateNotifier();
+
+        XRouterResolver(
+          resolvers: [],
+          routes: routes,
+          stateNotifier: stateNotifier,
+        );
+
+        stateNotifier.startResolving('/route-resolvers');
+        expect(stateNotifier.value.status, equals(XStatus.resolved));
+        expect(
+            stateNotifier.value.resolved, equals('/route-resolvers/success'));
+        stateNotifier.startResolving('/');
+        expect(
+          stateNotifier.value.resolved.startsWith('/route-resolvers'),
+          equals(false),
+        );
       },
     );
   });

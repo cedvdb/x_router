@@ -2,7 +2,7 @@ import 'package:example/services/auth_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';
 
-class AuthResolver extends ValueNotifier with XRouteResolver {
+class AuthResolver extends ValueNotifier with XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.instance.authStatus$.listen((status) {
       value = status;

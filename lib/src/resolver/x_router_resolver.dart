@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:x_router/src/resolver/x_route_resolver.dart';
+import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouterResolver {
-  final List<XRouteResolver> resolvers;
+  final List<XResolver> resolvers;
   final List<XRoute> routes;
   final XRouterStateNotifier stateNotifier;
 

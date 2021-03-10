@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/src/parser/x_parsing_result.dart';
 import 'package:x_router/src/parser/x_route_parser.dart';
+import 'package:x_router/src/resolver/x_resolver.dart';
+import 'package:x_router/src/resolver/x_route_resolver.dart';
 
 typedef XPageBuilder = Widget Function(
     BuildContext context, Map<String, String> params);
@@ -16,6 +18,12 @@ typedef XPageBuilder = Widget Function(
 ///
 /// {@template builder}
 /// The [builder] role is to the page with the params it might receive as arguments.
+/// {@endtemplate}
+///
+/// {@template resolvers}
+/// The list of [resolvers] that are active for this specific route.
+/// In those resolvers, the target will always be matching the route and
+/// children if [matchChildren] is true.
 /// {@endtemplate}
 ///
 /// {@template matchChildren}
@@ -40,13 +48,23 @@ class XRoute {
   /// {@macro matchChildren}
   final bool matchChildren;
 
+  // those are the resolvers that the user specified, we are wrapping them
+  // in XRouteResolvers to make them only apply for this route
+  final List<XResolver> _resolvers;
+
+  /// {@macro resolvers}
+  late final List<XRouteResolver> resolvers =
+      _resolvers.map((r) => XRouteResolver(resolver: r, route: this)).toList();
+
   final XRouteParser _parser;
 
   XRoute({
     required this.path,
     required this.builder,
+    List<XResolver> resolvers = const [],
     this.matchChildren = true,
-  }) : _parser = XRouteParser(path);
+  })  : _parser = XRouteParser(path),
+        _resolvers = resolvers;
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
