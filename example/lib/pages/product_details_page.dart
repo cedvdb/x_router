@@ -4,6 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
+final xRouter = XRouter.child(
+  routes: [
+    XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
+    XRoute(
+      path: '/products/:id/comments',
+      builder: (_, __) => ProductComments(),
+    ),
+  ],
+);
+
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
   ProductDetailsPage(String id) : product = ProductsService.getById(id);
@@ -13,16 +23,6 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
-  final xRouter = XRouter.child(
-    routes: [
-      XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
-      XRoute(
-        path: '/products/:id/comments',
-        builder: (_, __) => ProductComments(),
-      ),
-    ],
-  );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +30,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       drawer: AppDrawer(),
       body: Column(
         children: [
-          widget.product != null
-              ? Text(widget.product.name)
-              : Text('product not found'),
+          Text(widget.product.name),
           Row(
             children: [
               ElevatedButton(

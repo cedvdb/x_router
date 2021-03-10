@@ -31,16 +31,17 @@ class XRouter {
     List<XResolver> resolvers = const [],
     Function(XRouterState)? onRouterStateChanges,
   }) : _isRoot = true {
+    _resolvers.addAll(resolvers);
     _addRouteResolvers(routes);
-    // the resolver will change the router state
-    XRouterResolver(
-      resolvers: resolvers,
-      routes: routes,
-      stateNotifier: _routerStateNotifier,
-    );
     _addUserListener(onRouterStateChanges);
     // when the resolver has modified the states this runs
     _routerStateNotifier.addListener(_onRouterStateChanges);
+    // the resolver will change the router state
+    XRouterResolver(
+      resolvers: _resolvers,
+      routes: routes,
+      stateNotifier: _routerStateNotifier,
+    );
   }
 
   XRouter.child({

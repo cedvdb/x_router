@@ -20,7 +20,7 @@ class XRouteResolver with XResolver, ChangeNotifier {
   @override
   String resolve(String target, List<XRoute> routes) {
     if (route.match(target)) {
-      resolver.resolve(target, routes);
+      return resolver.resolve(target, routes);
     }
     return target;
   }

@@ -22,6 +22,7 @@ class AuthResolver extends ValueNotifier with XResolver {
         return '/sign-in';
       case AuthStatus.unknown:
       default:
+        if (target.startsWith('/loading')) return target;
         return '/loading$target';
     }
   }
