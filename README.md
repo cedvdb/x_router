@@ -90,6 +90,7 @@ final router = XRouter(
       builder: (ctx, params) => ProductsPage(),
     ),
     XRoute(
+      resolvers: [ProductExists]
       path: AppRoutes.productDetail,
       builder: (ctx, params) => ProductDetailsPage(params['id']),
     ),
@@ -146,9 +147,9 @@ is a static class:
 # Reactive guards / resolvers
 
 
-The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('//route'). That route goes through each resolvers `String resolve(String target)` sequentially and output a path which may or may not be the one received.
+The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `String resolve(String target)` sequentially and output a path which may or may not be the one received.
 
-This way you can have a RedirectResolver that redirects every access to '/' to '/dashboard'.
+In other words if you access '/route', the resolving process first takes the first resolver, which may output '/not-found' then the second resolver receives '/not-found' and outputs '/sign-in.
 
 Those resolvers can be `ChangeNotifier` in which case the resolving process happens again when the resolvers `notifyListeners()`.
 
@@ -166,13 +167,10 @@ class AuthResolver extends ValueNotifier with XRouteResolver {
 
   // this will run every time the value changes
   @override
-  String resolve(String target, List<XRoute> routes) {
-
+  String resolve(String target) {
     switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith('/sign-in')) {
-          return '/';
-        }
+        if (target.startsWith('/sign-in')) return '/';
         if (target.startsWith('/loading')) {
           return target.replaceFirst('/loading', '');
         }
@@ -181,20 +179,32 @@ class AuthResolver extends ValueNotifier with XRouteResolver {
         return '/sign-in';
       case AuthStatus.unknown:
       default:
+        if (target.startsWith('/loading')) return target;
         return '/loading$target';
     }
   }
 }
-
 ```
+
+This is powerful because you then don't need to worry about redirection on user authentication.
+
+Note: You can add resolvers on specific routes, in which case they will only be active on that route & children.
+
+## Provided resolvers
+
+A series of resolvers are provided by the library:
+
+ - XNotFoundResolver: to redirect when no route is found
+ - XRedirect: to redirect a specific path
+ - XSimpleResolver: A simple resolver for creating resolvers in line via its constructor
 
 
 # Child Router 
 
-To create a child router use the XRouter.child property:
+To create a child router use the XRouter constructor like you would for its parent:
 
 ```
-XRouter.child(
+XRouter(
     routes: [
       XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
       XRoute(
