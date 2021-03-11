@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
@@ -15,12 +16,12 @@ class XRedirectResolver with XResolver {
         from = XRouteParser(from);
 
   @override
-  String resolve(String target) {
+  Future<String> resolve(String target) {
     final parsed = from.parse(target, matchChildren: matchChildren);
     if (parsed.matches) {
       // we add the params to the redirect
-      return to.reverse(parsed.parameters);
+      return SynchronousFuture(to.reverse(parsed.parameters));
     }
-    return target;
+    return SynchronousFuture(target);
   }
 }

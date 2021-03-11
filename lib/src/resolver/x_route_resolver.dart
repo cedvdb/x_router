@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:x_router/x_router.dart';
 
 /// wrapper for resolver that are put on specific routes so they are
@@ -18,10 +19,10 @@ class XRouteResolver with XResolver, ChangeNotifier {
   }
 
   @override
-  String resolve(String target) {
+  Future<String> resolve(String target) {
     if (route.match(target)) {
       return resolver.resolve(target);
     }
-    return target;
+    return SynchronousFuture(target);
   }
 }

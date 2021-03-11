@@ -10,7 +10,7 @@ class AuthResolver extends ValueNotifier with XResolver {
   }
 
   @override
-  String resolve(String target) {
+  Future<String> resolve(String target) async {
     switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith('/sign-in')) return '/';

@@ -37,10 +37,10 @@ class XRouterResolver {
     addResolvers(resolvers);
   }
 
-  String resolve(String target) {
+  Future<String> resolve(String target) async {
     var resolved = target;
     for (final resolver in resolvers) {
-      resolved = resolver.resolve(resolved);
+      resolved = await resolver.resolve(resolved);
     }
     return resolved;
   }
@@ -54,12 +54,12 @@ class XRouterResolver {
     });
   }
 
-  void _onRouterStateChanges() {
+  void _onRouterStateChanges() async {
     final state = stateNotifier.value;
     final status = state.status;
 
     if (status == XStatus.resolving) {
-      final resolved = resolve(state.target);
+      final resolved = await resolve(state.target);
       stateNotifier.endResolving(resolved);
     }
   }
