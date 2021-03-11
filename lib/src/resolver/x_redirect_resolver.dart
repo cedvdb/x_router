@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
-import 'package:x_router/src/route/x_route.dart';
 
 class XRedirectResolver with XResolver {
   final XRouteParser from;
@@ -11,7 +10,7 @@ class XRedirectResolver with XResolver {
   XRedirectResolver({
     required String from,
     required String to,
-    this.matchChildren = false,
+    this.matchChildren = true,
   })  : to = XRouteParser(to),
         from = XRouteParser(from);
 
