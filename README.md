@@ -151,16 +151,40 @@ The XRouter class accepts resolvers as parameters. When a page is accessed via a
 
 In other words if you access '/route', the resolving process first takes the first resolver, which may output '/not-found' then the second resolver receives '/not-found' and outputs '/sign-in.
 
+Here is an example of redirect resolver (a more complete version is available in the library):
+
+```dart
+class XRedirectResolver with XResolver {
+  final String from;
+  final String to;
+
+  XRedirectResolver({
+    required this.from,
+    required this.to,
+  });
+
+  @override
+  Future<String> resolve(String target) async {
+    if (target.startsWith(from)) {
+      return to;
+    }
+    return target;
+  }
+}
+
+```
+
 Those resolvers can be `ChangeNotifier` in which case the resolving process happens again when the resolvers `notifyListeners()`.
 
 Here is an example of an authentication resolver:
 
 ```dart
-class AuthResolver extends ValueNotifier with XRouteResolver {
+class AuthResolver extends ValueNotifier with XResolver {
 
 
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.instance.authStatus$.listen((status) {
+      // this calls notifyListener
       value = status;
     });
   }
