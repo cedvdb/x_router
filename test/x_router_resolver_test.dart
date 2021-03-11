@@ -14,7 +14,7 @@ class ReactiveResolver extends ValueNotifier<bool> with XResolver {
   }) : super(false);
 
   @override
-  String resolve(String target, List<XRoute> routes) {
+  String resolve(String target) {
     if (value) {
       return onTrue;
     } else {
@@ -38,8 +38,7 @@ void main() {
         path: '/route-resolvers',
         builder: (context, params) => Container(),
         resolvers: [
-          XSimpleResolver((target, __) {
-            print('we here');
+          XSimpleResolver((target) {
             return '/success';
           }),
         ],
@@ -48,30 +47,31 @@ void main() {
 
     test('RedirectResolver', () {
       final redirectResolver = XRedirectResolver(from: '/', to: '/dashboard');
-      expect(redirectResolver.resolve('/', routes), equals('/dashboard'));
-      expect(redirectResolver.resolve('/other', routes), equals('/other'));
+      expect(redirectResolver.resolve('/'), equals('/dashboard'));
+      expect(redirectResolver.resolve('/other'), equals('/other'));
     });
 
     test(
         'NotFoundResolver should resolve to the route specified when not found',
         () {
-      final notFoundResolver = XNotFoundResolver(redirectTo: '/redirected');
+      final notFoundResolver =
+          XNotFoundResolver(redirectTo: '/redirected', routes: routes);
       // found
       expect(
-        notFoundResolver.resolve('/dashboard', routes),
+        notFoundResolver.resolve('/dashboard'),
         equals('/dashboard'),
       );
       // not found
       expect(
-        notFoundResolver.resolve('/', routes),
+        notFoundResolver.resolve('/'),
         equals('/redirected'),
       );
       expect(
-        notFoundResolver.resolve('/redirected', routes),
+        notFoundResolver.resolve('/redirected'),
         equals('/redirected'),
       );
       expect(
-        notFoundResolver.resolve('/not-found', routes),
+        notFoundResolver.resolve('/not-found'),
         equals('/redirected'),
       );
     });
@@ -82,7 +82,7 @@ void main() {
         resolvers: [
           XRedirectResolver(from: '/', to: '/other'),
           XRedirectResolver(from: '/other', to: '/not-found'),
-          XNotFoundResolver(redirectTo: '/dashboard'),
+          XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
         ],
         routes: routes,
         stateNotifier: stateNotifier,
@@ -103,7 +103,6 @@ void main() {
         resolver.value = false;
         XRouterResolver(
           resolvers: [resolver],
-          routes: routes,
           stateNotifier: stateNotifier,
         );
         stateNotifier.startResolving('/');
@@ -119,11 +118,7 @@ void main() {
       () {
         final stateNotifier = XRouterStateNotifier();
 
-        XRouterResolver(
-          resolvers: [],
-          routes: routes,
-          stateNotifier: stateNotifier,
-        );
+        XRouterResolver(stateNotifier: stateNotifier, routes: routes);
 
         stateNotifier.startResolving('/route-resolvers');
         expect(stateNotifier.value.status, equals(XStatus.resolved));

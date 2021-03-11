@@ -48,23 +48,17 @@ class XRoute {
   /// {@macro matchChildren}
   final bool matchChildren;
 
-  // those are the resolvers that the user specified, we are wrapping them
-  // in XRouteResolvers to make them only apply for this route
-  final List<XResolver> _resolvers;
-
   /// {@macro resolvers}
-  late final List<XRouteResolver> resolvers =
-      _resolvers.map((r) => XRouteResolver(resolver: r, route: this)).toList();
+  final List<XResolver> resolvers;
 
   final XRouteParser _parser;
 
   XRoute({
     required this.path,
     required this.builder,
-    List<XResolver> resolvers = const [],
+    this.resolvers = const [],
     this.matchChildren = true,
-  })  : _parser = XRouteParser(path),
-        _resolvers = resolvers;
+  }) : _parser = XRouteParser(path);
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route

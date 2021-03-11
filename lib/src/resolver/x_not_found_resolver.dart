@@ -3,11 +3,15 @@ import 'package:x_router/src/route/x_route.dart';
 
 class XNotFoundResolver with XResolver {
   final String redirectTo;
+  final List<XRoute> routes;
 
-  XNotFoundResolver({this.redirectTo = '/'});
+  XNotFoundResolver({
+    this.redirectTo = '/',
+    required this.routes,
+  });
 
   @override
-  String resolve(String target, List<XRoute> routes) {
+  String resolve(String target) {
     try {
       routes.firstWhere(
         (r) => r.match(target),

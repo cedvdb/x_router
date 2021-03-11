@@ -15,7 +15,7 @@ class XRedirectResolver with XResolver {
         from = XRouteParser(from);
 
   @override
-  String resolve(String target, List<XRoute> routes) {
+  String resolve(String target) {
     final parsed = from.parse(target, matchChildren: matchChildren);
     if (parsed.matches) {
       // we add the params to the redirect

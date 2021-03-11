@@ -12,40 +12,35 @@ class XRouter {
   // responsible of notifying when a new route needs to be resolved
   static final XRouterStateNotifier _routerStateNotifier =
       XRouterStateNotifier();
+  static final XRouterResolver _resolver = XRouterResolver(
+    stateNotifier: _routerStateNotifier,
+  );
   // responsible of resolving a string path to (maybe) another
   final XRouteInformationParser parser = XRouteInformationParser();
-  late final XRouterDelegate delegate;
+  late final XRouterDelegate delegate = XRouterDelegate(
+    onNewRoute: (path) => goTo(path),
+    isRoot: _isRoot,
+    onDispose: dispose,
+  );
   final List<XRoute> routes;
   late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(routes: routes);
   // whether this router is the root resolver and not a child / nested
-  static bool _isRoot = true;
-  static final List<XResolver> _resolvers = [];
+  static bool _firstInstance = true;
+  final bool _isRoot;
+  Function()? _userListener;
 
   XRouter({
     required this.routes,
     List<XResolver> resolvers = const [],
     Function(XRouterState)? onRouterStateChanges,
-  }) {
-    _resolvers.addAll(resolvers);
-    _addRouteResolvers(routes);
+  }) : _isRoot = _firstInstance {
     _addUserListener(onRouterStateChanges);
     // when the resolver has modified the states this runs
     _routerStateNotifier.addListener(_onRouterStateChanges);
-    delegate = XRouterDelegate(
-      onNewRoute: (path) => goTo(path),
-      isRoot: _isRoot,
-      onDispose: dispose,
-    );
-    if (_isRoot) {
-      // the resolver will change the router state
-      XRouterResolver(
-        resolvers: _resolvers,
-        routes: routes,
-        stateNotifier: _routerStateNotifier,
-      );
-    }
-    _isRoot = false;
+    _resolver.addResolvers(resolvers);
+    _resolver.addRouteResolvers(routes);
+    _firstInstance = false;
   }
 
   static goTo(String target, {Map<String, String>? params}) {
@@ -62,14 +57,9 @@ class XRouter {
   }
 
   dispose() {
-    _routerStateNotifier.removeListener(_onRouterStateChanges);
-  }
-
-  // adds resolvers that are put on specific routes
-  _addRouteResolvers(List<XRoute> routes) {
-    // sorting the routes by path length so children are after parents.
-    routes.sort((a, b) => a.path.length.compareTo(b.path.length));
-    routes.forEach((route) => _resolvers.addAll(route.resolvers));
+    if (_userListener != null) {
+      _routerStateNotifier.removeListener(_userListener!);
+    }
   }
 
   _onRouterStateChanges() {
@@ -84,8 +74,8 @@ class XRouter {
 
   _addUserListener(Function(XRouterState)? onRouterStateChanges) {
     if (onRouterStateChanges != null) {
-      _routerStateNotifier
-          .addListener(() => onRouterStateChanges(_routerStateNotifier.value));
+      _userListener = () => onRouterStateChanges(_routerStateNotifier.value);
+      _routerStateNotifier.addListener(_userListener!);
     }
   }
 }
