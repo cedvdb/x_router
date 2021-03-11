@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
-final xRouter = XRouter.child(
+final xRouter = XRouter(
   routes: [
     XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
     XRoute(

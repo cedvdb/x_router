@@ -14,8 +14,7 @@ final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: '/dashboard'),
-    XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
+    XRedirectResolver(from: '/', to: AppRoutes.dashboard),
   ],
   routes: [
     XRoute(

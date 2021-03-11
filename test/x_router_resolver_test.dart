@@ -35,15 +35,15 @@ void main() {
         builder: (context, params) => Container(),
       ),
       XRoute(
-          path: '/route-resolvers',
-          builder: (context, params) => Container(),
-          resolvers: [
-            XSimpleResolver((target, __) {
-              return target.startsWith('/route-resolvers')
-                  ? '/route-resolvers/success'
-                  : '/route-resolvers/failure';
-            }),
-          ])
+        path: '/route-resolvers',
+        builder: (context, params) => Container(),
+        resolvers: [
+          XSimpleResolver((target, __) {
+            print('we here');
+            return '/success';
+          }),
+        ],
+      )
     ];
 
     test('RedirectResolver', () {
@@ -127,13 +127,9 @@ void main() {
 
         stateNotifier.startResolving('/route-resolvers');
         expect(stateNotifier.value.status, equals(XStatus.resolved));
-        expect(
-            stateNotifier.value.resolved, equals('/route-resolvers/success'));
+        expect(stateNotifier.value.resolved, equals('/success'));
         stateNotifier.startResolving('/');
-        expect(
-          stateNotifier.value.resolved.startsWith('/route-resolvers'),
-          equals(false),
-        );
+        expect(stateNotifier.value.resolved, equals('/'));
       },
     );
   });

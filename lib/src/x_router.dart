@@ -14,42 +14,38 @@ class XRouter {
       XRouterStateNotifier();
   // responsible of resolving a string path to (maybe) another
   final XRouteInformationParser parser = XRouteInformationParser();
-  late final XRouterDelegate delegate = XRouterDelegate(
-    onNewRoute: (path) => goTo(path),
-    isRoot: _isRoot,
-    onDispose: dispose,
-  );
+  late final XRouterDelegate delegate;
   final List<XRoute> routes;
   late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(routes: routes);
   // whether this router is the root resolver and not a child / nested
-  final bool _isRoot;
+  static bool _isRoot = true;
   static final List<XResolver> _resolvers = [];
 
   XRouter({
     required this.routes,
     List<XResolver> resolvers = const [],
     Function(XRouterState)? onRouterStateChanges,
-  }) : _isRoot = true {
+  }) {
     _resolvers.addAll(resolvers);
     _addRouteResolvers(routes);
     _addUserListener(onRouterStateChanges);
     // when the resolver has modified the states this runs
     _routerStateNotifier.addListener(_onRouterStateChanges);
-    // the resolver will change the router state
-    XRouterResolver(
-      resolvers: _resolvers,
-      routes: routes,
-      stateNotifier: _routerStateNotifier,
+    delegate = XRouterDelegate(
+      onNewRoute: (path) => goTo(path),
+      isRoot: _isRoot,
+      onDispose: dispose,
     );
-  }
-
-  XRouter.child({
-    required this.routes,
-  }) : _isRoot = false {
-    _addRouteResolvers(routes);
-    _onRouterStateChanges();
-    _routerStateNotifier.addListener(_onRouterStateChanges);
+    if (_isRoot) {
+      // the resolver will change the router state
+      XRouterResolver(
+        resolvers: _resolvers,
+        routes: routes,
+        stateNotifier: _routerStateNotifier,
+      );
+    }
+    _isRoot = false;
   }
 
   static goTo(String target, {Map<String, String>? params}) {
