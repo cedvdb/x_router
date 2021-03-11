@@ -78,7 +78,7 @@ final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: '/dashboard'),
+    XRedirectResolver(from: '/', to: '/dashboard', matchChildren: false),
   ],
   routes: [
     XRoute(

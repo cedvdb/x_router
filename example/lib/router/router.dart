@@ -8,7 +8,7 @@ final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/', routes: AppRoutes.routes),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: AppRoutes.dashboard),
+    XRedirectResolver(from: '/', to: AppRoutes.dashboard, matchChildren: false),
   ],
   routes: AppRoutes.routes,
   onRouterStateChanges: (s) => print(s),
