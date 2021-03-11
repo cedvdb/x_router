@@ -4,7 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
-final xRouter = XRouter(
+final productDetailsRouter = XRouter.child(
+  resolvers: [
+    XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
+    XSimpleResolver((target) async {
+      print('======= here');
+      return target;
+    })
+  ],
   routes: [
     XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
     XRoute(
@@ -45,7 +52,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               padding: const EdgeInsets.all(8.0),
               child: Card(
                 child: Router(
-                  routerDelegate: xRouter.delegate,
+                  routerDelegate: productDetailsRouter.delegate,
                 ),
               ),
             ),

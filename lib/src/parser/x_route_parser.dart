@@ -3,11 +3,12 @@ import 'dart:math';
 
 /// Representation of a route that can then be parsed and matched against other types
 class XRouteParser {
-  final Uri _uri;
+  final String path;
+  late final Uri _uri = Uri(path: sanitize(path));
 
-  List<String> get segments => _uri.pathSegments;
+  List<String> get _segments => _uri.pathSegments;
 
-  XRouteParser(String path) : _uri = Uri(path: sanitize(path));
+  XRouteParser(String path) : path = sanitize(path);
 
   /// matches a path against this route.
   bool match(String path, {bool matchChildren = false}) {
@@ -35,9 +36,9 @@ class XRouteParser {
     final matches = <bool>[];
     final params = <String, String>{};
     final matchingSegments = [];
-    final toMatchIsShorter = toMatch.segments.length < segments.length;
-    final toMatchIsLonger = toMatch.segments.length > segments.length;
-    final minLength = min(segments.length, toMatch.segments.length);
+    final toMatchIsShorter = toMatch._segments.length < _segments.length;
+    final toMatchIsLonger = toMatch._segments.length > _segments.length;
+    final minLength = min(_segments.length, toMatch._segments.length);
 
     // if toMatch is shorter it's defacto not a match
     if (toMatchIsShorter) {
@@ -50,8 +51,8 @@ class XRouteParser {
     }
 
     for (var i = 0; i < minLength; i++) {
-      final patternSegment = segments[i];
-      final toMatchSegment = toMatch.segments[i];
+      final patternSegment = _segments[i];
+      final toMatchSegment = toMatch._segments[i];
 
       // we extract the param
       if (patternSegment.startsWith(':')) {

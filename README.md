@@ -147,7 +147,7 @@ is a static class:
 # Reactive guards / resolvers
 
 
-The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `String resolve(String target)` sequentially and output a path which may or may not be the one received.
+The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `Future<String> resolve(String target)` sequentially and output a path which may or may not be the one received.
 
 In other words if you access '/route', the resolving process first takes the first resolver, which may output '/not-found' then the second resolver receives '/not-found' and outputs '/sign-in.
 
@@ -167,7 +167,7 @@ class AuthResolver extends ValueNotifier with XRouteResolver {
 
   // this will run every time the value changes
   @override
-  String resolve(String target) {
+  Future<String> resolve(String target) async {
     switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith('/sign-in')) return '/';
@@ -201,10 +201,10 @@ A series of resolvers are provided by the library:
 
 # Child Router 
 
-To create a child router use the XRouter constructor like you would for its parent:
+To create a child router use the XRouter.child constructor and add it to the parent:
 
 ```
-XRouter(
+final childRouter = XRouter.child(
     routes: [
       XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
       XRoute(
@@ -213,4 +213,6 @@ XRouter(
       ),
     ],
   )
+parentRouter.addChildren([childRouter]);
 ```
+

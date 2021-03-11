@@ -26,21 +26,50 @@ class XRouter {
   late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(routes: routes);
   // whether this router is the root resolver and not a child / nested
-  static bool _firstInstance = true;
   final bool _isRoot;
   Function()? _userListener;
 
-  XRouter({
+  XRouter._({
     required this.routes,
     List<XResolver> resolvers = const [],
     Function(XRouterState)? onRouterStateChanges,
-  }) : _isRoot = _firstInstance {
+    required bool isRoot,
+  }) : _isRoot = isRoot {
     _addUserListener(onRouterStateChanges);
     // when the resolver has modified the states this runs
     _routerStateNotifier.addListener(_onRouterStateChanges);
     _resolver.addResolvers(resolvers);
     _resolver.addRouteResolvers(routes);
-    _firstInstance = false;
+  }
+
+  XRouter({
+    required List<XRoute> routes,
+    List<XResolver> resolvers = const [],
+    Function(XRouterState)? onRouterStateChanges,
+  }) : this._(
+          isRoot: true,
+          routes: routes,
+          resolvers: resolvers,
+          onRouterStateChanges: onRouterStateChanges,
+        );
+
+  XRouter.child({
+    required List<XRoute> routes,
+    List<XResolver> resolvers = const [],
+    Function(XRouterState)? onRouterStateChanges,
+  }) : this._(
+          isRoot: false,
+          routes: routes,
+          resolvers: resolvers,
+          onRouterStateChanges: onRouterStateChanges,
+        );
+
+  XRouter addChildren(List<XRouter> children) {
+    // this is just to force instanciation of the XRouter.child
+    // without it the child router could be in a widget and only instanciated
+    // when accessing said widget. If there were resolvers present then they
+    // would not be active until we reach the widget.
+    return this;
   }
 
   static goTo(String target, {Map<String, String>? params}) {

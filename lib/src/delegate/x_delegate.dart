@@ -5,7 +5,7 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
 
 final GlobalKey<NavigatorState> _nestedNavigatorKey =
-    GlobalKey<NavigatorState>(); // THIS IS THE IMPORTANT PART
+    GlobalKey<NavigatorState>();
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -14,6 +14,7 @@ class XRouterDelegate extends RouterDelegate<String>
       isRoot ? GlobalKey<NavigatorState>() : _nestedNavigatorKey;
 
   /// maintains the url
+  @override
   String? currentConfiguration;
 
   /// callback called when the os receive a new route

@@ -1,3 +1,4 @@
+import 'package:example/pages/product_details_page.dart';
 import 'package:example/router/routes.dart';
 import 'package:x_router/x_router.dart';
 
@@ -11,4 +12,4 @@ final router = XRouter(
   ],
   routes: AppRoutes.routes,
   onRouterStateChanges: (s) => print(s),
-);
+)..addChildren([productDetailsRouter]);
