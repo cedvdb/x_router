@@ -71,7 +71,7 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   _goUp() {
-    if (_activatedRoute.upstack.length > 1) {
+    if (_activatedRoute.upstack.length >= 1) {
       setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
     }
   }

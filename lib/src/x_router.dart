@@ -68,7 +68,8 @@ class XRouter {
     // this is just to force instanciation of the XRouter.child
     // without it the child router could be in a widget and only instanciated
     // when accessing said widget. If there were resolvers present then they
-    // would not be active until we reach the widget.
+    // would not be active until we reach the widget and a route could be
+    // accessed which the user intended to have a resolver on
     return this;
   }
 
