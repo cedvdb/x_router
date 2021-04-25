@@ -6,15 +6,10 @@ import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_state.dart';
-import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouter {
-  // responsible of notifying when a new route needs to be resolved
-  static final XRouterStateNotifier _routerStateNotifier =
-      XRouterStateNotifier();
-  static final XRouterResolver _resolver = XRouterResolver(
-    stateNotifier: _routerStateNotifier,
-  );
+  static final XRouterState _state = XRouterState();
+  static final XRouterResolver _resolver = XRouterResolver();
   // responsible of resolving a string path to (maybe) another
   final XRouteInformationParser parser = XRouteInformationParser();
   late final XRouterDelegate delegate = XRouterDelegate(
@@ -32,12 +27,9 @@ class XRouter {
   XRouter._({
     required this.routes,
     List<XResolver> resolvers = const [],
-    Function(XRouterState)? onRouterStateChanges,
     required bool isRoot,
   }) : _isRoot = isRoot {
-    _addUserListener(onRouterStateChanges);
     // when the resolver has modified the states this runs
-    _routerStateNotifier.addListener(_onRouterStateChanges);
     _resolver.addResolvers(resolvers);
     _resolver.addRouteResolvers(routes);
   }
@@ -45,23 +37,19 @@ class XRouter {
   XRouter({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
-    Function(XRouterState)? onRouterStateChanges,
   }) : this._(
           isRoot: true,
           routes: routes,
           resolvers: resolvers,
-          onRouterStateChanges: onRouterStateChanges,
         );
 
   XRouter.child({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
-    Function(XRouterState)? onRouterStateChanges,
   }) : this._(
           isRoot: false,
           routes: routes,
           resolvers: resolvers,
-          onRouterStateChanges: onRouterStateChanges,
         );
 
   XRouter addChildren(List<XRouter> children) {
@@ -78,12 +66,19 @@ class XRouter {
       target = XRouteParser(target).reverse(params);
     }
     // relative to current route
-    if (target.startsWith('./')) {
-      var resolved = _routerStateNotifier.value.resolved.split('/');
-      resolved.removeLast();
-      target = resolved.join('/') + target.substring(1);
-    }
+    target = _getRelativeUrl(target);
     _routerStateNotifier.startResolving(target);
+  }
+
+  /// gets the url relative to the current route if the url starts with ./
+  static String _getRelativeUrl(String target) {
+    // relative to current route
+    if (target.startsWith('./') && _state.currentUrl != null) {
+      var resolvedParts = _state.currentUrl!.split('/');
+      resolvedParts.removeLast();
+      target = resolvedParts.join('/') + target.substring(1);
+    }
+    return target;
   }
 
   dispose() {

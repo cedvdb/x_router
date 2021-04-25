@@ -2,19 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
-import 'package:x_router/src/state/x_router_state.dart';
-import 'package:x_router/src/state/x_router_state_notifier.dart';
 
 class XRouterResolver {
   final List<XResolver> resolvers = [];
-  final XRouterStateNotifier stateNotifier;
 
   XRouterResolver({
-    required this.stateNotifier,
     List<XResolver>? resolvers,
     List<XRoute>? routes,
   }) {
-    stateNotifier.addListener(_onRouterStateChanges);
     addResolvers(resolvers ?? []);
     addRouteResolvers(routes ?? []);
   }
@@ -46,7 +41,6 @@ class XRouterResolver {
   }
 
   dispose() {
-    stateNotifier.removeListener(_onRouterStateChanges);
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
         (resolver as ChangeNotifier).removeListener(_onResolverStateChanges);

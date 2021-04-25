@@ -1,40 +1,27 @@
-enum XStatus {
-  initializing,
-  resolving,
-  resolved,
+import 'dart:async';
+
+enum EventType {
+  navigation_start,
+  resolving_start,
+  resolving_end,
+  navigation_end,
+}
+
+class XRouterEvent {
+  EventType type;
+  String description;
+
+  XRouterEvent({
+    required this.type,
+    required this.description,
+  });
 }
 
 class XRouterState {
-  final XStatus status;
-  final String target;
-  final String resolved;
+  StreamController _events = StreamController();
+  String? currentUrl;
 
-  XRouterState({
-    required this.status,
-    required this.resolved,
-    required this.target,
-  });
-
-  XRouterState.initial()
-      : this(
-          status: XStatus.initializing,
-          target: '',
-          resolved: '',
-        );
-
-  @override
-  String toString() =>
-      'XRoutingState(status: $status, target: $target, resolved: $resolved)';
-
-  XRouterState copyWith({
-    XStatus? status,
-    String? target,
-    String? resolved,
-  }) {
-    return XRouterState(
-      status: status ?? this.status,
-      target: target ?? this.target,
-      resolved: resolved ?? this.resolved,
-    );
+  addEvent(EventType type, String description) {
+    _events.add(XRouterEvent(type: type, description: description));
   }
 }
