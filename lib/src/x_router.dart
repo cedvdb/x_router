@@ -78,12 +78,19 @@ class XRouter {
       target = XRouteParser(target).reverse(params);
     }
     // relative to current route
-    if (target.startsWith('./')) {
-      var resolved = _routerStateNotifier.value.resolved.split('/');
-      resolved.removeLast();
-      target = resolved.join('/') + target.substring(1);
-    }
+    target = _getRelativeUrl(target);
     _routerStateNotifier.startResolving(target);
+  }
+
+  /// gets the url relative to the current route if the url starts with ./
+  static String _getRelativeUrl(String target) {
+    // relative to current route
+    if (target.startsWith('./')) {
+      var resolvedParts = _routerStateNotifier.value.resolved.split('/');
+      resolvedParts.removeLast();
+      target = resolvedParts.join('/') + target.substring(1);
+    }
+    return target;
   }
 
   dispose() {
