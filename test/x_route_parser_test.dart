@@ -5,6 +5,24 @@ import 'matchers.dart';
 
 void main() {
   group('Route', () {
+    test('should format silly paths to prevent typos', () {
+      final path = '/test/route';
+      expect(XRouteParser('test/route').path, equals(path));
+      expect(XRouteParser('test/route/').path, equals(path));
+      expect(XRouteParser(' /test/route/ ').path, equals(path));
+      expect(XRouteParser('/test/route/').path, equals(path));
+      expect(XRouteParser('test/route ').path, equals(path));
+      expect(XRouteParser('//test/route/').path, equals(path));
+      expect(XRouteParser('/not/route').path, isNot(path));
+      expect(XRouteParser(' /not/route').path, isNot(path));
+    });
+
+    test('should create path with relative url', () {
+      expect(XRouteParser.relative('./rel', '/home').path, equals('/home/rel'));
+      expect(XRouteParser.relative('./rel', 'home').path, equals('/home/rel'));
+      expect(XRouteParser.relative('/rel', '/home').path, equals('/rel'));
+    });
+
     test('should match exact route', () {
       final path = '/test/route';
       expect(XRouteParser(path).parse(path), isMatch());
@@ -73,26 +91,15 @@ void main() {
       expect(result.patternPath, equals('/teams/:teamId'));
     });
 
-    test('should format silly paths to prevent typos', () {
-      final path = '/test/route';
-      expect(XRouteParser.sanitize('test/route'), equals(path));
-      expect(XRouteParser.sanitize('test/route/'), equals(path));
-      expect(XRouteParser.sanitize(' /test/route/ '), equals(path));
-      expect(XRouteParser.sanitize('/test/route/'), equals(path));
-      expect(XRouteParser.sanitize('test/route '), equals(path));
-      expect(XRouteParser.sanitize('//test/route/'), equals(path));
-      expect(XRouteParser.sanitize('/not/route'), isNot(path));
-      expect(XRouteParser.sanitize(' /not/route'), isNot(path));
-    });
-
     test('Should reverse params', () {
       final params = {'id': '3', 'otherId': '4'};
-      expect(XRouteParser('/route/:id').reverse(params), equals('/route/3'));
-      expect(XRouteParser('/route/:id/other/:otherId').reverse(params),
+      expect(
+          XRouteParser('/route/:id').addParameters(params), equals('/route/3'));
+      expect(XRouteParser('/route/:id/other/:otherId').addParameters(params),
           equals('/route/3/other/4'));
-      expect(XRouteParser('/route/:id/not/:not').reverse(params),
+      expect(XRouteParser('/route/:id/not/:not').addParameters(params),
           equals('/route/3/not/:not'));
-      expect(XRouteParser('/').reverse(params), equals('/'));
+      expect(XRouteParser('/').addParameters(params), equals('/'));
     });
   });
 }

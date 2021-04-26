@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/state/x_router_state.dart';
-import 'package:x_router/src/state/x_router_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends ValueNotifier<bool> with XResolver {

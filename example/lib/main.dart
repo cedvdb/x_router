@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routeInformationParser: router.parser,
+      routeInformationParser: router.informationParser,
       routerDelegate: router.delegate,
       title: 'XRouter Demo',
       theme: ThemeData(

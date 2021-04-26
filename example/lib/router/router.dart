@@ -11,5 +11,5 @@ final router = XRouter(
     XRedirectResolver(from: '/', to: AppRoutes.dashboard, matchChildren: false),
   ],
   routes: AppRoutes.routes,
-  onRouterStateChanges: (s) => print(s),
+  onEvent: (s) => print(s),
 )..addChildren([productDetailsRouter]);

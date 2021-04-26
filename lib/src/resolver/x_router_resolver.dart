@@ -4,22 +4,17 @@ import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
 
 class XRouterResolver {
-  final List<XResolver> resolvers = [];
+  final List<XResolver> resolvers = const [];
+  final void Function() onStateChanged;
 
-  XRouterResolver({
-    List<XResolver>? resolvers,
-    List<XRoute>? routes,
-  }) {
-    addResolvers(resolvers ?? []);
-    addRouteResolvers(routes ?? []);
-  }
+  const XRouterResolver({required this.onStateChanged});
 
-  addResolvers(List<XResolver> resolvers) {
+  void addResolvers(List<XResolver> resolvers) {
     this.resolvers.addAll(resolvers);
     _listenResolversStateChanges(resolvers);
   }
 
-  addRouteResolvers(List<XRoute> routes) {
+  void addRouteResolvers(List<XRoute> routes) {
     List<XResolver> resolvers = [];
     // sorting the routes by path length so children are after parents.
     routes.sort((a, b) => a.path.length.compareTo(b.path.length));
@@ -43,36 +38,22 @@ class XRouterResolver {
   dispose() {
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).removeListener(_onResolverStateChanges);
+        (resolver as ChangeNotifier).removeListener(onStateChanged);
       }
     });
-  }
-
-  void _onRouterStateChanges() async {
-    final state = stateNotifier.value;
-    final status = state.status;
-
-    if (status == XStatus.resolving) {
-      final resolved = await resolve(state.target);
-      stateNotifier.endResolving(resolved);
-    }
-  }
-
-  void _onResolverStateChanges() {
-    stateNotifier.startResolving(stateNotifier.value.resolved);
   }
 
   void _listenResolversStateChanges(List<XResolver> resolvers) {
+    // when adding / routes we just remove every listener that were added
+    // previously and readd them for all resolvers
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).removeListener(_onResolverStateChanges);
+        (resolver as ChangeNotifier).removeListener(onStateChanged);
       }
     });
     resolvers.forEach((resolver) {
       if (resolver is ChangeNotifier) {
-        // when changes happen we trigger resolving with the currently
-        // resolved path
-        (resolver as ChangeNotifier).addListener(_onResolverStateChanges);
+        (resolver as ChangeNotifier).addListener(onStateChanged);
       }
     });
   }

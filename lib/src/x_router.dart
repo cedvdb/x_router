@@ -5,42 +5,57 @@ import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
+/// XRouter helper that handles navigation
+///
+/// For your root router instantiate it with XRouter(...) if you need
+/// nested routing you can do so with XRouter.child(...)
+///
+/// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
   static final XRouterState _state = XRouterState();
-  static final XRouterResolver _resolver = XRouterResolver();
-  static late final XActivatedRouteBuilder _activatedRouteBuilder =
+  static final XRouterResolver _resolver =
+      XRouterResolver(onStateChanged: () => goTo(_state.currentUrl));
+  late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(routes: routes);
-  // For Router 2: responsible of resolving a string path to (maybe) another
-  final XRouteInformationParser parser = XRouteInformationParser();
+  final List<XRoute> routes;
+  // whether this router is the root resolver or a child / nested one
+  final bool _isRoot;
+
+  // For flutter Router 2: responsible of resolving a string path to (maybe) another
+  final XRouteInformationParser informationParser = XRouteInformationParser();
   late final XRouterDelegate delegate = XRouterDelegate(
     onNewRoute: (path) => goTo(path),
     isRoot: _isRoot,
-    onDispose: dispose,
+    onDispose: () {},
   );
-  final List<XRoute> routes;
-  // whether this router is the root resolver and not a child / nested
-  final bool _isRoot;
-  Function()? _userListener;
 
   XRouter._({
     required this.routes,
     List<XResolver> resolvers = const [],
     required bool isRoot,
+    Function(XRouterEvent)? onEvent,
   }) : _isRoot = isRoot {
     // when the resolver has modified the states this runs
     _resolver.addResolvers(resolvers);
     _resolver.addRouteResolvers(routes);
+    _state.events$.listen(onEvent);
+    _state.events$
+        .where((event) => event is BuildStart)
+        .listen((ev) => _build(ev as BuildStart));
   }
 
   XRouter({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
+    Function(XRouterEvent)? onEvent,
   }) : this._(
           isRoot: true,
           routes: routes,
           resolvers: resolvers,
+          onEvent: onEvent,
         );
 
   XRouter.child({
@@ -62,47 +77,44 @@ class XRouter {
   }
 
   static goTo(String target, {Map<String, String>? params}) async {
-    if (params != null) {
-      target = XRouteParser(target).reverse(params);
-    }
-    // relative to current route
-    target = _getRelativeUrl(target);
+    // the below part is the common part to all router whether
+    // those are nested or not.
+    // nav starts
+    _state.addEvent(NavigationStart(target: target, params: params));
+    // parsing
+    _state.addEvent(UrlParsingStart(
+      target: target,
+      params: params,
+      currentUrl: _state.currentUrl,
+    ));
+    final parser = XRouteParser.relative(target, _state.currentUrl);
+    target = parser.addParameters(params);
+    _state.addEvent(UrlParsingEnd(target: target));
+    // resolving
+    _state.addEvent(
+        ResolvingStart(target: target, resolvers: _resolver.resolvers));
     final resolved = await _resolver.resolve(target);
-    final activatedRoute = _activatedRouteBuilder.build(resolved);
+    _state.addEvent(ResolvingEnd(target: resolved));
+    // the rest happens in instances of XRouter in the _build
+    _state.addEvent(BuildStart(target: target));
+  }
+
+  void _build(BuildStart buildStartEvent) {
+    final target = buildStartEvent.target;
+    _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
+    final activatedRoute = _activatedRouteBuilder.build(target);
     delegate.initBuild(activatedRoute);
-  }
+    _state.addEvent(ActivatedRouteBuildEnd(
+        isRoot: _isRoot, activatedRoute: activatedRoute, target: target));
 
-  /// gets the url relative to the current route if the url starts with ./
-  static String _getRelativeUrl(String target) {
-    // relative to current route
-    if (target.startsWith('./') && _state.currentUrl != null) {
-      var resolvedParts = _state.currentUrl!.split('/');
-      resolvedParts.removeLast();
-      target = resolvedParts.join('/') + target.substring(1);
-    }
-    return target;
-  }
-
-  dispose() {
-    if (_userListener != null) {
-      _routerStateNotifier.removeListener(_userListener!);
-    }
-  }
-
-  _onRouterStateChanges() {
-    final state = _routerStateNotifier.value;
-    final status = state.status;
-
-    if (status == XStatus.resolved) {
-      final activatedRoute = _activatedRouteBuilder.build(state.resolved);
-      delegate.initBuild(activatedRoute);
-    }
-  }
-
-  _addUserListener(Function(XRouterState)? onRouterStateChanges) {
-    if (onRouterStateChanges != null) {
-      _userListener = () => onRouterStateChanges(_routerStateNotifier.value);
-      _routerStateNotifier.addListener(_userListener!);
+    if (_isRoot) {
+      // we use a future here so the navigation end happens after the
+      // children have processed their build event, since those
+      // will happen in sync before this future.
+      Future.value(null).then((_) {
+        _state.addEvent(BuildEnd(target: target));
+        _state.addEvent(NavigationEnd(target: target));
+      });
     }
   }
 }

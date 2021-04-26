@@ -19,7 +19,7 @@ class XRedirectResolver with XResolver {
     final parsed = from.parse(target, matchChildren: matchChildren);
     if (parsed.matches) {
       // we add the params to the redirect
-      return SynchronousFuture(to.reverse(parsed.parameters));
+      return SynchronousFuture(to.addParameters(parsed.parameters));
     }
     return SynchronousFuture(target);
   }
