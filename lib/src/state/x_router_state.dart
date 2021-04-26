@@ -19,7 +19,7 @@ class XRouterEvent {
 
 class XRouterState {
   StreamController _events = StreamController();
-  String? currentUrl;
+  String currentUrl = '';
 
   addEvent(EventType type, String description) {
     _events.add(XRouterEvent(type: type, description: description));

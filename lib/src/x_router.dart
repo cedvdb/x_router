@@ -10,7 +10,9 @@ import 'package:x_router/src/state/x_router_state.dart';
 class XRouter {
   static final XRouterState _state = XRouterState();
   static final XRouterResolver _resolver = XRouterResolver();
-  // responsible of resolving a string path to (maybe) another
+  static late final XActivatedRouteBuilder _activatedRouteBuilder =
+      XActivatedRouteBuilder(routes: routes);
+  // For Router 2: responsible of resolving a string path to (maybe) another
   final XRouteInformationParser parser = XRouteInformationParser();
   late final XRouterDelegate delegate = XRouterDelegate(
     onNewRoute: (path) => goTo(path),
@@ -18,8 +20,6 @@ class XRouter {
     onDispose: dispose,
   );
   final List<XRoute> routes;
-  late final XActivatedRouteBuilder _activatedRouteBuilder =
-      XActivatedRouteBuilder(routes: routes);
   // whether this router is the root resolver and not a child / nested
   final bool _isRoot;
   Function()? _userListener;
@@ -61,13 +61,15 @@ class XRouter {
     return this;
   }
 
-  static goTo(String target, {Map<String, String>? params}) {
+  static goTo(String target, {Map<String, String>? params}) async {
     if (params != null) {
       target = XRouteParser(target).reverse(params);
     }
     // relative to current route
     target = _getRelativeUrl(target);
-    _routerStateNotifier.startResolving(target);
+    final resolved = await _resolver.resolve(target);
+    final activatedRoute = _activatedRouteBuilder.build(resolved);
+    delegate.initBuild(activatedRoute);
   }
 
   /// gets the url relative to the current route if the url starts with ./
