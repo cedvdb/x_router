@@ -1,21 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:x_router/x_router.dart';
 
 /// wrapper for resolver that are put on specific routes so they are
 /// only active on that route
-class XRouteResolver with XResolver, ChangeNotifier {
+class XRouteResolver extends XResolver {
   final XResolver resolver;
   final XRoute route;
 
   XRouteResolver({
     required this.resolver,
     required this.route,
-  }) {
+  }) : super(initialState: resolver.state) {
     // bubble the change event if any
-    if (resolver is ChangeNotifier) {
-      (resolver as ChangeNotifier).addListener(notifyListeners);
-    }
+    resolver.state$.listen((s) => state = s);
   }
 
   @override

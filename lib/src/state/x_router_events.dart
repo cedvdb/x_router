@@ -10,6 +10,8 @@ abstract class XRouterEvent {
   String toString() => '$runtimeType(target: $target)';
 }
 
+// navigation
+
 class NavigationStart extends XRouterEvent {
   final Map<String, String>? params;
 
@@ -27,6 +29,8 @@ class NavigationEnd extends XRouterEvent {
     required String target,
   }) : super(target);
 }
+
+// url parsing
 
 class UrlParsingStart extends XRouterEvent {
   final Map<String, String>? params;
@@ -47,6 +51,8 @@ class UrlParsingEnd extends XRouterEvent {
   UrlParsingEnd({required String target}) : super(target);
 }
 
+// resolving
+
 class ResolvingStart extends XRouterEvent {
   final List<XResolver> resolvers;
   ResolvingStart({
@@ -61,6 +67,40 @@ class ResolvingStart extends XRouterEvent {
 class ResolvingEnd extends XRouterEvent {
   ResolvingEnd({required String target}) : super(target);
 }
+
+class ResolverResolveStart extends XRouterEvent {
+  final String type;
+  final String? state;
+
+  ResolverResolveStart({
+    required this.type,
+    required this.state,
+    required String target,
+  }) : super(target);
+
+  @override
+  String toString() =>
+      'ResolverResolveStart($target: $target, type: $type, state: $state)';
+}
+
+class ResolverResolveEnd extends XRouterEvent {
+  final String type;
+  final String state;
+  final String resolved;
+
+  ResolverResolveEnd({
+    required this.resolved,
+    required this.type,
+    required this.state,
+    required String target,
+  }) : super(target);
+
+  @override
+  String toString() =>
+      'ResolverResolveEnd(target: $target, type: $type, state: $state, resolved: $resolved)';
+}
+
+// build
 
 class BuildStart extends XRouterEvent {
   BuildStart({required String target}) : super(target);

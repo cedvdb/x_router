@@ -1,17 +1,16 @@
 import 'package:example/services/auth_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';
 
-class AuthResolver extends ValueNotifier with XResolver {
-  AuthResolver() : super(AuthStatus.unknown) {
+class AuthResolver extends XResolver<AuthStatus> {
+  AuthResolver() : super(initialState: AuthStatus.unknown) {
     AuthService.instance.authStatus$.listen((status) {
-      value = status;
+      state = status;
     });
   }
 
   @override
   Future<String> resolve(String target) async {
-    switch (value) {
+    switch (state) {
       case AuthStatus.authenticated:
         if (target.startsWith('/sign-in')) return '/';
         if (target.startsWith('/loading')) {

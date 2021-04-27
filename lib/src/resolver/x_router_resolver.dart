@@ -1,13 +1,21 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/state/x_router_events.dart';
+import 'package:x_router/src/state/x_router_state.dart';
 
-class XRouterResolver {
-  final List<XResolver> resolvers = const [];
+class XRouterResolver extends XResolver {
+  final List<XResolver> resolvers = [];
   final void Function() onStateChanged;
+  final XRouterState routerState;
+  final List<StreamSubscription> _resolverSubscriptions = [];
 
-  const XRouterResolver({required this.onStateChanged});
+  XRouterResolver({
+    required this.onStateChanged,
+    required this.routerState,
+  });
 
   void addResolvers(List<XResolver> resolvers) {
     this.resolvers.addAll(resolvers);
@@ -30,31 +38,36 @@ class XRouterResolver {
   Future<String> resolve(String target) async {
     var resolved = target;
     for (final resolver in resolvers) {
+      final state = resolver.state.toString();
+      final type = resolver.runtimeType.toString();
+      routerState.addEvent(
+        ResolverResolveStart(
+          state: state,
+          type: type,
+          target: target,
+        ),
+      );
       resolved = await resolver.resolve(resolved);
+      routerState.addEvent(
+        ResolverResolveEnd(
+          state: state,
+          type: type,
+          target: target,
+          resolved: resolved,
+        ),
+      );
     }
     return resolved;
-  }
-
-  dispose() {
-    resolvers.forEach((resolver) {
-      if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).removeListener(onStateChanged);
-      }
-    });
   }
 
   void _listenResolversStateChanges(List<XResolver> resolvers) {
     // when adding / routes we just remove every listener that were added
     // previously and readd them for all resolvers
+    _resolverSubscriptions.forEach((sub) => sub.cancel());
+    _resolverSubscriptions.removeWhere((_) => true);
     resolvers.forEach((resolver) {
-      if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).removeListener(onStateChanged);
-      }
-    });
-    resolvers.forEach((resolver) {
-      if (resolver is ChangeNotifier) {
-        (resolver as ChangeNotifier).addListener(onStateChanged);
-      }
+      final sub = resolver.state$.listen((_) => onStateChanged());
+      _resolverSubscriptions.add(sub);
     });
   }
 }

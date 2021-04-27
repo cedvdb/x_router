@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
 
