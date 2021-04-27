@@ -8,7 +8,6 @@ final productDetailsRouter = XRouter.child(
   resolvers: [
     XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
     XSimpleResolver((target) async {
-      print('======= here');
       return target;
     })
   ],

@@ -2,7 +2,7 @@ import 'dart:async';
 
 abstract class XResolver<G> {
   StreamController<G?> _state$ = StreamController<G?>();
-  Stream<G?> get state$ => _state$.stream;
+  late final Stream<G?> state$ = _state$.stream.asBroadcastStream();
   G? _state;
   G? get state => _state;
   set state(G? state) {

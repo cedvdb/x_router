@@ -39,9 +39,7 @@ class XActivatedRouteBuilder {
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {
-    return routes
-        .where((route) => route.builder != null && route.match(path))
-        .toList()
-          ..sort((a, b) => a.path.length.compareTo(b.path.length));
+    return routes.where((route) => route.match(path)).toList()
+      ..sort((a, b) => a.path.length.compareTo(b.path.length));
   }
 }

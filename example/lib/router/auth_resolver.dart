@@ -3,9 +3,7 @@ import 'package:x_router/x_router.dart';
 
 class AuthResolver extends XResolver<AuthStatus> {
   AuthResolver() : super(initialState: AuthStatus.unknown) {
-    AuthService.instance.authStatus$.listen((status) {
-      state = status;
-    });
+    AuthService.instance.authStatus$.listen((status) => state = status);
   }
 
   @override

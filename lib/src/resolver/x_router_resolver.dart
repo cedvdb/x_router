@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:x_router/src/resolver/x_resolver.dart';
-import 'package:x_router/src/resolver/x_route_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
@@ -41,21 +40,12 @@ class XRouterResolver extends XResolver {
       final state = resolver.state.toString();
       final type = resolver.runtimeType.toString();
       routerState.addEvent(
-        ResolverResolveStart(
-          state: state,
-          type: type,
-          target: target,
-        ),
-      );
+          ResolverResolveStart(state: state, type: type, target: target));
+
       resolved = await resolver.resolve(resolved);
-      routerState.addEvent(
-        ResolverResolveEnd(
-          state: state,
-          type: type,
-          target: target,
-          resolved: resolved,
-        ),
-      );
+      routerState.addEvent(ResolverResolveEnd(
+          state: state, type: type, target: target, resolved: resolved));
+      target = resolved;
     }
     return resolved;
   }

@@ -19,7 +19,7 @@ class AppRoutes {
     XRoute(path: products, builder: (ctx, params) => ProductsPage()),
     XRoute(
       path: productDetail,
-      builder: (ctx, params) => ProductDetailsPage(params['id']),
+      builder: (ctx, params) => ProductDetailsPage(params['id']!),
       resolvers: [productFoundResolver],
     ),
     XRoute(path: loading, builder: (ctx, params) => LoadingPage()),

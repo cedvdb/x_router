@@ -1,3 +1,9 @@
+## [0.1.0] - 27/04/2021
+
+* Change internal state structure
+* Breaking Resolvers are always reactive. Now use state to notify changes.
+* Breaking: onStateChanged removed in virtue of onEvent
+
 ## [0.0.2] - 11/03/2021
 
 * Resolvers now allowed on specific routes

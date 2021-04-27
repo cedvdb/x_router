@@ -61,7 +61,8 @@ class ResolvingStart extends XRouterEvent {
   }) : super(target);
 
   @override
-  String toString() => 'ResolvingStart($target: target, resolvers: $resolvers)';
+  String toString() =>
+      'ResolvingStart($target: target, resolvers: ${resolvers.map((r) => r.runtimeType)})';
 }
 
 class ResolvingEnd extends XRouterEvent {
@@ -79,8 +80,7 @@ class ResolverResolveStart extends XRouterEvent {
   }) : super(target);
 
   @override
-  String toString() =>
-      'ResolverResolveStart($target: $target, type: $type, state: $state)';
+  String toString() => '    $type ResolveStart(target: $target, state: $state)';
 }
 
 class ResolverResolveEnd extends XRouterEvent {
@@ -97,7 +97,7 @@ class ResolverResolveEnd extends XRouterEvent {
 
   @override
   String toString() =>
-      'ResolverResolveEnd(target: $target, type: $type, state: $state, resolved: $resolved)';
+      '    $type ResolveEnd(resolved: $resolved, target: $target, type: $type, state: $state)';
 }
 
 // build
@@ -119,7 +119,7 @@ class ActivatedRouteBuildStart extends XRouterEvent {
 
   @override
   String toString() =>
-      'ActivatedRouteBuildStart(target: $target, isRoot: $isRoot)';
+      '    ActivatedRouteBuildStart(target: $target, isRoot: $isRoot)';
 }
 
 class ActivatedRouteBuildEnd extends XRouterEvent {
@@ -134,5 +134,5 @@ class ActivatedRouteBuildEnd extends XRouterEvent {
 
   @override
   String toString() =>
-      'ActivatedRouteBuildEnd(target: $target, isRoot: $isRoot, activatedRoute: $activatedRoute)';
+      '    ActivatedRouteBuildEnd(target: $target, isRoot: $isRoot, activatedRoute: $activatedRoute)';
 }

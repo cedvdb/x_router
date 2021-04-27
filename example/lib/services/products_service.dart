@@ -3,9 +3,9 @@ class Product {
   final String name;
   final double price;
   Product({
-    this.id,
-    this.name,
-    this.price,
+    required this.id,
+    required this.name,
+    required this.price,
   });
 }
 
@@ -18,7 +18,10 @@ class ProductsService {
   ];
 
   static getById(String id) {
-    return products.firstWhere((element) => element.id == id,
-        orElse: () => null);
+    try {
+      return products.firstWhere((element) => element.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 }
