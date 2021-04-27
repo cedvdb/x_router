@@ -70,34 +70,31 @@ class ResolvingEnd extends XRouterEvent {
 }
 
 class ResolverResolveStart extends XRouterEvent {
-  final String type;
-  final String? state;
+  final XResolver resolver;
 
   ResolverResolveStart({
-    required this.type,
-    required this.state,
-    required String target,
-  }) : super(target);
-
-  @override
-  String toString() => '    $type ResolveStart(target: $target, state: $state)';
-}
-
-class ResolverResolveEnd extends XRouterEvent {
-  final String type;
-  final String state;
-  final String resolved;
-
-  ResolverResolveEnd({
-    required this.resolved,
-    required this.type,
-    required this.state,
+    required this.resolver,
     required String target,
   }) : super(target);
 
   @override
   String toString() =>
-      '    $type ResolveEnd(resolved: $resolved, target: $target, type: $type, state: $state)';
+      '    ${resolver.runtimeType} ResolveStart(target: $target, state: ${resolver.state})';
+}
+
+class ResolverResolveEnd extends XRouterEvent {
+  final XResolver resolver;
+  final String resolved;
+
+  ResolverResolveEnd({
+    required this.resolver,
+    required this.resolved,
+    required String target,
+  }) : super(target);
+
+  @override
+  String toString() =>
+      '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target, state: ${resolver.state})';
 }
 
 // build

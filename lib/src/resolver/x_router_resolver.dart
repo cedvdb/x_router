@@ -7,6 +7,7 @@ import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterResolver extends XResolver {
   final List<XResolver> resolvers = [];
+  final List<XRoute> routesWithResolvers = [];
   final void Function() onStateChanged;
   final XRouterState routerState;
   final List<StreamSubscription> _resolverSubscriptions = [];
@@ -22,30 +23,59 @@ class XRouterResolver extends XResolver {
   }
 
   void addRouteResolvers(List<XRoute> routes) {
-    List<XResolver> resolvers = [];
-    // sorting the routes by path length so children are after parents.
-    routes.sort((a, b) => a.path.length.compareTo(b.path.length));
-    for (final route in routes) {
-      final routeResolvers = route.resolvers
-          .map((r) => XRouteResolver(resolver: r, route: route))
-          .toList();
-      resolvers.addAll(routeResolvers);
-    }
-    addResolvers(resolvers);
+    final addedRoutes = routes
+        // we are only interested in routes that have resolvers
+        .where((route) => route.resolvers.isNotEmpty)
+        .toList()
+          // sorting the routes by path length so children are after parents.
+          ..sort((a, b) => a.path.length.compareTo(b.path.length));
+    routesWithResolvers.addAll(addedRoutes);
   }
 
   Future<String> resolve(String target) async {
     var resolved = target;
     for (final resolver in resolvers) {
-      final state = resolver.state.toString();
-      final type = resolver.runtimeType.toString();
-      routerState.addEvent(
-          ResolverResolveStart(state: state, type: type, target: target));
+      resolved = await _useResolver(resolver, resolved);
+    }
+    resolved = await _useRouteResolvers(resolved);
+    return resolved;
+  }
 
-      resolved = await resolver.resolve(resolved);
-      routerState.addEvent(ResolverResolveEnd(
-          state: state, type: type, target: target, resolved: resolved));
-      target = resolved;
+  Future<String> _useResolver(XResolver resolver, String target) async {
+    routerState
+        .addEvent(ResolverResolveStart(resolver: resolver, target: target));
+
+    final resolved = await resolver.resolve(target);
+    routerState.addEvent(ResolverResolveEnd(
+        resolver: resolver, target: target, resolved: resolved));
+    return resolved;
+  }
+
+  /// use the route specific resolvers
+  ///
+  /// [calls] since this can easily lead to infinite loop by user error
+  /// the calls attribute is to keep track of the number of times this fn
+  /// was called recursively
+  Future<String> _useRouteResolvers(String target, {int calls = 0}) async {
+    final targetRoutes = routesWithResolvers.where((r) => r.match(target));
+
+    if (calls > 5) {
+      throw 'XRouter error: infinite resolver loop detected. '
+          'This is likely because you have resolvers doing ping pong with each others, '
+          'where resolver A is resolving to a route with resolver B and '
+          'resolver B is resolving to a route with resolver A';
+    }
+    var resolved = target;
+    for (var route in targetRoutes) {
+      for (var resolver in route.resolvers) {
+        resolved = await _useResolver(resolver, target);
+        // if the route doesn't match anymore then we have to restart
+        // the process for a new route
+        if (!route.match(resolved)) {
+          resolved = await _useRouteResolvers(resolved, calls: calls + 1);
+          break;
+        }
+      }
     }
     return resolved;
   }
