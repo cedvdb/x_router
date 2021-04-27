@@ -93,11 +93,11 @@ void main() {
           routerState: XRouterState(),
         );
         final resolver = ReactiveResolver();
-        routerResolver.addResolvers([ReactiveResolver()]);
-        await Future.delayed(Duration(milliseconds: 100));
+        routerResolver.addResolvers([resolver]);
         resolver.state = true;
+        await Future.delayed(Duration(milliseconds: 100));
         expect(stateChangeCalled, equals(true));
-        expect(resolver.resolve('/target'), equals('/true'));
+        expect(await resolver.resolve('/target'), equals('/true'));
       },
     );
 
@@ -117,7 +117,7 @@ void main() {
 
         expect(await routerResolver.resolve('/route'), equals('/true'));
         expect(await routerResolver.resolve('/route/child'), equals('/true'));
-        expect(await routerResolver.resolve('/not-route'), equals('/true'));
+        expect(await routerResolver.resolve('/not-route'), isNot('/true'));
       },
     );
   });
