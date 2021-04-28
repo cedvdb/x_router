@@ -7,9 +7,6 @@ import 'package:x_router/x_router.dart';
 final productDetailsRouter = XRouter.child(
   resolvers: [
     XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
-    XSimpleResolver((target) async {
-      return target;
-    })
   ],
   routes: [
     XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),

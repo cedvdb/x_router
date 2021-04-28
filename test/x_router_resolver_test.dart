@@ -83,7 +83,7 @@ void main() {
     });
 
     test(
-      'Router Resolver should notify when the state changes',
+      'Resolvers should notify when the state changes',
       () async {
         var stateChangeCalled = false;
         final routerResolver = XRouterResolver(
@@ -95,14 +95,15 @@ void main() {
         final resolver = ReactiveResolver();
         routerResolver.addResolvers([resolver]);
         resolver.state = true;
-        await Future.delayed(Duration(milliseconds: 100));
+        // state change is async
+        await Future.value(true);
         expect(stateChangeCalled, equals(true));
         expect(await resolver.resolve('/target'), equals('/true'));
       },
     );
 
     test(
-      'Routes Resolvers should run only on their path',
+      'Route Resolvers should run only on their path',
       () async {
         final routerResolver =
             XRouterResolver(onStateChanged: () {}, routerState: XRouterState());
@@ -120,5 +121,32 @@ void main() {
         expect(await routerResolver.resolve('/not-route'), isNot('/true'));
       },
     );
+  });
+
+  test(
+      'Route resolver should only notify state change when we are on their path',
+      () {
+    var stateChangeCalled = false;
+    final routerResolver = XRouterResolver(
+      onStateChanged: () {
+        stateChangeCalled = true;
+      },
+      routerState: XRouterState(),
+    );
+
+    routerResolver.addRouteResolvers([
+      XRoute(
+        path: 'route',
+        builder: (_, __) => Container(),
+        resolvers: [
+          XSimpleResolver((t) async => t),
+        ],
+      )
+    ]);
+    // resolver.state = true;
+    // // state change is async
+    // await Future.value(true);
+    // expect(stateChangeCalled, equals(true));
+    // expect(await resolver.resolve('/target'), equals('/true'));
   });
 }
