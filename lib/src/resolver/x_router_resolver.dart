@@ -7,7 +7,7 @@ import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterResolver extends XResolver {
   final List<XResolver> resolvers = [];
-  final List<XRoute> routesWithResolvers = [];
+  final List<XRoute> routes = [];
   final void Function() onStateChanged;
   final XRouterState routerState;
   final List<StreamSubscription> _resolverSubscriptions = [];
@@ -57,7 +57,7 @@ class XRouterResolver extends XResolver {
   /// the calls attribute is to keep track of the number of times this fn
   /// was called recursively
   Future<String> _useRouteResolvers(String target, {int calls = 0}) async {
-    final targetRoutes = routesWithResolvers.where((r) => r.match(target));
+    final targetRoutes = routes.where((r) => r.match(target));
 
     if (calls > 5) {
       throw 'XRouter error: infinite resolver loop detected. '

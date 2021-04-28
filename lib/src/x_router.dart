@@ -16,9 +16,11 @@ import 'package:x_router/src/state/x_router_state.dart';
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
   static final XRouterState _state = XRouterState();
-  static final XRouterResolver _resolver = XRouterResolver(
+  late final XRouterResolver _resolver = XRouterResolver(
     onStateChanged: () => goTo(_state.currentUrl),
     routerState: _state,
+    resolvers: resolvers,
+    routes: routes,
   );
   late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(routes: routes);
