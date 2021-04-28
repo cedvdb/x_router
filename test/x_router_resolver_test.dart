@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/state/x_router_state.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends XResolver<bool> {
@@ -72,7 +71,6 @@ void main() {
     test('XRouter resolver should resolve in chain', () async {
       final routerResolver = XRouterResolver(
         onStateChanged: () {},
-        routerState: XRouterState(),
       );
       routerResolver.addResolvers([
         XRedirectResolver(from: '/', to: '/other'),
@@ -90,7 +88,6 @@ void main() {
           onStateChanged: () {
             stateChangeCalled = true;
           },
-          routerState: XRouterState(),
         );
         final resolver = ReactiveResolver();
         routerResolver.addResolvers([resolver]);
@@ -105,8 +102,7 @@ void main() {
     test(
       'Route Resolvers should run only on their path',
       () async {
-        final routerResolver =
-            XRouterResolver(onStateChanged: () {}, routerState: XRouterState());
+        final routerResolver = XRouterResolver(onStateChanged: () {});
         final resolver = ReactiveResolver()..state = true;
         routerResolver.addRouteResolvers([
           XRoute(
@@ -131,7 +127,6 @@ void main() {
       onStateChanged: () {
         stateChangeCalled = true;
       },
-      routerState: XRouterState(),
     );
 
     routerResolver.addRouteResolvers([

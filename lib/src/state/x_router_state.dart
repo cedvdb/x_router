@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:x_router/src/state/x_router_events.dart';
 
 class XRouterState {
+  static final XRouterState instance = XRouterState._();
   final StreamController<XRouterEvent> _events = StreamController();
   late final Stream<XRouterEvent> events$ = _events.stream.asBroadcastStream();
+
+  XRouterState._();
 
   String _currentUrl = '';
   String get currentUrl => _currentUrl;

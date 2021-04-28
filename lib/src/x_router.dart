@@ -15,13 +15,15 @@ import 'package:x_router/src/state/x_router_state.dart';
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
-  static final XRouterState _state = XRouterState();
+  static final XRouterState _state = XRouterState.instance;
   static final XRouterResolver _resolver = XRouterResolver(
     onStateChanged: () => goTo(_state.currentUrl),
-    routerState: _state,
   );
   late final XActivatedRouteBuilder _activatedRouteBuilder =
-      XActivatedRouteBuilder(routes: routes);
+      XActivatedRouteBuilder(
+    routes: routes,
+    isRoot: _isRoot,
+  );
   final List<XRoute> routes;
   // whether this router is the root resolver or a child / nested one
   final bool _isRoot;
@@ -103,12 +105,8 @@ class XRouter {
 
   void _build(BuildStart buildStartEvent) {
     final target = buildStartEvent.target;
-    _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
     final activatedRoute = _activatedRouteBuilder.build(target);
     delegate.initBuild(activatedRoute);
-    _state.addEvent(ActivatedRouteBuildEnd(
-        isRoot: _isRoot, activatedRoute: activatedRoute, target: target));
-
     if (_isRoot) {
       // we use a future here so the navigation end happens after the
       // children have processed their build event, since those

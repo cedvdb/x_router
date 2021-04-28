@@ -9,12 +9,11 @@ class XRouterResolver extends XResolver {
   final List<XResolver> resolvers = [];
   final List<XRoute> routesWithResolvers = [];
   final void Function() onStateChanged;
-  final XRouterState routerState;
+  final XRouterState _routerState = XRouterState.instance;
   final List<StreamSubscription> _resolverSubscriptions = [];
 
   XRouterResolver({
     required this.onStateChanged,
-    required this.routerState,
   });
 
   void addResolvers(List<XResolver> resolvers) {
@@ -42,11 +41,11 @@ class XRouterResolver extends XResolver {
   }
 
   Future<String> _useResolver(XResolver resolver, String target) async {
-    routerState
+    _routerState
         .addEvent(ResolverResolveStart(resolver: resolver, target: target));
 
     final resolved = await resolver.resolve(target);
-    routerState.addEvent(ResolverResolveEnd(
+    _routerState.addEvent(ResolverResolveEnd(
         resolver: resolver, target: target, resolved: resolved));
     return resolved;
   }
