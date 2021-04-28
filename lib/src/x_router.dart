@@ -18,12 +18,14 @@ class XRouter {
   static final XRouterState _state = XRouterState();
   late final XRouterResolver _resolver = XRouterResolver(
     onStateChanged: () => goTo(_state.currentUrl),
-    routerState: _state,
     resolvers: resolvers,
     routes: routes,
   );
   late final XActivatedRouteBuilder _activatedRouteBuilder =
-      XActivatedRouteBuilder(routes: routes);
+      XActivatedRouteBuilder(
+    routes: routes,
+    isRoot: _isRoot,
+  );
   final List<XRoute> routes;
   // whether this router is the root resolver or a child / nested one
   final bool _isRoot;
@@ -105,12 +107,8 @@ class XRouter {
 
   void _build(BuildStart buildStartEvent) {
     final target = buildStartEvent.target;
-    _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
     final activatedRoute = _activatedRouteBuilder.build(target);
     delegate.initBuild(activatedRoute);
-    _state.addEvent(ActivatedRouteBuildEnd(
-        isRoot: _isRoot, activatedRoute: activatedRoute, target: target));
-
     if (_isRoot) {
       // we use a future here so the navigation end happens after the
       // children have processed their build event, since those

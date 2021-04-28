@@ -5,14 +5,11 @@ import 'package:x_router/x_router.dart';
 
 void main() {
   group('Activated Route Builder', () {
-    final routeBuilder = XActivatedRouteBuilder(
-      routes: [
-        XRoute(
-            path: '/', builder: (_, __) => Container(), matchChildren: false),
-        XRoute(path: '/products', builder: (_, __) => Container()),
-        XRoute(path: '/products/:id', builder: (_, __) => Container())
-      ],
-    );
+    final routeBuilder = XActivatedRouteBuilder(routes: [
+      XRoute(path: '/', builder: (_, __) => Container(), matchChildren: false),
+      XRoute(path: '/products', builder: (_, __) => Container()),
+      XRoute(path: '/products/:id', builder: (_, __) => Container())
+    ], isRoot: true);
 
     test('should start build when routing state says so', () {});
 
