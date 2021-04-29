@@ -6,29 +6,29 @@ import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterResolver extends XResolver {
-  final List<XResolver> resolvers = [];
+  final List<XResolver> resolvers;
   final List<XRoute> routes = [];
   final void Function() onStateChanged;
   final XRouterState _routerState = XRouterState.instance;
-  final List<StreamSubscription> _resolverSubscriptions = [];
+  final List<StreamSubscription> _routeResolversSubscriptions = [];
 
   XRouterResolver({
     required this.onStateChanged,
-  });
-
-  void addResolvers(List<XResolver> resolvers) {
-    this.resolvers.addAll(resolvers);
+    this.resolvers = const [],
+    List<XRoute> routes = const [],
+  }) {
+    _addRoutesWithResolvers(routes);
     _listenResolversStateChanges(resolvers);
   }
 
-  void addRouteResolvers(List<XRoute> routes) {
-    final addedRoutes = routes
+  void _addRoutesWithResolvers(List<XRoute> addedRoutes) {
+    addedRoutes = addedRoutes
         // we are only interested in routes that have resolvers
         .where((route) => route.resolvers.isNotEmpty)
         .toList()
           // sorting the routes by path length so children are after parents.
           ..sort((a, b) => a.path.length.compareTo(b.path.length));
-    routesWithResolvers.addAll(addedRoutes);
+    routes.addAll(addedRoutes);
   }
 
   Future<String> resolve(String target) async {
@@ -37,6 +37,7 @@ class XRouterResolver extends XResolver {
       resolved = await _useResolver(resolver, resolved);
     }
     resolved = await _useRouteResolvers(resolved);
+    _listenToRouteResolvers(target);
     return resolved;
   }
 
@@ -79,14 +80,20 @@ class XRouterResolver extends XResolver {
     return resolved;
   }
 
-  void _listenResolversStateChanges(List<XResolver> resolvers) {
-    // when adding / routes we just remove every listener that were added
-    // previously and readd them for all resolvers
-    _resolverSubscriptions.forEach((sub) => sub.cancel());
-    _resolverSubscriptions.removeWhere((_) => true);
-    resolvers.forEach((resolver) {
-      final sub = resolver.state$.listen((_) => onStateChanged());
-      _resolverSubscriptions.add(sub);
-    });
+  List<StreamSubscription> _listenResolversStateChanges(
+      List<XResolver> resolvers) {
+    return resolvers
+        .map((resolver) => resolver.state$.listen((_) => onStateChanged()))
+        .toList();
+  }
+
+  void _listenToRouteResolvers(String target) {
+    // cancel previous subscriptions since the path might have changed
+    final targetRoutes = routes.where((route) => route.match(target));
+    _routeResolversSubscriptions.forEach((sub) => sub.cancel());
+    for (var route in targetRoutes) {
+      _routeResolversSubscriptions
+          .addAll(_listenResolversStateChanges(route.resolvers));
+    }
   }
 }

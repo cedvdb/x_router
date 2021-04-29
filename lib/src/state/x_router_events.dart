@@ -54,15 +54,7 @@ class UrlParsingEnd extends XRouterEvent {
 // resolving
 
 class ResolvingStart extends XRouterEvent {
-  final List<XResolver> resolvers;
-  ResolvingStart({
-    required String target,
-    required this.resolvers,
-  }) : super(target);
-
-  @override
-  String toString() =>
-      'ResolvingStart($target: target, resolvers: ${resolvers.map((r) => r.runtimeType)})';
+  ResolvingStart({required String target}) : super(target);
 }
 
 class ResolvingEnd extends XRouterEvent {
@@ -104,7 +96,15 @@ class BuildStart extends XRouterEvent {
 }
 
 class BuildEnd extends XRouterEvent {
-  BuildEnd({required String target}) : super(target);
+  XActivatedRoute activatedRoute;
+  BuildEnd({
+    required String target,
+    required this.activatedRoute,
+  }) : super(target);
+
+  @override
+  String toString() =>
+      'BuildEnd(target: $target, activatedRoute: $activatedRoute)';
 }
 
 class ActivatedRouteBuildStart extends XRouterEvent {
