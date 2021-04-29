@@ -69,11 +69,13 @@ void main() {
     });
 
     test('XRouter resolver should resolve in chain', () async {
-      final routerResolver = XRouterResolver(onStateChanged: () {}, resolvers: [
-        XRedirectResolver(from: '/', to: '/other'),
-        XRedirectResolver(from: '/other', to: '/not-found'),
-        XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-      ]);
+      final routerResolver = XRouterResolver(
+        onStateChanged: () {},
+      )..addResolvers([
+          XRedirectResolver(from: '/', to: '/other'),
+          XRedirectResolver(from: '/other', to: '/not-found'),
+          XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
+        ]);
       expect(await routerResolver.resolve('/'), equals('/dashboard'));
     });
 
@@ -86,8 +88,7 @@ void main() {
           onStateChanged: () {
             stateChangeCalled = true;
           },
-          resolvers: [resolver],
-        );
+        )..addResolvers([resolver]);
         resolver.state = true;
         // state change is async
         await Future.value(true);
@@ -102,14 +103,13 @@ void main() {
         final resolver = ReactiveResolver()..state = true;
         final routerResolver = XRouterResolver(
           onStateChanged: () {},
-          routes: [
+        )..addRoutes([
             XRoute(
               path: '/route',
               builder: (_, __) => Container(),
               resolvers: [resolver],
             )
-          ],
-        );
+          ]);
 
         expect(await routerResolver.resolve('/route'), equals('/true'));
         expect(await routerResolver.resolve('/route/child'), equals('/true'));
@@ -123,17 +123,17 @@ void main() {
       () {
     var stateChangeCalled = false;
     final routerResolver = XRouterResolver(
-        onStateChanged: () {
-          stateChangeCalled = true;
-        },
-        routes: [
-          XRoute(
-            path: 'route',
-            builder: (_, __) => Container(),
-            resolvers: [
-              XSimpleResolver((t) async => t),
-            ],
-          )
-        ]);
+      onStateChanged: () {
+        stateChangeCalled = true;
+      },
+    )..addRoutes([
+        XRoute(
+          path: 'route',
+          builder: (_, __) => Container(),
+          resolvers: [
+            XSimpleResolver((t) async => t),
+          ],
+        )
+      ]);
   });
 }

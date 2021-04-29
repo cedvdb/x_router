@@ -6,7 +6,7 @@ import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterResolver extends XResolver {
-  final List<XResolver> resolvers;
+  List<XResolver> _globalResolvers = [];
   final List<XRoute> routes = [];
   final void Function() onStateChanged;
   final XRouterState _routerState = XRouterState.instance;
@@ -14,14 +14,14 @@ class XRouterResolver extends XResolver {
 
   XRouterResolver({
     required this.onStateChanged,
-    this.resolvers = const [],
-    List<XRoute> routes = const [],
-  }) {
-    _addRoutesWithResolvers(routes);
+  });
+
+  void addResolvers(List<XResolver> resolvers) {
+    _globalResolvers.addAll(resolvers);
     _listenResolversStateChanges(resolvers);
   }
 
-  void _addRoutesWithResolvers(List<XRoute> addedRoutes) {
+  void addRoutes(List<XRoute> addedRoutes) {
     addedRoutes = addedRoutes
         // we are only interested in routes that have resolvers
         .where((route) => route.resolvers.isNotEmpty)
@@ -33,7 +33,7 @@ class XRouterResolver extends XResolver {
 
   Future<String> resolve(String target) async {
     var resolved = target;
-    for (final resolver in resolvers) {
+    for (final resolver in _globalResolvers) {
       resolved = await _useResolver(resolver, resolved);
     }
     resolved = await _useRouteResolvers(resolved);
@@ -87,6 +87,7 @@ class XRouterResolver extends XResolver {
         .toList();
   }
 
+  /// listen to resolvers that are on a specific path
   void _listenToRouteResolvers(String target) {
     // cancel previous subscriptions since the path might have changed
     final targetRoutes = routes.where((route) => route.match(target));
