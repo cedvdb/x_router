@@ -69,7 +69,18 @@ class XRouter {
   XRouter.child({
     required List<XRoute> routes,
   })  : _routes = routes,
-        _isRoot = false;
+        _isRoot = false {
+    _resolver.addRoutes(routes);
+  }
+
+  XRouter addChildren(List<XRouter> children) {
+    // this is just to force instanciation of the XRouter.child
+    // without it the child router could be in a widget and only instanciated
+    // when accessing said widget. If there were resolvers present then they
+    // would not be active until we reach the widget and a route could be
+    // accessed which the user intended to have a resolver on
+    return this;
+  }
 
   void _onNavigationEvent(event) async {
     // this method just calls the right method to get the result for the next event
@@ -93,13 +104,9 @@ class XRouter {
       _state.addEvent(BuildStart(target: event.target));
     } else if (event is BuildStart) {
       final activatedRoute = _build(event.target);
-      // we use a future here so the navigation end happens after the
-      // children have processed their build event, since those
-      // will happen in sync before this future.
-      Future.value(null).then((_) {
-        _state.addEvent(
-            BuildEnd(target: event.target, activatedRoute: activatedRoute));
-      });
+      // todo add child logic either only subscribe or call the correct child
+      _state.addEvent(
+          BuildEnd(target: event.target, activatedRoute: activatedRoute));
     }
   }
 

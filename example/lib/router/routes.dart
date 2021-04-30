@@ -15,6 +15,12 @@ class AppRoutes {
   static final String signIn = '/sign-in';
 
   static final routes = [
+    XRoute(
+      path: home,
+      builder: null,
+      resolvers: [XRedirectResolver(from: home, to: dashboard)],
+      matchChildren: false,
+    ),
     XRoute(path: dashboard, builder: (ctx, params) => DashboardPage()),
     XRoute(path: products, builder: (ctx, params) => ProductsPage()),
     XRoute(

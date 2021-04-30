@@ -21,9 +21,9 @@ class XActivatedRouteBuilder {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     var isFound = matchings.length > 0;
     if (!isFound) {
-      matchings = [XSpecialRoutes.notFoundRoute, ...matchings];
+      matchings = [XSpecialRoutes.notFoundRoute];
     }
-    final topRoute = matchings.removeLast();
+    final topRoute = matchings.removeAt(0);
     final upstack =
         matchings.map((route) => _toActivatedRoute(target, route)).toList();
     final activatedRoute = _toActivatedRoute(target, topRoute, upstack);
@@ -48,7 +48,15 @@ class XActivatedRouteBuilder {
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {
-    return routes.where((route) => route.match(path)).toList()
+    final matching = routes.where((route) => route.match(path)).toList()
+      // ordered by length so childs are after
       ..sort((a, b) => a.path.length.compareTo(b.path.length));
+    // when there is no builder we don't keep going
+    return matching
+        .takeWhile((route) => route.builder != null)
+        .toList()
+        // reverse so childs are in front
+        .reversed
+        .toList();
   }
 }
