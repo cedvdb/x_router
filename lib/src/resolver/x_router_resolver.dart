@@ -7,14 +7,14 @@ import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterResolver extends XResolver {
   List<XResolver> _globalResolvers = [];
-  final List<XRoute> routes = [];
-  final void Function() onStateChanged;
+  final List<XRoute> _routes = [];
+  final void Function() _onStateChanged;
   final XRouterState _routerState = XRouterState.instance;
   final List<StreamSubscription> _routeResolversSubscriptions = [];
 
   XRouterResolver({
-    required this.onStateChanged,
-  });
+    required void Function() onStateChanged,
+  }) : _onStateChanged = onStateChanged;
 
   void addResolvers(List<XResolver> resolvers) {
     _globalResolvers.addAll(resolvers);
@@ -28,7 +28,7 @@ class XRouterResolver extends XResolver {
         .toList()
           // sorting the routes by path length so children are after parents.
           ..sort((a, b) => a.path.length.compareTo(b.path.length));
-    routes.addAll(addedRoutes);
+    _routes.addAll(addedRoutes);
   }
 
   Future<String> resolve(String target) async {
@@ -57,7 +57,7 @@ class XRouterResolver extends XResolver {
   /// the calls attribute is to keep track of the number of times this fn
   /// was called recursively
   Future<String> _useRouteResolvers(String target, {int calls = 0}) async {
-    final targetRoutes = routes.where((r) => r.match(target));
+    final targetRoutes = _routes.where((r) => r.match(target));
 
     if (calls > 5) {
       throw 'XRouter error: infinite resolver loop detected. '
@@ -83,14 +83,14 @@ class XRouterResolver extends XResolver {
   List<StreamSubscription> _listenResolversStateChanges(
       List<XResolver> resolvers) {
     return resolvers
-        .map((resolver) => resolver.state$.listen((_) => onStateChanged()))
+        .map((resolver) => resolver.state$.listen((_) => _onStateChanged()))
         .toList();
   }
 
   /// listen to resolvers that are on a specific path
   void _listenToRouteResolvers(String target) {
     // cancel previous subscriptions since the path might have changed
-    final targetRoutes = routes.where((route) => route.match(target));
+    final targetRoutes = _routes.where((route) => route.match(target));
     _routeResolversSubscriptions.forEach((sub) => sub.cancel());
     for (var route in targetRoutes) {
       _routeResolversSubscriptions
