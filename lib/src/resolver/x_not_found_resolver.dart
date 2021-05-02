@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
 
-class XNotFoundResolver with XResolver {
+class XNotFoundResolver extends XResolver {
   final String redirectTo;
   final List<XRoute> routes;
 

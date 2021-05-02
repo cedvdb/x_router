@@ -1,27 +1,35 @@
-import 'package:flutter/widgets.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
+import 'package:x_router/src/state/x_router_events.dart';
+import 'package:x_router/src/state/x_router_state.dart';
 
 import '../route/x_route.dart';
 
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {
   final List<XRoute> routes;
+  final XRouterState _state = XRouterState.instance;
+  final bool _isRoot;
 
   XActivatedRouteBuilder({
     required this.routes,
-  });
+    required bool isRoot,
+  }) : _isRoot = isRoot;
 
-  XActivatedRoute build(String path) {
-    var matchings = _getOrderedPartiallyMatchingRoutes(path);
+  XActivatedRoute build(String target) {
+    _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
+    var matchings = _getOrderedPartiallyMatchingRoutes(target);
     var isFound = matchings.length > 0;
     if (!isFound) {
-      matchings = [XSpecialRoutes.notFoundRoute, ...matchings];
+      matchings = [XSpecialRoutes.notFoundRoute];
     }
-    final topRoute = matchings.removeLast();
+    final topRoute = matchings.removeAt(0);
     final upstack =
-        matchings.map((route) => _toActivatedRoute(path, route)).toList();
-    return _toActivatedRoute(path, topRoute, upstack);
+        matchings.map((route) => _toActivatedRoute(target, route)).toList();
+    final activatedRoute = _toActivatedRoute(target, topRoute, upstack);
+    _state.addEvent(ActivatedRouteBuildEnd(
+        isRoot: _isRoot, activatedRoute: activatedRoute, target: target));
+    return activatedRoute;
   }
 
   XActivatedRoute _toActivatedRoute(
@@ -40,9 +48,15 @@ class XActivatedRouteBuilder {
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {
-    return routes
-        .where((route) => route.builder != null && route.match(path))
+    final matching = routes.where((route) => route.match(path)).toList()
+      // ordered by length so childs are after
+      ..sort((a, b) => a.path.length.compareTo(b.path.length));
+    // when there is no builder we don't keep going
+    return matching
+        .where((route) => route.builder != null)
         .toList()
-          ..sort((a, b) => a.path.length.compareTo(b.path.length));
+        // reverse so childs are in front
+        .reversed
+        .toList();
   }
 }

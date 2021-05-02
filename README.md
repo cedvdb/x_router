@@ -72,13 +72,12 @@ XRouter(
 
 In any real world application however, you might have an authentication status, redirectors, and take care of not found routes. Therefor your code, in a real world scenario will look more like this:
 
-```
-
+```dart
 final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: '/dashboard', matchChildren: false),
+    XRedirectResolver(from: '/', to: '/dashboard'),
   ],
   routes: [
     XRoute(
@@ -103,7 +102,7 @@ final router = XRouter(
       builder: (ctx, params) => SignInPage(),
     )
   ],
-  onRouterStateChanges: (s) => print(s),
+  // onEvent: (ev) => print(ev),
 );
 ```
 
@@ -147,14 +146,15 @@ is a static class:
 # Reactive guards / resolvers
 
 
-The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `Future<String> resolve(String target)` sequentially and output a path which may or may not be the one received.
+The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `resolve(String target)` sequentially and output a path which may or may not be the one received.
 
 In other words if you access '/route', the resolving process first takes the first resolver, which may output '/not-found' then the second resolver receives '/not-found' and outputs '/sign-in.
 
 Here is an example of redirect resolver (a more complete version is available in the library):
 
 ```dart
-class XRedirectResolver with XResolver {
+// A redirect resolver is provided by the library 
+class XRedirectResolver extends XResolver {
   final String from;
   final String to;
 
@@ -174,28 +174,29 @@ class XRedirectResolver with XResolver {
 
 ```
 
-Those resolvers can be `ChangeNotifier` in which case the resolving process happens again when the resolvers `notifyListeners()`.
+Those resolvers have a state. If that state changes, then the current route is recalculated.
 
 Here is an example of an authentication resolver:
 
 ```dart
-class AuthResolver extends ValueNotifier with XResolver {
+import 'package:example/services/auth_service.dart';
+import 'package:x_router/x_router.dart';
 
-
-  AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatus$.listen((status) {
-      // this calls notifyListener
-      value = status;
-    });
+class AuthResolver extends XResolver<AuthStatus> {
+  
+  AuthResolver() : super(initialState: AuthStatus.unknown) {
+    AuthService.instance.authStatus$
+      .listen((status) => state = status);
   }
 
-  // this will run every time the value changes
   @override
   Future<String> resolve(String target) async {
-    switch (value) {
+    switch (state) {
       case AuthStatus.authenticated:
         if (target.startsWith('/sign-in')) return '/';
         if (target.startsWith('/loading')) {
+          // when we are on the loading page, the remaining part of 
+          // the url is where we want to navigate after.
           return target.replaceFirst('/loading', '');
         }
         return target;
@@ -223,20 +224,28 @@ A series of resolvers are provided by the library:
  - XSimpleResolver: A simple resolver for creating resolvers in line via its constructor
 
 
-# Child Router 
+# Child Router (alpha)
 
 To create a child router use the XRouter.child constructor and add it to the parent:
 
 ```
 final childRouter = XRouter.child(
-    routes: [
-      XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
-      XRoute(
-        path: '/products/:id/comments',
-        builder: (_, __) => ProductComments(),
-      ),
-    ],
-  )
-parentRouter.addChildren([childRouter]);
+  basePath: '/products/:id',
+  routes: [
+    XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
+    XRoute(
+      path: '/products/:id/comments',
+      builder: (_, __) => ProductComments(),
+    ),
+  ],
+)
+```
+
+and add it to the router
+
+```dart
+
+XRouter(...)
+  ..addChildren([childRouter])
 ```
 

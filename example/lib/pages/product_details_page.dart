@@ -5,14 +5,15 @@ import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
 final productDetailsRouter = XRouter.child(
-  resolvers: [
-    XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
-    XSimpleResolver((target) async {
-      print('======= here');
-      return target;
-    })
-  ],
+  basePath: '/products/:id',
   routes: [
+    XRoute(
+      path: '/products/:id',
+      builder: null,
+      resolvers: [
+        XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
+      ],
+    ),
     XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
     XRoute(
       path: '/products/:id/comments',
@@ -34,7 +35,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('product details (Nested routing)')),
-      drawer: AppDrawer(),
       body: Column(
         children: [
           Text(widget.product.name),

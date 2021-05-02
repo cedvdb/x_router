@@ -66,7 +66,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   MaterialPage _buildPage(
       BuildContext context, XActivatedRoute activatedRoute) {
-    final builder = activatedRoute.matchingRoute.builder;
+    final builder = activatedRoute.matchingRoute.builder!;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 

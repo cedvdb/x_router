@@ -10,19 +10,25 @@ class XRouteParser {
 
   XRouteParser(String path) : path = sanitize(path);
 
+  XRouteParser.relative(String path, String relativeTo)
+      : path = sanitize(getRelativePath(path, relativeTo));
+
   /// matches a path against this route.
   bool match(String path, {bool matchChildren = false}) {
     return parse(path, matchChildren: matchChildren).matches;
   }
 
   /// adds params to a route
-  String reverse(Map<String, String> params) {
+  String addParameters(Map<String, String>? params) {
+    if (params == null) {
+      return path;
+    }
     final segments = _uri.pathSegments.map((segment) {
       if (segment.startsWith(':')) {
         final key = segment.replaceFirst(':', '');
         final param = params[key];
         if (param != null) {
-          return param;
+          return Uri.encodeComponent(param);
         }
       }
       return segment;
@@ -85,9 +91,23 @@ class XRouteParser {
 
   /// sanitize path by removing leading and trailing spaces and backslashes
   static String sanitize(String path) {
-    return '/' +
+    path = '/' +
         path
+            // remove leading and trailing spaces
             .replaceAll(RegExp(r'^\s+|\s+$'), '')
+            // remove leading and trailing slashes
             .replaceAll(RegExp(r'^\/+|\/+$'), '');
+    return Uri.encodeFull(path);
+  }
+
+  /// gets the url relative to the current route if the url starts with ./
+  static String getRelativePath(String target, String relativeTo) {
+    // relative to current route
+    if (target.startsWith('./')) {
+      var resolvedParts = relativeTo.split('/');
+      resolvedParts.removeLast();
+      target = resolvedParts.join('/') + target.substring(1);
+    }
+    return target;
   }
 }

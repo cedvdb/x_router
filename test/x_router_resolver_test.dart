@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/state/x_router_state.dart';
-import 'package:x_router/src/state/x_router_state_notifier.dart';
 import 'package:x_router/x_router.dart';
 
-class ReactiveResolver extends ValueNotifier<bool> with XResolver {
-  String onFalse;
-  String onTrue;
-  ReactiveResolver({
-    required this.onFalse,
-    required this.onTrue,
-  }) : super(false);
+class ReactiveResolver extends XResolver<bool> {
+  ReactiveResolver() : super(initialState: false);
 
   @override
   Future<String> resolve(String target) async {
-    if (value) {
-      return onTrue;
-    } else {
-      return onFalse;
+    if (state == true) {
+      return '/true';
     }
+    return '/false';
   }
 }
 
@@ -78,55 +70,57 @@ void main() {
 
     test('XRouter resolver should resolve in chain', () async {
       final routerResolver = XRouterResolver(
-        resolvers: [
+        onStateChanged: () {},
+      )..addResolvers([
           XRedirectResolver(from: '/', to: '/other'),
           XRedirectResolver(from: '/other', to: '/not-found'),
           XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-        ],
-        routes: routes,
-        stateNotifier: XRouterStateNotifier(),
-      );
+        ]);
       expect(await routerResolver.resolve('/'), equals('/dashboard'));
     });
 
     test(
-      'Router Resolver should run resolve when resolver state changes',
+      'Resolvers should notify when the state changes',
       () async {
-        final stateNotifier = XRouterStateNotifier();
-        final resolver = ReactiveResolver(
-          onTrue: '/true',
-          onFalse: '/false',
-        );
-        resolver.value = false;
-        XRouterResolver(
-          resolvers: [resolver],
-          stateNotifier: stateNotifier,
-        );
-        stateNotifier.startResolving('/');
-        await Future.delayed(Duration(milliseconds: 100));
-        expect(stateNotifier.value.status, equals(XStatus.resolved));
-        expect(stateNotifier.value.resolved, equals('/false'));
-        resolver.value = true;
-        await Future.delayed(Duration(milliseconds: 100));
-        expect(stateNotifier.value.resolved, equals('/true'));
+        var stateChangeCalled = false;
+        final resolver = ReactiveResolver();
+        final routerResolver = XRouterResolver(
+          onStateChanged: () {
+            stateChangeCalled = true;
+          },
+        )..addResolvers([resolver]);
+        resolver.state = true;
+        // state change is async
+        await Future.value(true);
+        expect(stateChangeCalled, equals(true));
+        expect(await routerResolver.resolve('/target'), equals('/true'));
       },
     );
 
     test(
-      'Routes Resolvers should run only on their path',
+      'Route Resolvers should run only on their path',
       () async {
-        final stateNotifier = XRouterStateNotifier();
+        final resolver = ReactiveResolver()..state = true;
+        final routerResolver = XRouterResolver(
+          onStateChanged: () {},
+        )..addRoutes([
+            XRoute(
+              path: '/route',
+              builder: (_, __) => Container(),
+              resolvers: [resolver],
+            )
+          ]);
 
-        XRouterResolver(stateNotifier: stateNotifier, routes: routes);
-
-        stateNotifier.startResolving('/route-resolvers');
-        await Future.delayed(Duration(milliseconds: 100));
-        expect(stateNotifier.value.status, equals(XStatus.resolved));
-        expect(stateNotifier.value.resolved, equals('/success'));
-        stateNotifier.startResolving('/');
-        await Future.delayed(Duration(milliseconds: 100));
-        expect(stateNotifier.value.resolved, equals('/'));
+        expect(await routerResolver.resolve('/route'), equals('/true'));
+        expect(await routerResolver.resolve('/route/child'), equals('/true'));
+        expect(await routerResolver.resolve('/not-route'), isNot('/true'));
       },
     );
+  });
+
+  test(
+      'Route resolver should only notify state change when we are on their path',
+      () {
+    // todo
   });
 }

@@ -12,6 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # for firstWhere that don't throw error on null
+  collection: ^1.15.0
+
 
 dev_dependencies:
   flutter_test:

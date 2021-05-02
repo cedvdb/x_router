@@ -43,7 +43,7 @@ class XRoute {
   final String path;
 
   /// {@macro builder}
-  final XPageBuilder builder;
+  final XPageBuilder? builder;
 
   /// {@macro matchChildren}
   final bool matchChildren;

@@ -6,10 +6,9 @@ import 'auth_resolver.dart';
 
 final router = XRouter(
   resolvers: [
-    XNotFoundResolver(redirectTo: '/', routes: AppRoutes.routes),
+    XNotFoundResolver(redirectTo: AppRoutes.home, routes: AppRoutes.routes),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: AppRoutes.dashboard, matchChildren: false),
   ],
   routes: AppRoutes.routes,
-  onRouterStateChanges: (s) => print(s),
+  onEvent: (s) => print(s),
 )..addChildren([productDetailsRouter]);
