@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
 final productDetailsRouter = XRouter.child(
+  basePath: '/products/:id',
   routes: [
     XRoute(
       path: '/products/:id',
@@ -34,7 +35,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('product details (Nested routing)')),
-      drawer: AppDrawer(),
       body: Column(
         children: [
           Text(widget.product.name),

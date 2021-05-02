@@ -53,7 +53,7 @@ class XActivatedRouteBuilder {
       ..sort((a, b) => a.path.length.compareTo(b.path.length));
     // when there is no builder we don't keep going
     return matching
-        .takeWhile((route) => route.builder != null)
+        .where((route) => route.builder != null)
         .toList()
         // reverse so childs are in front
         .reversed

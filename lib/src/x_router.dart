@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
@@ -60,16 +62,20 @@ class XRouter {
 
     _state.events$.listen((event) {
       onEvent?.call(event);
-      if (_isRoot) {
-        _onNavigationEvent(event);
-      }
+      _onNavigationEvent(event);
     });
   }
 
   XRouter.child({
+    required String basePath,
     required List<XRoute> routes,
   })  : _routes = routes,
         _isRoot = false {
+    _state.events$
+        .where((event) => event is BuildStart)
+        .where((event) =>
+            XRouteParser(basePath).match(event.target, matchChildren: true))
+        .listen((event) => _build(event.target));
     _resolver.addRoutes(routes);
   }
 
@@ -104,9 +110,14 @@ class XRouter {
       _state.addEvent(BuildStart(target: event.target));
     } else if (event is BuildStart) {
       final activatedRoute = _build(event.target);
-      // todo add child logic either only subscribe or call the correct child
+
+      // using a future here so children finish before sending this event
+      await Future.value(true);
       _state.addEvent(
-          BuildEnd(target: event.target, activatedRoute: activatedRoute));
+        BuildEnd(target: event.target, activatedRoute: activatedRoute),
+      );
+    } else if (event is BuildEnd) {
+      _state.addEvent(NavigationEnd(target: event.target));
     }
   }
 
