@@ -65,6 +65,7 @@ class XRouterResolver extends XResolver {
           'where resolver A is resolving to a route with resolver B and '
           'resolver B is resolving to a route with resolver A';
     }
+
     var resolved = target;
     for (var route in targetRoutes) {
       for (var resolver in route.resolvers) {
