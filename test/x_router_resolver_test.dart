@@ -121,19 +121,6 @@ void main() {
   test(
       'Route resolver should only notify state change when we are on their path',
       () {
-    var stateChangeCalled = false;
-    final routerResolver = XRouterResolver(
-      onStateChanged: () {
-        stateChangeCalled = true;
-      },
-    )..addRoutes([
-        XRoute(
-          path: 'route',
-          builder: (_, __) => Container(),
-          resolvers: [
-            XSimpleResolver((t) async => t),
-          ],
-        )
-      ]);
+    // todo
   });
 }
