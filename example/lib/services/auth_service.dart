@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 enum AuthStatus { unknown, authenticated, unautenticated }
 
@@ -23,6 +24,8 @@ class AuthService {
   }
 
   init() async {
+    await Hive.initFlutter();
+
     final authBox = await Hive.openBox('authBox');
     // listen for auth changes and saves it in storage
     _authStateSubj$.stream.listen((state) {

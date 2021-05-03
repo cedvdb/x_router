@@ -45,10 +45,15 @@ class XRouter {
     onNewRoute: (path) => goTo(path),
     isRoot: _isRoot,
     onDispose: () {},
+    onPop: _pop,
   );
 
   static goTo(String target, {Map<String, String>? params}) async {
     _state.addEvent(NavigationStart(target: target, params: params));
+  }
+
+  static pop() {
+    _state.addEvent(Pop(target: _state.currentUrl));
   }
 
   XRouter({
@@ -90,6 +95,9 @@ class XRouter {
 
   void _onNavigationEvent(event) async {
     // this method just calls the right method to get the result for the next event
+    if (event is Pop) {
+      _pop();
+    }
     if (event is NavigationStart) {
       _state.addEvent(
         UrlParsingStart(
@@ -118,6 +126,13 @@ class XRouter {
       );
     } else if (event is BuildEnd) {
       _state.addEvent(NavigationEnd(target: event.target));
+    }
+  }
+
+  _pop() {
+    if (_state.activatedRoute != null &&
+        _state.activatedRoute!.upstack.length >= 1) {
+      goTo(_state.activatedRoute!.upstack.last.effectivePath);
     }
   }
 

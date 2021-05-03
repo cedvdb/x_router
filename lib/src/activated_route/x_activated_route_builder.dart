@@ -7,14 +7,15 @@ import '../route/x_route.dart';
 
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {
-  final List<XRoute> routes;
+  final List<XRoute> _routes;
   final XRouterState _state = XRouterState.instance;
   final bool _isRoot;
 
   XActivatedRouteBuilder({
-    required this.routes,
+    required List<XRoute> routes,
     required bool isRoot,
-  }) : _isRoot = isRoot;
+  })  : _routes = routes,
+        _isRoot = isRoot;
 
   XActivatedRoute build(String target) {
     _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
@@ -48,7 +49,7 @@ class XActivatedRouteBuilder {
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {
-    final matching = routes.where((route) => route.match(path)).toList()
+    final matching = _routes.where((route) => route.match(path)).toList()
       // ordered by length so childs are after
       ..sort((a, b) => a.path.length.compareTo(b.path.length));
     // when there is no builder we don't keep going

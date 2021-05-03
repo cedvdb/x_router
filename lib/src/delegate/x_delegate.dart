@@ -31,11 +31,14 @@ class XRouterDelegate extends RouterDelegate<String>
   /// whether this is the root delegate
   final bool isRoot;
 
+  final Function _onPop;
+
   XRouterDelegate({
     required this.onNewRoute,
     required this.isRoot,
     required this.onDispose,
-  });
+    required Function onPop,
+  }) : _onPop = onPop;
 
   initBuild(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
@@ -57,7 +60,7 @@ class XRouterDelegate extends RouterDelegate<String>
     return Navigator(
       pages: pages,
       onPopPage: (route, res) {
-        _goUp();
+        pop();
         return route.didPop(res);
       },
       key: navigatorKey,
@@ -70,7 +73,7 @@ class XRouterDelegate extends RouterDelegate<String>
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 
-  _goUp() {
+  pop() {
     if (_activatedRoute.upstack.length >= 1) {
       setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
     }

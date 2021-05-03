@@ -32,14 +32,7 @@ Let's take this fairly common and complex scenario:
 ```
 
 In this scenario it is apparent that the **upstack** can be defined as a function of the url path where each segment is a screen in the stack.
-For example when on the '/sign-in/phone' route the **upstack** will look like this:
-
-```
-  - SignInScreen
-  - SignInWithPhoneScreen
-```
-
-On the product details page the up stack will look like this
+For example when on the '/products/:id' route the **upstack** will look like this:
 
 ```
   - ProductsScreen
@@ -77,9 +70,13 @@ final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
     AuthResolver(),
-    XRedirectResolver(from: '/', to: '/dashboard'),
   ],
   routes: [
+    XRoute(
+      path: AppRoutes.home, 
+      builder: null, 
+      resolvers[XRedirectResolver(from: AppRoutes.home, to: AppRoutes.dashboard),],
+    ),
     XRoute(
       path: AppRoutes.dashboard,
       builder: (ctx, params) => DashboardPage(),

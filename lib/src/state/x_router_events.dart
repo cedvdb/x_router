@@ -30,6 +30,12 @@ class NavigationEnd extends XRouterEvent {
   }) : super(target);
 }
 
+class Pop extends XRouterEvent {
+  Pop({
+    required String target,
+  }) : super(target);
+}
+
 // url parsing
 
 class UrlParsingStart extends XRouterEvent {
