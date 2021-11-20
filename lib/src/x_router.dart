@@ -61,7 +61,7 @@ class XRouter {
     Function(XRouterEvent)? onEvent,
   }) : _routes = routes {
     _resolver.addResolvers(resolvers);
-    _resolver.addRoutes(routes);
+    _resolver.addRoutesResolvers(routes);
 
     _state.events$.listen((event) {
       onEvent?.call(event);

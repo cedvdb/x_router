@@ -12,7 +12,7 @@ class ResolverResolveStart extends ResolvingEvent {
 
   @override
   String toString() =>
-      '    ${resolver.runtimeType} ResolveStart(target: $target, state: ${resolver.state})';
+      '    ${resolver.runtimeType} ResolveStart(target: $target)';
 }
 
 class ResolverResolveEnd extends ResolvingEvent {
@@ -27,5 +27,5 @@ class ResolverResolveEnd extends ResolvingEvent {
 
   @override
   String toString() =>
-      '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target, state: ${resolver.state})';
+      '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target)';
 }

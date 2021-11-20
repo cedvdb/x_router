@@ -103,7 +103,7 @@ void main() {
         final resolver = ReactiveResolver()..state = true;
         final routerResolver = XRouterResolver(
           onStateChanged: () {},
-        )..addRoutes([
+        )..addRoutesResolvers([
             XRoute(
               path: '/route',
               builder: (_, __) => Container(),

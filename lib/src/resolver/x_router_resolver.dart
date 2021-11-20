@@ -7,48 +7,57 @@ import 'package:x_router/src/state/x_router_state.dart';
 import 'x_resolver_event.dart';
 
 class XRouterResolver extends XResolver {
-  List<XResolver> _globalResolvers = [];
-  final List<XRoute> _routes = [];
+  List<XResolver> _resolvers = [];
   final void Function() _onStateChanged;
   final XRouterState _routerState = XRouterState.instance;
   final List<StreamSubscription> _routeResolversSubscriptions = [];
 
   XRouterResolver({
     required void Function() onStateChanged,
-  }) : _onStateChanged = onStateChanged;
-
-  void addResolvers(List<XResolver> resolvers) {
-    _globalResolvers.addAll(resolvers);
+    required List<XRoute> routes,
+    required List<XResolver> resolvers,
+  }) : _onStateChanged = onStateChanged {
+    _resolvers.addAll(resolvers);
+    _resolvers.addAll(_getRoutesResolvers(routes));
     _listenResolversStateChanges(resolvers);
   }
 
-  void addRoutes(List<XRoute> addedRoutes) {
-    addedRoutes = addedRoutes
+  dispose() {}
+
+  /// gets the resolvers from the routes
+  List<XResolver> _getRoutesResolvers(List<XRoute> routes) {
+    routes = routes
         // we are only interested in routes that have resolvers
         .where((route) => route.resolvers.isNotEmpty)
         .toList()
       // sorting the routes by path length so children are after parents.
       ..sort((a, b) => a.path.length.compareTo(b.path.length));
-    _routes.addAll(addedRoutes);
+    final routesResolvers = routes.fold<List<XResolver>>(
+      [],
+      (previousValue, route) => previousValue..addAll(route.resolvers),
+    ).toList();
+    return routesResolvers;
   }
 
-  Future<String> resolve(String target) async {
-    var resolved = target;
+  /// resolve target path against the list of resolvers
+  Future<String> resolve(String path) async {
+    var resolved = path;
     for (final resolver in _globalResolvers) {
       resolved = await _useResolver(resolver, resolved);
     }
     resolved = await _useRouteResolvers(resolved);
-    _listenToRouteResolvers(target);
+    _listenToRouteResolvers(path);
     return resolved;
   }
 
-  Future<String> _useResolver(XResolver resolver, String target) async {
+  /// resolve path against a specific resolver
+  Future<String> _useResolver(XResolver resolver, String path) async {
     _routerState
-        .addEvent(ResolverResolveStart(resolver: resolver, target: target));
+        .addEvent(ResolverResolveStart(resolver: resolver, target: path));
 
-    final resolved = await resolver.resolve(target);
+    final resolved = await resolver.resolve(path);
     _routerState.addEvent(ResolverResolveEnd(
-        resolver: resolver, target: target, resolved: resolved));
+        resolver: resolver, target: path, resolved: resolved));
     return resolved;
   }
 
@@ -87,16 +96,5 @@ class XRouterResolver extends XResolver {
     return resolvers
         .map((resolver) => resolver.state$.listen((_) => _onStateChanged()))
         .toList();
-  }
-
-  /// listen to resolvers that are on a specific path
-  void _listenToRouteResolvers(String target) {
-    // cancel previous subscriptions since the path might have changed
-    final targetRoutes = _routes.where((route) => route.match(target));
-    _routeResolversSubscriptions.forEach((sub) => sub.cancel());
-    for (var route in targetRoutes) {
-      _routeResolversSubscriptions
-          .addAll(_listenResolversStateChanges(route.resolvers));
-    }
   }
 }
