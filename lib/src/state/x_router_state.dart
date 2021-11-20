@@ -15,7 +15,7 @@ class XRouterState {
   String _currentUrl = '';
   String get currentUrl => _currentUrl;
 
-  addEvent(XRouterEvent event) {
+  void addEvent(XRouterEvent event) {
     if (event is BuildEnd) {
       _activatedRoute = event.activatedRoute;
     }

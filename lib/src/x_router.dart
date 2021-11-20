@@ -11,10 +11,7 @@ import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
-/// XRouter helper that handles navigation
-///
-/// For your root router instantiate it with XRouter(...) if you need
-/// nested routing you can do so with XRouter.child(...)
+/// Handles navigation
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
@@ -45,15 +42,22 @@ class XRouter {
     onNewRoute: (path) => goTo(path),
     isRoot: _isRoot,
     onDispose: () {},
-    onPop: _pop,
+    onPop: pop,
   );
 
-  static goTo(String target, {Map<String, String>? params}) async {
+  static void goTo(String target, {Map<String, String>? params}) async {
     _state.addEvent(NavigationStart(target: target, params: params));
   }
 
-  static pop() {
-    _state.addEvent(Pop(target: _state.currentUrl));
+  static void back() {
+    throw 'unimplemented';
+  }
+
+  static void pop() {
+    if (_state.activatedRoute != null &&
+        _state.activatedRoute!.upstack.length >= 1) {
+      goTo(_state.activatedRoute!.upstack.last.effectivePath);
+    }
   }
 
   XRouter({
@@ -79,7 +83,7 @@ class XRouter {
     _state.events$
         .where((event) => event is BuildStart)
         .where((event) =>
-            XRouteParser(basePath).match(event.target, matchChildren: true))
+            XRoutePattern(basePath).match(event.target, matchChildren: true))
         .listen((event) => _build(event.target));
     _resolver.addRoutes(routes);
   }
@@ -95,29 +99,10 @@ class XRouter {
 
   void _onNavigationEvent(event) async {
     // this method just calls the right method to get the result for the next event
-    if (event is Pop) {
-      _pop();
-    }
     if (event is NavigationStart) {
-      _state.addEvent(
-        UrlParsingStart(
-          target: event.target,
-          params: event.params,
-          currentUrl: _state.currentUrl,
-        ),
-      );
-    } else if (event is UrlParsingStart) {
       final parsed = _parse(event.target, event.params, _state.currentUrl);
-      _state.addEvent(UrlParsingEnd(target: parsed));
-    } else if (event is UrlParsingEnd) {
-      _state.addEvent(ResolvingStart(target: event.target));
-    } else if (event is ResolvingStart) {
-      var resolved = await _resolve(event.target);
-      _state.addEvent(ResolvingEnd(target: resolved));
-    } else if (event is ResolvingEnd) {
-      _state.addEvent(BuildStart(target: event.target));
-    } else if (event is BuildStart) {
-      final activatedRoute = _build(event.target);
+      final resolved = await _resolve(parsed);
+      final activatedRoute = _build(resolved);
 
       // using a future here so children finish before sending this event
       await Future.value(true);
@@ -129,15 +114,8 @@ class XRouter {
     }
   }
 
-  _pop() {
-    if (_state.activatedRoute != null &&
-        _state.activatedRoute!.upstack.length >= 1) {
-      goTo(_state.activatedRoute!.upstack.last.effectivePath);
-    }
-  }
-
   String _parse(String target, Map<String, String>? params, String currentUrl) {
-    final parser = XRouteParser.relative(target, currentUrl);
+    final parser = XRoutePattern.relative(target, currentUrl);
     return parser.addParameters(params);
   }
 

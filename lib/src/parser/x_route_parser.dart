@@ -1,16 +1,18 @@
 import 'x_parsing_result.dart';
 import 'dart:math';
 
-/// Representation of a route that can then be parsed and matched against other types
-class XRouteParser {
+/// Representation of a route that can then be parsed and matched
+/// example
+class XRoutePattern {
   final String path;
   late final Uri _uri = Uri(path: sanitize(path));
 
   List<String> get _segments => _uri.pathSegments;
 
-  XRouteParser(String path) : path = sanitize(path);
+  XRoutePattern(String path) : path = sanitize(path);
 
-  XRouteParser.relative(String path, String relativeTo)
+  /// creates a route pattern relative to another if the path starts with ./
+  XRoutePattern.relative(String path, String relativeTo)
       : path = sanitize(getRelativePath(path, relativeTo));
 
   /// matches a path against this route.
@@ -18,7 +20,9 @@ class XRouteParser {
     return parse(path, matchChildren: matchChildren).matches;
   }
 
-  /// adds params to a route
+  /// adds params to a route.
+  ///
+  /// eg: /path/:id with params { 'id' : '123'} becomes /path/123
   String addParameters(Map<String, String>? params) {
     if (params == null) {
       return path;
@@ -38,7 +42,7 @@ class XRouteParser {
 
   /// parses path against this route
   XParsingResult parse(String path, {bool matchChildren = false}) {
-    final toMatch = XRouteParser(path);
+    final toMatch = XRoutePattern(path);
     final matches = <bool>[];
     final params = <String, String>{};
     final matchingSegments = [];

@@ -1,9 +1,9 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
-import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 import '../route/x_route.dart';
+import 'x_activated_route_event.dart';
 
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {

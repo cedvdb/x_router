@@ -51,14 +51,14 @@ class XRoute {
   /// {@macro resolvers}
   final List<XResolver> resolvers;
 
-  final XRouteParser _parser;
+  final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
     this.resolvers = const [],
     this.matchChildren = true,
-  }) : _parser = XRouteParser(path);
+  }) : _parser = XRoutePattern(path);
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route

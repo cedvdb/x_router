@@ -26,28 +26,18 @@ class XRouterResolver extends XResolver {
         // we are only interested in routes that have resolvers
         .where((route) => route.resolvers.isNotEmpty)
         .toList()
-          // sorting the routes by path length so children are after parents.
-          ..sort((a, b) => a.path.length.compareTo(b.path.length));
+      // sorting the routes by path length so children are after parents.
+      ..sort((a, b) => a.path.length.compareTo(b.path.length));
     _routes.addAll(addedRoutes);
   }
 
   Future<String> resolve(String target) async {
     var resolved = target;
     for (final resolver in _globalResolvers) {
-      resolved = await _useResolver(resolver, resolved);
+      resolved = await resolver.resolve(resolved);
     }
     resolved = await _useRouteResolvers(resolved);
     _listenToRouteResolvers(target);
-    return resolved;
-  }
-
-  Future<String> _useResolver(XResolver resolver, String target) async {
-    _routerState
-        .addEvent(ResolverResolveStart(resolver: resolver, target: target));
-
-    final resolved = await resolver.resolve(target);
-    _routerState.addEvent(ResolverResolveEnd(
-        resolver: resolver, target: target, resolved: resolved));
     return resolved;
   }
 
@@ -69,7 +59,7 @@ class XRouterResolver extends XResolver {
     var resolved = target;
     for (var route in targetRoutes) {
       for (var resolver in route.resolvers) {
-        resolved = await _useResolver(resolver, target);
+        resolved = await resolver.resolve(target);
         // if the route doesn't match anymore then we have to restart
         // the process for a new route
         if (!route.match(resolved)) {

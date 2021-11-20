@@ -3,16 +3,16 @@ import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 
 class XRedirectResolver extends XResolver {
-  final XRouteParser from;
-  final XRouteParser to;
+  final XRoutePattern from;
+  final XRoutePattern to;
   final bool matchChildren;
 
   XRedirectResolver({
     required String from,
     required String to,
     this.matchChildren = false,
-  })  : to = XRouteParser(to),
-        from = XRouteParser(from);
+  })  : to = XRoutePattern(to),
+        from = XRoutePattern(from);
 
   @override
   Future<String> resolve(String target) {

@@ -1,20 +1,16 @@
 name: x_router
 description: A new Flutter package project.
 version: 0.0.1
-author: cedvdb
 homepage:
 publish_to: none
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
   flutter: ">=2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  # for firstWhere that don't throw error on null
-  collection: ^1.15.0
-
 
 dev_dependencies:
   flutter_test:
