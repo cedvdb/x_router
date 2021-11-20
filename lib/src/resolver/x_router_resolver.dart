@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
-import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
+
+import 'x_resolver_event.dart';
 
 class XRouterResolver extends XResolver {
   List<XResolver> _globalResolvers = [];
@@ -34,10 +35,20 @@ class XRouterResolver extends XResolver {
   Future<String> resolve(String target) async {
     var resolved = target;
     for (final resolver in _globalResolvers) {
-      resolved = await resolver.resolve(resolved);
+      resolved = await _useResolver(resolver, resolved);
     }
     resolved = await _useRouteResolvers(resolved);
     _listenToRouteResolvers(target);
+    return resolved;
+  }
+
+  Future<String> _useResolver(XResolver resolver, String target) async {
+    _routerState
+        .addEvent(ResolverResolveStart(resolver: resolver, target: target));
+
+    final resolved = await resolver.resolve(target);
+    _routerState.addEvent(ResolverResolveEnd(
+        resolver: resolver, target: target, resolved: resolved));
     return resolved;
   }
 
@@ -59,7 +70,7 @@ class XRouterResolver extends XResolver {
     var resolved = target;
     for (var route in targetRoutes) {
       for (var resolver in route.resolvers) {
-        resolved = await resolver.resolve(target);
+        resolved = await _useResolver(resolver, target);
         // if the route doesn't match anymore then we have to restart
         // the process for a new route
         if (!route.match(resolved)) {

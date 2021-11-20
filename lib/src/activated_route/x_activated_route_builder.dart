@@ -9,16 +9,12 @@ import 'x_activated_route_event.dart';
 class XActivatedRouteBuilder {
   final List<XRoute> _routes;
   final XRouterState _state = XRouterState.instance;
-  final bool _isRoot;
 
   XActivatedRouteBuilder({
     required List<XRoute> routes,
-    required bool isRoot,
-  })  : _routes = routes,
-        _isRoot = isRoot;
+  }) : _routes = routes;
 
   XActivatedRoute build(String target) {
-    _state.addEvent(ActivatedRouteBuildStart(isRoot: _isRoot, target: target));
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     var isFound = matchings.length > 0;
     if (!isFound) {
@@ -28,8 +24,6 @@ class XActivatedRouteBuilder {
     final upstack =
         matchings.map((route) => _toActivatedRoute(target, route)).toList();
     final activatedRoute = _toActivatedRoute(target, topRoute, upstack);
-    _state.addEvent(ActivatedRouteBuildEnd(
-        isRoot: _isRoot, activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 
@@ -38,14 +32,18 @@ class XActivatedRouteBuilder {
     XRoute route, [
     List<XActivatedRoute> upstack = const [],
   ]) {
+    _state.addEvent(ActivatedRouteBuildStart(target: path));
     final parsed = route.parse(path);
-    return XActivatedRoute(
+    final activatedRoute = XActivatedRoute(
       path: path,
-      matchingRoute: route,
+      route: route,
       effectivePath: parsed.matchingPath,
       parameters: parsed.parameters,
       upstack: upstack,
     );
+    _state.addEvent(
+        ActivatedRouteBuildEnd(activatedRoute: activatedRoute, target: path));
+    return activatedRoute;
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {

@@ -1,29 +1,24 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 
-class ActivatedRouteBuildStart extends XRouterEvent {
-  final bool isRoot;
+class ActivatedRouteBuildStart extends BuildEvent {
   ActivatedRouteBuildStart({
-    required this.isRoot,
     required String target,
   }) : super(target);
 
   @override
-  String toString() =>
-      '    ActivatedRouteBuildStart(target: $target, isRoot: $isRoot)';
+  String toString() => '    ActivatedRouteBuildStart(target: $target)';
 }
 
-class ActivatedRouteBuildEnd extends XRouterEvent {
-  final bool isRoot;
+class ActivatedRouteBuildEnd extends BuildEvent {
   final XActivatedRoute activatedRoute;
 
   ActivatedRouteBuildEnd({
-    required this.isRoot,
     required this.activatedRoute,
     required String target,
   }) : super(target);
 
   @override
   String toString() =>
-      '    ActivatedRouteBuildEnd(target: $target, isRoot: $isRoot, activatedRoute: $activatedRoute)';
+      '    ActivatedRouteBuildEnd(target: $target, activatedRoute: $activatedRoute)';
 }

@@ -1,26 +1,7 @@
 import 'package:example/services/products_service.dart';
-import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
-
-final productDetailsRouter = XRouter.child(
-  basePath: '/products/:id',
-  routes: [
-    XRoute(
-      path: '/products/:id',
-      builder: null,
-      resolvers: [
-        XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
-      ],
-    ),
-    XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
-    XRoute(
-      path: '/products/:id/comments',
-      builder: (_, __) => ProductComments(),
-    ),
-  ],
-);
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
@@ -51,10 +32,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                child: Router(
-                  routerDelegate: productDetailsRouter.delegate,
-                ),
-              ),
+                  // child: Router(
+                  //   routerDelegate: productDetailsRouter.delegate,
+                  // ),
+                  ),
             ),
           )
         ],

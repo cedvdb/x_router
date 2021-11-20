@@ -1,21 +1,23 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/resolver/x_resolver.dart';
 
 abstract class XRouterEvent {
   final String target;
 
-  XRouterEvent(this.target);
+  const XRouterEvent(this.target);
 
   @override
   String toString() => '$runtimeType(target: $target)';
 }
 
 // navigation
+class NavigationEvent extends XRouterEvent {
+  const NavigationEvent(String target) : super(target);
+}
 
-class NavigationStart extends XRouterEvent {
+class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
 
-  NavigationStart({
+  const NavigationStart({
     required String target,
     required this.params,
   }) : super(target);
@@ -24,25 +26,22 @@ class NavigationStart extends XRouterEvent {
   String toString() => 'NavigationStart(target: $target, params: $params)';
 }
 
-class NavigationEnd extends XRouterEvent {
-  NavigationEnd({
-    required String target,
-  }) : super(target);
-}
-
-class Pop extends XRouterEvent {
-  Pop({
+class NavigationEnd extends NavigationEvent {
+  const NavigationEnd({
     required String target,
   }) : super(target);
 }
 
 // url parsing
+class UrlParsingEvent extends XRouterEvent {
+  const UrlParsingEvent(String target) : super(target);
+}
 
-class UrlParsingStart extends XRouterEvent {
+class UrlParsingStart extends UrlParsingEvent {
   final Map<String, String>? params;
   final String currentUrl;
 
-  UrlParsingStart({
+  const UrlParsingStart({
     required String target,
     required this.params,
     required this.currentUrl,
@@ -53,18 +52,33 @@ class UrlParsingStart extends XRouterEvent {
       'UrlParsingStart(target:$target, params: $params, currentUrl: $currentUrl)';
 }
 
-class UrlParsingEnd extends XRouterEvent {
-  UrlParsingEnd({required String target}) : super(target);
+class UrlParsingEnd extends UrlParsingEvent {
+  const UrlParsingEnd({required String target}) : super(target);
 }
 
 // resolving
-// build
+class ResolvingEvent extends XRouterEvent {
+  const ResolvingEvent(String target) : super(target);
+}
 
-class BuildStart extends XRouterEvent {
+class ResolvingStart extends ResolvingEvent {
+  const ResolvingStart({required String target}) : super(target);
+}
+
+class ResolvingEnd extends ResolvingEvent {
+  const ResolvingEnd({required String target}) : super(target);
+}
+
+// build
+class BuildEvent extends XRouterEvent {
+  const BuildEvent(String target) : super(target);
+}
+
+class BuildStart extends BuildEvent {
   BuildStart({required String target}) : super(target);
 }
 
-class BuildEnd extends XRouterEvent {
+class BuildEnd extends BuildEvent {
   XActivatedRoute activatedRoute;
   BuildEnd({
     required String target,

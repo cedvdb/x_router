@@ -7,18 +7,24 @@ import 'package:example/router/product_found_resolver.dart';
 import 'package:x_router/x_router.dart';
 
 class AppRoutes {
-  static final String home = '/';
-  static final String dashboard = '/dashboard';
-  static final String products = '/products';
-  static final String productDetail = '/products/:id';
-  static final String loading = '/loading';
-  static final String signIn = '/sign-in';
+  static const home = '/';
+  static const dashboard = '/dashboard';
+  static const products = '/products';
+  static const productDetail = '/products/:id';
+  static const productDetailInfo = '$productDetail/info';
+  static const productDetailComments = '$productDetail/comments';
+  static const loading = '/loading';
+  static const signIn = '/sign-in';
 
   static final routes = [
+    XRoute(path: loading, builder: (ctx, params) => LoadingPage()),
+    XRoute(path: signIn, builder: (ctx, params) => SignInPage()),
     XRoute(
       path: home,
       builder: null,
-      resolvers: [XRedirectResolver(from: home, to: dashboard)],
+      resolvers: [
+        XRedirectResolver(from: home, to: dashboard),
+      ],
       matchChildren: false,
     ),
     XRoute(path: dashboard, builder: (ctx, params) => DashboardPage()),
@@ -26,9 +32,18 @@ class AppRoutes {
     XRoute(
       path: productDetail,
       builder: (ctx, params) => ProductDetailsPage(params['id']!),
-      resolvers: [productFoundResolver],
+      resolvers: [
+        productFoundResolver,
+        XRedirectResolver(from: '/products/:id', to: '/products/:id/info'),
+      ],
     ),
-    XRoute(path: loading, builder: (ctx, params) => LoadingPage()),
-    XRoute(path: signIn, builder: (ctx, params) => SignInPage()),
+    XRoute(
+      path: productDetailInfo,
+      builder: (_, __) => ProductInfo(),
+    ),
+    XRoute(
+      path: productDetailComments,
+      builder: (_, __) => ProductComments(),
+    ),
   ];
 }

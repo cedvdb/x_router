@@ -4,14 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
 
-final GlobalKey<NavigatorState> _nestedNavigatorKey =
-    GlobalKey<NavigatorState>();
-
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
-  GlobalKey<NavigatorState> get navigatorKey =>
-      isRoot ? GlobalKey<NavigatorState>() : _nestedNavigatorKey;
+  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
 
   /// maintains the url
   @override
@@ -23,28 +19,19 @@ class XRouterDelegate extends RouterDelegate<String>
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute(
-    matchingRoute: XSpecialRoutes.initializationRoute,
+    route: XSpecialRoutes.initializationRoute,
     path: '',
     effectivePath: '',
   );
 
-  /// whether this is the root delegate
-  final bool isRoot;
-
-  final Function _onPop;
-
   XRouterDelegate({
     required this.onNewRoute,
-    required this.isRoot,
     required this.onDispose,
-    required Function onPop,
-  }) : _onPop = onPop;
+  });
 
   initBuild(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
-    if (isRoot) {
-      currentConfiguration = _activatedRoute.path;
-    }
+    currentConfiguration = _activatedRoute.path;
     notifyListeners();
   }
 
@@ -69,7 +56,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   MaterialPage _buildPage(
       BuildContext context, XActivatedRoute activatedRoute) {
-    final builder = activatedRoute.matchingRoute.builder!;
+    final builder = activatedRoute.route.builder!;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 

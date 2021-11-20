@@ -1,4 +1,4 @@
-/// The result of trying to match a path to a route.
+/// The result of trying to match a path against a route.
 class XParsingResult {
   XParsingResult({
     required this.matches,
@@ -15,7 +15,7 @@ class XParsingResult {
 
   /// The part of the route
   ///
-  /// ie `/route` when the path is `/route/123` and the route pattern is `/route/:id`
+  /// ie `/route/123` when the path is `/route/123` and the route pattern is `/route/:id`
   final String matchingPath;
 
   /// The route path being matched onto

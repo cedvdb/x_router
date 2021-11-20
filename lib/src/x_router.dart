@@ -20,6 +20,7 @@ class XRouter {
 
   /// the resolver responsible of resolving a route path
   static final XRouterResolver _resolver = XRouterResolver(
+    // when the state changes we resolve the current url
     onStateChanged: () => goTo(_state.currentUrl),
   );
 
@@ -27,22 +28,16 @@ class XRouter {
   late final XActivatedRouteBuilder _activatedRouteBuilder =
       XActivatedRouteBuilder(
     routes: _routes,
-    isRoot: _isRoot,
   );
 
   /// all the routes for this router
   final List<XRoute> _routes;
 
-  /// whether this router is the root resolver or a child / nested one
-  final bool _isRoot;
-
   // For flutter Router 2: responsible of resolving a string path to (maybe) another
   final XRouteInformationParser informationParser = XRouteInformationParser();
   late final XRouterDelegate delegate = XRouterDelegate(
     onNewRoute: (path) => goTo(path),
-    isRoot: _isRoot,
     onDispose: () {},
-    onPop: pop,
   );
 
   static void goTo(String target, {Map<String, String>? params}) async {
@@ -64,8 +59,7 @@ class XRouter {
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
     Function(XRouterEvent)? onEvent,
-  })  : _isRoot = true,
-        _routes = routes {
+  }) : _routes = routes {
     _resolver.addResolvers(resolvers);
     _resolver.addRoutes(routes);
 
@@ -73,28 +67,6 @@ class XRouter {
       onEvent?.call(event);
       _onNavigationEvent(event);
     });
-  }
-
-  XRouter.child({
-    required String basePath,
-    required List<XRoute> routes,
-  })  : _routes = routes,
-        _isRoot = false {
-    _state.events$
-        .where((event) => event is BuildStart)
-        .where((event) =>
-            XRoutePattern(basePath).match(event.target, matchChildren: true))
-        .listen((event) => _build(event.target));
-    _resolver.addRoutes(routes);
-  }
-
-  XRouter addChildren(List<XRouter> children) {
-    // this is just to force instanciation of the XRouter.child
-    // without it the child router could be in a widget and only instanciated
-    // when accessing said widget. If there were resolvers present then they
-    // would not be active until we reach the widget and a route could be
-    // accessed which the user intended to have a resolver on
-    return this;
   }
 
   void _onNavigationEvent(event) async {
@@ -115,17 +87,27 @@ class XRouter {
   }
 
   String _parse(String target, Map<String, String>? params, String currentUrl) {
+    _state.addEvent(UrlParsingStart(
+        target: target, params: params, currentUrl: currentUrl));
     final parser = XRoutePattern.relative(target, currentUrl);
-    return parser.addParameters(params);
+    final parsed = parser.addParameters(params);
+    _state.addEvent(UrlParsingEnd(target: target));
+    return parsed;
   }
 
-  Future<String> _resolve(String target) {
-    return _resolver.resolve(target);
+  Future<String> _resolve(String target) async {
+    _state.addEvent(ResolvingStart(target: target));
+    final resolved = await _resolver.resolve(target);
+    _state.addEvent(ResolvingEnd(target: resolved));
+    return resolved;
   }
 
   XActivatedRoute _build(String target) {
+    _state.addEvent(BuildStart(target: target));
+
     final activatedRoute = _activatedRouteBuilder.build(target);
     delegate.initBuild(activatedRoute);
+    _state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 }

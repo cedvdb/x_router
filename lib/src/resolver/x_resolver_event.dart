@@ -2,15 +2,7 @@ import 'package:x_router/src/state/x_router_events.dart';
 
 import '../../x_router.dart';
 
-class ResolvingStart extends XRouterEvent {
-  ResolvingStart({required String target}) : super(target);
-}
-
-class ResolvingEnd extends XRouterEvent {
-  ResolvingEnd({required String target}) : super(target);
-}
-
-class ResolverResolveStart extends XRouterEvent {
+class ResolverResolveStart extends ResolvingEvent {
   final XResolver resolver;
 
   ResolverResolveStart({
@@ -23,7 +15,7 @@ class ResolverResolveStart extends XRouterEvent {
       '    ${resolver.runtimeType} ResolveStart(target: $target, state: ${resolver.state})';
 }
 
-class ResolverResolveEnd extends XRouterEvent {
+class ResolverResolveEnd extends ResolvingEvent {
   final XResolver resolver;
   final String resolved;
 
