@@ -1,4 +1,4 @@
-import 'package:x_router/src/parser/x_route_parser.dart';
+import 'package:x_router/src/parser/x_route_pattern.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 
 class XRedirectResolver extends XResolver {

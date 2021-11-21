@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:x_router/src/parser/x_parsing_result.dart';
-import 'package:x_router/src/parser/x_route_parser.dart';
+import 'package:x_router/src/parser/x_route_pattern.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 
 typedef XPageBuilder = Widget Function(
