@@ -42,7 +42,7 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   Widget build(BuildContext context) {
     final pages = [
-      // parents
+      // upstack
       ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
       // top
       _buildPage(context, _activatedRoute)
@@ -62,9 +62,10 @@ class XRouterDelegate extends RouterDelegate<String>
     BuildContext context,
     XActivatedRoute activatedRoute,
   ) {
-    final builder = activatedRoute.route.builder;
+    final route = activatedRoute.route;
+    final builder = route.builder;
     return MaterialPage(
-      key: ValueKey('my page'),
+      key: route.pageKey,
       child: builder(
         context,
         activatedRoute.parameters,
@@ -75,10 +76,11 @@ class XRouterDelegate extends RouterDelegate<String>
   void _setBrowserTitle(BuildContext context, String? title) {
     if (kIsWeb && title != null) {
       SystemChrome.setApplicationSwitcherDescription(
-          ApplicationSwitcherDescription(
-        label: title,
-        primaryColor: Theme.of(context).primaryColor.value,
-      ));
+        ApplicationSwitcherDescription(
+          label: title,
+          primaryColor: Theme.of(context).primaryColor.value,
+        ),
+      );
     }
   }
 

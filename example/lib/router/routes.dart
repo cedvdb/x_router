@@ -29,15 +29,19 @@ class AppRoutes {
     ),
     XRoute(
       title: 'dashboard',
+      pageKey: const ValueKey('Home'),
       path: dashboard,
-      builder: (ctx, params) =>
-          HomeLayout(title: 'Dashboard', child: DashboardPage()),
+      builder: (ctx, params) => HomeLayout(
+        index: 0,
+        title: 'dashboard',
+      ),
     ),
     XRoute(
       path: products,
+      pageKey: const ValueKey('Home'),
       builder: (ctx, params) => HomeLayout(
+        index: 1,
         title: 'products',
-        child: ProductsPage(),
       ),
     ),
     XRoute(

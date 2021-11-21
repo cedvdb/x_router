@@ -35,7 +35,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               padding: const EdgeInsets.all(8.0),
               child: Card(
                 child: StreamBuilder(
-                  stream: XRouter.eventStream
+                  stream: XRouter.state.eventStream
                       .where((event) => event is NavigationEnd),
                   builder: (ctx, snap) {
                     if (!snap.hasData) {

@@ -15,11 +15,7 @@ import 'package:x_router/src/state/x_router_state.dart';
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
   /// the current state of the navigation
-  static final XRouterState _state = XRouterState.instance;
-  static Stream<XRouterEvent> get eventStream => _state.eventStream;
-  static Stream<NavigationEnd> get navigationEndStream => eventStream
-      .where((event) => event is NavigationEnd)
-      .cast<NavigationEnd>();
+  static XRouterState get state => XRouterState.instance;
 
   /// the resolver responsible of resolving a route path
   late final XRouterResolver _resolver;
@@ -41,7 +37,7 @@ class XRouter {
   );
 
   static void goTo(String target, {Map<String, String>? params}) async {
-    _state.addEvent(NavigationStart(target: target, params: params));
+    state.addEvent(NavigationStart(target: target, params: params));
   }
 
   static void back() {
@@ -49,9 +45,9 @@ class XRouter {
   }
 
   static void pop() {
-    if (_state.activatedRoute != null &&
-        _state.activatedRoute!.upstack.length >= 1) {
-      goTo(_state.activatedRoute!.upstack.last.effectivePath);
+    if (state.activatedRoute != null &&
+        state.activatedRoute!.upstack.length >= 1) {
+      goTo(state.activatedRoute!.upstack.last.effectivePath);
     }
   }
 
@@ -62,12 +58,12 @@ class XRouter {
   }) : _routes = routes {
     _resolver = XRouterResolver(
       // when the state changes we resolve the current url
-      onStateChanged: () => goTo(_state.currentUrl),
+      onStateChanged: () => goTo(state.currentUrl),
       resolvers: resolvers,
       routes: routes,
     );
 
-    _state.eventStream.listen((event) {
+    state.eventStream.listen((event) {
       onEvent?.call(event);
       _onNavigationEvent(event);
     });
@@ -76,36 +72,36 @@ class XRouter {
   void _onNavigationEvent(event) {
     // this method just calls the right method to get the result for the next event
     if (event is NavigationStart) {
-      final parsed = _parse(event.target, event.params, _state.currentUrl);
+      final parsed = _parse(event.target, event.params, state.currentUrl);
       final resolved = _resolve(parsed);
       final activatedRoute = _build(resolved);
       delegate.initBuild(activatedRoute);
-      _state.addEvent(NavigationEnd(target: event.target));
+      state.addEvent(NavigationEnd(target: event.target));
     }
   }
 
   String _parse(String target, Map<String, String>? params, String currentUrl) {
-    _state.addEvent(UrlParsingStart(
+    state.addEvent(UrlParsingStart(
         target: target, params: params, currentUrl: currentUrl));
     final parser = XRoutePattern.relative(target, currentUrl);
     final parsed = parser.addParameters(params);
-    _state.addEvent(UrlParsingEnd(target: target));
+    state.addEvent(UrlParsingEnd(target: target));
     return parsed;
   }
 
   XRouterResolveResult _resolve(String target) {
-    _state.addEvent(ResolvingStart(target: target));
+    state.addEvent(ResolvingStart(target: target));
     final resolved = _resolver.resolve(target);
-    _state.addEvent(ResolvingEnd(resolved));
+    state.addEvent(ResolvingEnd(resolved));
     return resolved;
   }
 
   XActivatedRoute _build(XRouterResolveResult resolved) {
-    _state.addEvent(BuildStart(target: resolved.target));
+    state.addEvent(BuildStart(target: resolved.target));
 
     final activatedRoute = _activatedRouteBuilder.build(resolved);
     delegate.initBuild(activatedRoute);
-    _state.addEvent(
+    state.addEvent(
         BuildEnd(activatedRoute: activatedRoute, target: resolved.target));
     return activatedRoute;
   }

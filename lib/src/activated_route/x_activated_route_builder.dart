@@ -1,6 +1,6 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/route/x_special_routes.dart';
+import 'package:x_router/src/route/x_not_found_routes.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 import '../route/x_route.dart';

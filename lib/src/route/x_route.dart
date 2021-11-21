@@ -39,6 +39,8 @@ typedef XPageBuilder = Widget Function(
 /// when accessing `/products/123` and no little arrow ⬅ would be in the appbar
 /// {@end template}
 class XRoute {
+  final LocalKey? pageKey;
+
   /// {@macro path}
   final String path;
 
@@ -59,6 +61,7 @@ class XRoute {
   XRoute({
     required this.path,
     required this.builder,
+    this.pageKey,
     this.title,
     this.resolvers = const [],
     this.matchChildren = true,

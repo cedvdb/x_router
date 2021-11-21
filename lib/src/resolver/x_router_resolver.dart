@@ -53,12 +53,14 @@ class XRouterResolver {
 
     for (final resolver in _resolvers) {
       final resolved = _useResolver(resolver, next);
+
       if (resolved is End) {
         return XRouterResolveResult(
           origin: path,
           target: next,
         );
       }
+
       if (resolved is Loading) {
         // if it is loading we need to wait for an effective result
         // so this is the end, but we override the builder

@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:example/pages/dashboard_page.dart';
+import 'package:example/pages/products_page.dart';
 import 'package:example/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
 class HomeLayout extends StatefulWidget {
-  final Widget child;
   final String title;
+  final int index;
   const HomeLayout({
-    required this.child,
     required this.title,
+    required this.index,
   }) : super(key: const ValueKey('HomeLayout'));
 
   @override
@@ -23,25 +25,18 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
-
-    _tabController.addListener(() {
-      if (_tabController.index == 0) {
-        XRouter.goTo(AppRoutes.dashboard);
-      } else {
-        XRouter.goTo(AppRoutes.products);
-      }
-    });
-    navSubscription = XRouter.navigationEndStream.listen((event) {
-      if (event.target.startsWith(AppRoutes.dashboard)) {
-        _tabController.animateTo(0);
-      } else if (event.target.startsWith(AppRoutes.products)) {
-        _tabController.animateTo(1);
-      } else {
-        _tabController.animateTo(2);
-      }
-    });
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.index,
+    );
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _tabController.index = widget.index;
+    super.didChangeDependencies();
   }
 
   @override
@@ -51,6 +46,14 @@ class _HomeLayoutState extends State<HomeLayout>
     super.dispose();
   }
 
+  _navigate(int index) {
+    if (index == 0) {
+      XRouter.goTo(AppRoutes.dashboard);
+    } else if (index == 1) {
+      XRouter.goTo(AppRoutes.products);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +61,7 @@ class _HomeLayoutState extends State<HomeLayout>
         title: Text(widget.title),
         bottom: TabBar(
           controller: _tabController,
+          onTap: (index) => _navigate(index),
           tabs: [
             Tab(icon: Icon(Icons.home)),
             Tab(icon: Icon(Icons.star)),
@@ -65,7 +69,14 @@ class _HomeLayoutState extends State<HomeLayout>
           ],
         ),
       ),
-      body: widget.child,
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(),
+          ProductsPage(),
+          ProductsPage(),
+        ],
+      ),
     );
   }
 }
