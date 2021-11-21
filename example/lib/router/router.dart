@@ -5,9 +5,9 @@ import 'auth_resolver.dart';
 
 final router = XRouter(
   resolvers: [
-    XNotFoundResolver(redirectTo: AppRoutes.home, routes: AppRoutes.routes),
     AuthResolver(),
-    XRedirectResolver(from: AppRoutes.home, to: AppRoutes.dashboard)
+    XRedirectResolver(from: AppRoutes.home, to: AppRoutes.dashboard),
+    XNotFoundResolver(redirectTo: AppRoutes.home, routes: AppRoutes.routes),
   ],
   routes: AppRoutes.routes,
   onEvent: (s) => print(s),

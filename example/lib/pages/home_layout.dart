@@ -30,7 +30,7 @@ class _HomeLayoutState extends State<HomeLayout>
     _tabController = TabController(
       length: 3,
       vsync: this,
-      initialIndex: widget.index,
+      // initialIndex: widget.index,
     );
     navSubscription = XRouter.state.eventStream
         .where((event) => event is NavigationEnd)
@@ -50,7 +50,7 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void didChangeDependencies() {
-    _tabController.animateTo(widget.index);
+    // _tabController.animateTo(widget.index);
     super.didChangeDependencies();
   }
 

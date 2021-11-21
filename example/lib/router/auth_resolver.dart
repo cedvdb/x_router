@@ -1,3 +1,4 @@
+import 'package:example/pages/loading_page.dart';
 import 'package:example/router/routes.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,19 +26,7 @@ class AuthResolver extends XResolver<AuthStatus> {
       case AuthStatus.unknown:
       default:
         return Loading(
-          Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Checking auth status'),
-                  SizedBox(height: 20),
-                  CircularProgressIndicator(),
-                ],
-              ),
-            ),
-          ),
+          LoadingPage(text: 'Checking Auth Status'),
         );
     }
   }
