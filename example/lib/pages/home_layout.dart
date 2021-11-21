@@ -10,9 +10,10 @@ class HomeLayout extends StatefulWidget {
   final String title;
   final int index;
   const HomeLayout({
+    Key? key,
     required this.title,
     required this.index,
-  }) : super(key: const ValueKey('HomeLayout'));
+  }) : super(key: key);
 
   @override
   State<HomeLayout> createState() => _HomeLayoutState();
@@ -25,6 +26,7 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void initState() {
+    print('======> init state');
     _tabController = TabController(
       length: 3,
       vsync: this,
@@ -35,7 +37,7 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void didChangeDependencies() {
-    _tabController.index = widget.index;
+    _tabController.animateTo(widget.index);
     super.didChangeDependencies();
   }
 

@@ -36,6 +36,11 @@ class End extends XResolverAction {
   const End(this.target);
 }
 
+/// this is useful for not redirecting to a loading page when the state is unknow
+/// the alternative being Redirect to a loading page then when the state is known
+/// redirect back to the original requested page. However that process is slightly
+/// more involved as it requires to add informations to the loading page
+/// regarding the return Url
 class Loading extends XResolverAction {
   final Widget loadingScreen;
   const Loading(this.loadingScreen);

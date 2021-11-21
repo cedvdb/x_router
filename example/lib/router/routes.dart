@@ -29,6 +29,7 @@ class AppRoutes {
       pageKey: const ValueKey('Home'),
       path: dashboard,
       builder: (ctx, params) => HomeLayout(
+        key: const ValueKey('home_layout'),
         index: 0,
         title: 'dashboard',
       ),
@@ -37,6 +38,7 @@ class AppRoutes {
       path: products,
       pageKey: const ValueKey('Home'),
       builder: (ctx, params) => HomeLayout(
+        key: const ValueKey('home_layout'),
         index: 1,
         title: 'products',
       ),
