@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
 
@@ -12,14 +11,14 @@ class XNotFoundResolver extends XResolver {
   });
 
   @override
-  Future<String> resolve(String target) {
+  XResolverAction resolve(String target) {
     try {
       routes.firstWhere(
         (r) => r.match(target),
       );
-      return SynchronousFuture(target);
+      return const Next();
     } catch (e) {
-      return SynchronousFuture(redirectTo);
+      return Redirect(redirectTo);
     }
   }
 }

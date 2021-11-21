@@ -29,19 +29,19 @@ void main() {
 
     test('should match exact route', () {
       final path = '/test/route';
-      expect(XRoutePattern(path).parse(path), isMatch());
-      expect(XRoutePattern('/').parse('/'), isMatch());
-      expect(XRoutePattern(path).parse('/'), isNotMatch());
-      expect(XRoutePattern(path).parse('/test/route/longer'), isNotMatch());
-      expect(XRoutePattern(path).parse('/not/same'), isNotMatch());
-      expect(XRoutePattern('/').parse('/not'), isNotMatch());
+      expect(XRoutePattern(path).parse(path), IsMatch());
+      expect(XRoutePattern('/').parse('/'), IsMatch());
+      expect(XRoutePattern(path).parse('/'), IsNotMatch());
+      expect(XRoutePattern(path).parse('/test/route/longer'), IsNotMatch());
+      expect(XRoutePattern(path).parse('/not/same'), IsNotMatch());
+      expect(XRoutePattern('/').parse('/not'), IsNotMatch());
     });
 
     test('should match exact route with typos', () {
-      expect(XRoutePattern('/test/route').parse('test/route'), isMatch());
-      expect(XRoutePattern('/test/route').parse('test/route/'), isMatch());
-      expect(XRoutePattern('/test/route').parse(' /test/route/  '), isMatch());
-      expect(XRoutePattern('test/route').parse(' //test/route/ '), isMatch());
+      expect(XRoutePattern('/test/route').parse('test/route'), IsMatch());
+      expect(XRoutePattern('/test/route').parse('test/route/'), IsMatch());
+      expect(XRoutePattern('/test/route').parse(' /test/route/  '), IsMatch());
+      expect(XRoutePattern('test/route').parse(' //test/route/ '), IsMatch());
     });
 
     test('should match partial routes', () {
@@ -49,32 +49,32 @@ void main() {
 
       expect(
         XRoutePattern('/').parse('/any/route', matchChildren: true),
-        isMatch(),
+        IsMatch(),
       );
 
       expect(
         XRoutePattern(path).parse('test/route', matchChildren: true),
-        isMatch(),
+        IsMatch(),
       );
       expect(
         XRoutePattern(path).parse('/test/route/more', matchChildren: true),
-        isMatch(),
+        IsMatch(),
       );
       expect(
         XRoutePattern(path).parse('/another/route', matchChildren: true),
-        isNotMatch(),
+        IsNotMatch(),
       );
       expect(
         XRoutePattern(path).parse('/', matchChildren: true),
-        isNotMatch(),
+        IsNotMatch(),
       );
       expect(
         XRoutePattern(path).parse('/test', matchChildren: true),
-        isNotMatch(),
+        IsNotMatch(),
       );
       expect(
         XRoutePattern(path).parse('test/another', matchChildren: true),
-        isNotMatch(),
+        IsNotMatch(),
       );
     });
 

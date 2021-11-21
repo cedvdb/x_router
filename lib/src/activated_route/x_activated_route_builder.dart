@@ -1,4 +1,5 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_special_routes.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
@@ -14,16 +15,31 @@ class XActivatedRouteBuilder {
     required List<XRoute> routes,
   }) : _routes = routes;
 
-  XActivatedRoute build(String target) {
-    var matchings = _getOrderedPartiallyMatchingRoutes(target);
+  XActivatedRoute build(XRouterResolveResult resolved) {
+    var matchings = _getOrderedPartiallyMatchingRoutes(resolved.target);
     var isFound = matchings.length > 0;
+    final target = resolved.target;
     if (!isFound) {
       matchings = [XSpecialRoutes.notFoundRoute];
     }
-    final topRoute = matchings.removeAt(0);
-    final upstack =
-        matchings.map((route) => _toActivatedRoute(target, route)).toList();
-    final activatedRoute = _toActivatedRoute(target, topRoute, upstack);
+    var topRoute = matchings.removeAt(0);
+
+    if (resolved is XRouterResolveLoading) {
+      topRoute = topRoute.copyWith(builder: resolved.builder);
+    }
+
+    final upstack = matchings
+        .map((route) => _toActivatedRoute(
+              target,
+              route,
+            ))
+        .toList();
+
+    final activatedRoute = _toActivatedRoute(
+      target,
+      topRoute,
+      upstack,
+    );
     return activatedRoute;
   }
 
@@ -52,7 +68,6 @@ class XActivatedRouteBuilder {
       ..sort((a, b) => a.path.length.compareTo(b.path.length));
     // when there is no builder we don't keep going
     return matching
-        .where((route) => route.builder != null)
         .toList()
         // reverse so childs are in front
         .reversed

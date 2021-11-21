@@ -1,4 +1,5 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
 abstract class XRouterEvent {
   final String target;
@@ -66,7 +67,8 @@ class ResolvingStart extends ResolvingEvent {
 }
 
 class ResolvingEnd extends ResolvingEvent {
-  const ResolvingEnd({required String target}) : super(target);
+  final XRouterResolveResult result;
+  ResolvingEnd(this.result) : super(result.target);
 }
 
 // build

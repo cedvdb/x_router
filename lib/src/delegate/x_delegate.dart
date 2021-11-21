@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/route/x_special_routes.dart';
+import 'package:x_router/src/route/x_route.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -19,7 +19,10 @@ class XRouterDelegate extends RouterDelegate<String>
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute(
-    route: XSpecialRoutes.initializationRoute,
+    route: XRoute(
+      path: '',
+      builder: (ctx, params) => Container(),
+    ),
     path: '',
     effectivePath: '',
   );
@@ -55,8 +58,10 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   MaterialPage _buildPage(
-      BuildContext context, XActivatedRoute activatedRoute) {
-    final builder = activatedRoute.route.builder!;
+    BuildContext context,
+    XActivatedRoute activatedRoute,
+  ) {
+    final builder = activatedRoute.route.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
   }
 

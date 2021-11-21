@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:x_router/x_router.dart';
+
 
 /// wrapper for resolver that are put on specific routes so they are
 /// only active on that route

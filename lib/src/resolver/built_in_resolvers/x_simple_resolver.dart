@@ -1,11 +1,11 @@
 import 'package:x_router/src/resolver/x_resolver.dart';
 
 class XSimpleResolver extends XResolver {
-  Future<String> Function(String target) resolver;
+  XResolverAction Function(String target) resolver;
   XSimpleResolver(this.resolver);
 
   @override
-  Future<String> resolve(String target) {
+  XResolverAction resolve(String target) {
     return resolver(target);
   }
 }

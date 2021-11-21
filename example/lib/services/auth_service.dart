@@ -37,7 +37,7 @@ class AuthService {
     });
 
     // setting the status to what it was before after 1sec
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 2), () {
       final bool? wasAuthenticated = authBox.get('authenticated');
       if (wasAuthenticated == null) {
         _authStateSubj$.add(AuthStatus.unautenticated);

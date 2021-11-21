@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
 import 'package:x_router/src/parser/x_parsing_result.dart';
 import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
-import 'package:x_router/src/resolver/x_route_resolver.dart';
 
 typedef XPageBuilder = Widget Function(
     BuildContext context, Map<String, String> params);
@@ -43,7 +43,7 @@ class XRoute {
   final String path;
 
   /// {@macro builder}
-  final XPageBuilder? builder;
+  final XPageBuilder builder;
 
   /// {@macro matchChildren}
   final bool matchChildren;
@@ -85,5 +85,16 @@ class XRoute {
   @override
   String toString() {
     return 'XRoute(path: $path, matchChildren: $matchChildren, $builder: ${builder.runtimeType})';
+  }
+
+  XRoute copyWith({
+    XPageBuilder? builder,
+  }) {
+    return XRoute(
+      path: path,
+      builder: builder ?? this.builder,
+      matchChildren: matchChildren,
+      resolvers: resolvers,
+    );
   }
 }

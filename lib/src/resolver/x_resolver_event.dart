@@ -17,7 +17,7 @@ class ResolverResolveStart extends ResolvingEvent {
 
 class ResolverResolveEnd extends ResolvingEvent {
   final XResolver resolver;
-  final String resolved;
+  final XResolverAction resolved;
 
   ResolverResolveEnd({
     required this.resolver,

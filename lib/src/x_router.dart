@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
@@ -7,6 +5,7 @@ import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/parser/x_route_parser.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
+import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
@@ -19,10 +18,7 @@ class XRouter {
   static final XRouterState _state = XRouterState.instance;
 
   /// the resolver responsible of resolving a route path
-  static final XRouterResolver _resolver = XRouterResolver(
-    // when the state changes we resolve the current url
-    onStateChanged: () => goTo(_state.currentUrl),
-  );
+  late final XRouterResolver _resolver;
 
   /// builds the route up stack
   late final XActivatedRouteBuilder _activatedRouteBuilder =
@@ -60,8 +56,12 @@ class XRouter {
     List<XResolver> resolvers = const [],
     Function(XRouterEvent)? onEvent,
   }) : _routes = routes {
-    _resolver.addResolvers(resolvers);
-    _resolver.addRoutesResolvers(routes);
+    _resolver = XRouterResolver(
+      // when the state changes we resolve the current url
+      onStateChanged: () => goTo(_state.currentUrl),
+      resolvers: resolvers,
+      routes: routes,
+    );
 
     _state.events$.listen((event) {
       onEvent?.call(event);
@@ -69,19 +69,13 @@ class XRouter {
     });
   }
 
-  void _onNavigationEvent(event) async {
+  void _onNavigationEvent(event) {
     // this method just calls the right method to get the result for the next event
     if (event is NavigationStart) {
       final parsed = _parse(event.target, event.params, _state.currentUrl);
-      final resolved = await _resolve(parsed);
+      final resolved = _resolve(parsed);
       final activatedRoute = _build(resolved);
-
-      // using a future here so children finish before sending this event
-      await Future.value(true);
-      _state.addEvent(
-        BuildEnd(target: event.target, activatedRoute: activatedRoute),
-      );
-    } else if (event is BuildEnd) {
+      delegate.initBuild(activatedRoute);
       _state.addEvent(NavigationEnd(target: event.target));
     }
   }
@@ -95,19 +89,20 @@ class XRouter {
     return parsed;
   }
 
-  Future<String> _resolve(String target) async {
+  XRouterResolveResult _resolve(String target) {
     _state.addEvent(ResolvingStart(target: target));
-    final resolved = await _resolver.resolve(target);
-    _state.addEvent(ResolvingEnd(target: resolved));
+    final resolved = _resolver.resolve(target);
+    _state.addEvent(ResolvingEnd(resolved));
     return resolved;
   }
 
-  XActivatedRoute _build(String target) {
-    _state.addEvent(BuildStart(target: target));
+  XActivatedRoute _build(XRouterResolveResult resolved) {
+    _state.addEvent(BuildStart(target: resolved.target));
 
-    final activatedRoute = _activatedRouteBuilder.build(target);
+    final activatedRoute = _activatedRouteBuilder.build(resolved);
     delegate.initBuild(activatedRoute);
-    _state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
+    _state.addEvent(
+        BuildEnd(activatedRoute: activatedRoute, target: resolved.target));
     return activatedRoute;
   }
 }

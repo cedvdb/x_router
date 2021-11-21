@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 
-class isMatch extends Matcher {
-  const isMatch();
+class IsMatch extends Matcher {
+  const IsMatch();
   @override
   bool matches(item, Map matchState) => item.matches == true;
   @override
   Description describe(Description description) => description.add('a match');
 }
 
-class isNotMatch extends Matcher {
-  const isNotMatch();
+class IsNotMatch extends Matcher {
+  const IsNotMatch();
   @override
   bool matches(item, Map matchState) => item.matches == false;
   @override
