@@ -2,13 +2,14 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
-import 'package:x_router/src/parser/x_route_pattern.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
+
+import 'route_pattern/x_route_pattern.dart';
 
 /// Handles navigation
 ///
@@ -98,8 +99,13 @@ class XRouter {
 
   XActivatedRoute _build(XRouterResolveResult resolved) {
     state.addEvent(BuildStart(target: resolved.target));
-
-    final activatedRoute = _activatedRouteBuilder.build(resolved);
+    XActivatedRoute activatedRoute;
+    if (resolved is XRouterResolveLoading) {
+      activatedRoute = _activatedRouteBuilder.build(resolved.target,
+          builder: resolved.builder);
+    } else {
+      activatedRoute = _activatedRouteBuilder.build(resolved.target);
+    }
     delegate.initBuild(activatedRoute);
     state.addEvent(
         BuildEnd(activatedRoute: activatedRoute, target: resolved.target));

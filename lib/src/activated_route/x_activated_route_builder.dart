@@ -15,17 +15,18 @@ class XActivatedRouteBuilder {
     required List<XRoute> routes,
   }) : _routes = routes;
 
-  XActivatedRoute build(XRouterResolveResult resolved) {
-    var matchings = _getOrderedPartiallyMatchingRoutes(resolved.target);
+  XActivatedRoute build(String target, {XPageBuilder? builder}) {
+    var matchings = _getOrderedPartiallyMatchingRoutes(target);
+
     var isFound = matchings.length > 0;
-    final target = resolved.target;
     if (!isFound) {
       matchings = [XSpecialRoutes.notFoundRoute];
     }
+
     var topRoute = matchings.removeAt(0);
 
-    if (resolved is XRouterResolveLoading) {
-      topRoute = topRoute.copyAsLoading(builder: resolved.builder);
+    if (builder != null) {
+      topRoute = topRoute.copyWithBuilder(builder: builder);
     }
 
     final upstack = matchings

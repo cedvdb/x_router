@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:x_router/src/parser/x_parsing_result.dart';
-import 'package:x_router/src/parser/x_route_pattern.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
+import 'package:x_router/src/route_pattern/x_parsing_result.dart';
+import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
 typedef XPageBuilder = Widget Function(
     BuildContext context, Map<String, String> params);
@@ -94,7 +94,7 @@ class XRoute {
     return 'XRoute(path: $path, matchChildren: $matchChildren, $builder: ${builder.runtimeType})';
   }
 
-  XRoute copyAsLoading({
+  XRoute copyWithBuilder({
     XPageBuilder? builder,
   }) {
     return XRoute(
