@@ -1,8 +1,5 @@
-import 'package:example/pages/dashboard_page.dart';
 import 'package:example/pages/home_layout.dart';
-import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/product_details_page.dart';
-import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';

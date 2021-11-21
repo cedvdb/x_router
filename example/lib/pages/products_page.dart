@@ -1,4 +1,3 @@
-import 'package:example/pages/home_layout.dart';
 import 'package:example/router/routes.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';

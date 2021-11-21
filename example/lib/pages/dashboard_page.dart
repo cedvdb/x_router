@@ -1,5 +1,3 @@
-import 'package:example/pages/home_layout.dart';
-import 'package:example/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
