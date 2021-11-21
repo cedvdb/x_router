@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/route/x_route.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
@@ -17,14 +18,10 @@ class XRouterDelegate extends RouterDelegate<String>
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
   final Function onDispose;
-  final List<MaterialPage> _pageStack = [];
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute(
-    route: XRoute(
-      path: '',
-      builder: (ctx, params) => Container(),
-    ),
+    route: XDefaultRoutes.initialRoute,
     path: '',
     effectivePath: '',
   );
