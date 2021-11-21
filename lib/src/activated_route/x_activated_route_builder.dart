@@ -1,6 +1,6 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/route/x_not_found_routes.dart';
+import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 import '../route/x_route.dart';
@@ -20,7 +20,7 @@ class XActivatedRouteBuilder {
 
     var isFound = matchings.length > 0;
     if (!isFound) {
-      matchings = [XSpecialRoutes.notFoundRoute];
+      matchings = [XDefaultRoutes.notFoundRoute];
     }
 
     var topRoute = matchings.removeAt(0);
