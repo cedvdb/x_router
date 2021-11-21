@@ -63,7 +63,13 @@ class XRouterDelegate extends RouterDelegate<String>
     XActivatedRoute activatedRoute,
   ) {
     final builder = activatedRoute.route.builder;
-    return MaterialPage(child: builder(context, activatedRoute.parameters));
+    return MaterialPage(
+      key: ValueKey('my page'),
+      child: builder(
+        context,
+        activatedRoute.parameters,
+      ),
+    );
   }
 
   void _setBrowserTitle(BuildContext context, String? title) {

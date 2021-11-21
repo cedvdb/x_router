@@ -5,8 +5,9 @@ import 'package:x_router/src/state/x_router_events.dart';
 
 class XRouterState {
   static final XRouterState instance = XRouterState._();
-  final StreamController<XRouterEvent> _events = StreamController();
-  late final Stream<XRouterEvent> events$ = _events.stream.asBroadcastStream();
+  final StreamController<XRouterEvent> _eventController = StreamController();
+  late final Stream<XRouterEvent> eventStream =
+      _eventController.stream.asBroadcastStream();
   XActivatedRoute? _activatedRoute;
   XActivatedRoute? get activatedRoute => _activatedRoute;
 
@@ -22,6 +23,6 @@ class XRouterState {
     if (event is NavigationEnd) {
       _currentUrl = event.target;
     }
-    _events.add(event);
+    _eventController.add(event);
   }
 }

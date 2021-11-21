@@ -1,4 +1,5 @@
 import 'package:example/pages/dashboard_page.dart';
+import 'package:example/pages/home_layout.dart';
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/products_page.dart';
@@ -21,13 +22,24 @@ class AppRoutes {
         title: 'sign in !',
         path: signIn,
         builder: (ctx, params) => SignInPage()),
-    XRoute(path: home, builder: (ctx, params) => Container()),
+    XRoute(
+      path: home,
+      builder: (ctx, params) => Container(),
+      matchChildren: false,
+    ),
     XRoute(
       title: 'dashboard',
       path: dashboard,
-      builder: (ctx, params) => DashboardPage(),
+      builder: (ctx, params) =>
+          HomeLayout(title: 'Dashboard', child: DashboardPage()),
     ),
-    XRoute(path: products, builder: (ctx, params) => ProductsPage()),
+    XRoute(
+      path: products,
+      builder: (ctx, params) => HomeLayout(
+        title: 'products',
+        child: ProductsPage(),
+      ),
+    ),
     XRoute(
       path: productDetail,
       builder: (ctx, params) => ProductDetailsPage(params['id']!),

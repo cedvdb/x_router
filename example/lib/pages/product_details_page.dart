@@ -1,3 +1,4 @@
+import 'package:example/router/routes.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,8 +23,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           Row(
             children: [
               ElevatedButton(
-                  onPressed: () => XRouter.goTo('./comments'),
-                  child: Text('comments')),
+                onPressed: () => XRouter.goTo('./comments'),
+                child: Text('comments'),
+              ),
               ElevatedButton(
                   onPressed: () => XRouter.goTo('./info'), child: Text('info')),
             ],
@@ -32,10 +34,23 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
-                  // child: Router(
-                  //   routerDelegate: productDetailsRouter.delegate,
-                  // ),
-                  ),
+                child: StreamBuilder(
+                  stream: XRouter.eventStream
+                      .where((event) => event is NavigationEnd),
+                  builder: (ctx, snap) {
+                    if (!snap.hasData) {
+                      return Container();
+                    } else {
+                      final event = (snap.data) as NavigationEnd;
+                      if (event.target == AppRoutes.productDetailComments) {
+                        return ProductComments();
+                      } else {
+                        return ProductInfo();
+                      }
+                    }
+                  },
+                ),
+              ),
             ),
           )
         ],
@@ -48,7 +63,7 @@ class ProductComments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('comments (in nested router)'),
+      child: Text('comments'),
     );
   }
 }

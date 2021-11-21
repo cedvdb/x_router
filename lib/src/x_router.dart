@@ -16,6 +16,10 @@ import 'package:x_router/src/state/x_router_state.dart';
 class XRouter {
   /// the current state of the navigation
   static final XRouterState _state = XRouterState.instance;
+  static Stream<XRouterEvent> get eventStream => _state.eventStream;
+  static Stream<NavigationEnd> get navigationEndStream => eventStream
+      .where((event) => event is NavigationEnd)
+      .cast<NavigationEnd>();
 
   /// the resolver responsible of resolving a route path
   late final XRouterResolver _resolver;
@@ -63,7 +67,7 @@ class XRouter {
       routes: routes,
     );
 
-    _state.events$.listen((event) {
+    _state.eventStream.listen((event) {
       onEvent?.call(event);
       _onNavigationEvent(event);
     });
