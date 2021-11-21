@@ -17,6 +17,7 @@ class XRouterDelegate extends RouterDelegate<String>
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
   final Function onDispose;
+  final List<MaterialPage> _pageStack = [];
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute(
@@ -49,12 +50,12 @@ class XRouterDelegate extends RouterDelegate<String>
     ];
     _setBrowserTitle(context, _activatedRoute.route.title);
     return Navigator(
+      key: const ValueKey('root_navigator'),
       pages: pages,
       onPopPage: (route, res) {
         pop();
         return route.didPop(res);
       },
-      key: navigatorKey,
     );
   }
 
@@ -70,6 +71,7 @@ class XRouterDelegate extends RouterDelegate<String>
         context,
         activatedRoute.parameters,
       ),
+      restorationId: route.pageKey.toString(),
     );
   }
 

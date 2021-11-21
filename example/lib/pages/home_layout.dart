@@ -32,6 +32,19 @@ class _HomeLayoutState extends State<HomeLayout>
       vsync: this,
       initialIndex: widget.index,
     );
+    navSubscription = XRouter.state.eventStream
+        .where((event) => event is NavigationEnd)
+        .cast<NavigationEnd>()
+        .listen((nav) {
+      if (nav.target.startsWith(AppRoutes.products) &&
+          _tabController.index != 1) {
+        _tabController.animateTo(1);
+      }
+      if (nav.target.startsWith(AppRoutes.dashboard) &&
+          _tabController.index != 0) {
+        _tabController.animateTo(0);
+      }
+    });
     super.initState();
   }
 

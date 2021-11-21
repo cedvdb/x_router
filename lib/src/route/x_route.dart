@@ -94,10 +94,11 @@ class XRoute {
     return 'XRoute(path: $path, matchChildren: $matchChildren, $builder: ${builder.runtimeType})';
   }
 
-  XRoute copyWith({
+  XRoute copyAsLoading({
     XPageBuilder? builder,
   }) {
     return XRoute(
+      pageKey: null,
       path: path,
       builder: builder ?? this.builder,
       matchChildren: matchChildren,

@@ -25,7 +25,7 @@ class XActivatedRouteBuilder {
     var topRoute = matchings.removeAt(0);
 
     if (resolved is XRouterResolveLoading) {
-      topRoute = topRoute.copyWith(builder: resolved.builder);
+      topRoute = topRoute.copyAsLoading(builder: resolved.builder);
     }
 
     final upstack = matchings
