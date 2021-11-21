@@ -9,7 +9,9 @@ class AuthService {
       BehaviorSubject<AuthStatus>.seeded(AuthStatus.unknown);
   late final Stream<AuthStatus> authStatus$ = _authStateSubj$.stream;
 
-  signIn() {
+  signIn() async {
+    _authStateSubj$.add(AuthStatus.unknown);
+    await Future.delayed(Duration(seconds: 2));
     _authStateSubj$.add(AuthStatus.authenticated);
   }
 

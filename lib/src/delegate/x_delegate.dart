@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_route.dart';
 
@@ -46,7 +47,7 @@ class XRouterDelegate extends RouterDelegate<String>
       // top
       _buildPage(context, _activatedRoute)
     ];
-
+    _setBrowserTitle(context, _activatedRoute.route.title);
     return Navigator(
       pages: pages,
       onPopPage: (route, res) {
@@ -63,6 +64,16 @@ class XRouterDelegate extends RouterDelegate<String>
   ) {
     final builder = activatedRoute.route.builder;
     return MaterialPage(child: builder(context, activatedRoute.parameters));
+  }
+
+  void _setBrowserTitle(BuildContext context, String? title) {
+    if (kIsWeb && title != null) {
+      SystemChrome.setApplicationSwitcherDescription(
+          ApplicationSwitcherDescription(
+        label: title,
+        primaryColor: Theme.of(context).primaryColor.value,
+      ));
+    }
   }
 
   pop() {

@@ -3,7 +3,6 @@ import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';
-import 'package:example/router/product_found_resolver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:x_router/x_router.dart';
 
@@ -18,10 +17,16 @@ class AppRoutes {
   static const signIn = '/sign-in';
 
   static final routes = [
-    XRoute(path: loading, builder: (ctx, params) => LoadingPage()),
-    XRoute(path: signIn, builder: (ctx, params) => SignInPage()),
+    XRoute(
+        title: 'sign in !',
+        path: signIn,
+        builder: (ctx, params) => SignInPage()),
     XRoute(path: home, builder: (ctx, params) => Container()),
-    XRoute(path: dashboard, builder: (ctx, params) => DashboardPage()),
+    XRoute(
+      title: 'dashboard',
+      path: dashboard,
+      builder: (ctx, params) => DashboardPage(),
+    ),
     XRoute(path: products, builder: (ctx, params) => ProductsPage()),
     XRoute(
       path: productDetail,

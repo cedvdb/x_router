@@ -51,11 +51,15 @@ class XRoute {
   /// {@macro resolvers}
   final List<XResolver> resolvers;
 
+  /// browser tab title
+  final String? title;
+
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
+    this.title,
     this.resolvers = const [],
     this.matchChildren = true,
   }) : _parser = XRoutePattern(path);

@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class LoadingPage extends StatelessWidget {
+  final String text;
+  const LoadingPage({required this.text});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('loading page'),
-      ),
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(text),
+            SizedBox(height: 20),
+            CircularProgressIndicator(),
+          ],
+        ),
       ),
     );
   }
