@@ -4,13 +4,13 @@ import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its upstack
 class XActivatedRoute {
-  /// the path of the route. eg: `/team/123/route/44`
-  final String path;
+  /// the requested path eg: `/team/123/route/44`
+  final String requestedPath;
 
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;
 
-  /// the part of the path that is matching. eg: `/team/123`
+  /// the part of the path that is matching the deepest route. eg: `/team/123`
   final String effectivePath;
 
   /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
@@ -25,8 +25,8 @@ class XActivatedRoute {
   final List<XActivatedRoute> upstack;
 
   XActivatedRoute({
-    required this.path,
     required this.route,
+    required this.requestedPath,
     required this.effectivePath,
     this.pathParameters = const {},
     this.queryParameters = const {},
@@ -41,13 +41,13 @@ class XActivatedRoute {
         path: '',
         builder: (ctx, params) => Container(),
       ),
-      path: '',
+      requestedPath: '',
       effectivePath: '',
     );
   }
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParameters, queryParameters: $queryParameters, upstack.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParameters, queryParameters: $queryParameters, upstack.length: ${upstack.length})';
   }
 }

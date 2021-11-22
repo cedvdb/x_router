@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
-import 'matchers.dart';
+import '../matchers.dart';
 
 void main() {
   group('Route', () {
@@ -45,7 +45,7 @@ void main() {
       expect(XRoutePattern('test/route').parse(' //test/route/ '), IsMatch());
     });
 
-    test('should match partial routes', () {
+    test('should match children', () {
       final path = '/test/route';
 
       expect(

@@ -1,27 +1,26 @@
-import 'dart:async';
-
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/state/x_router_events.dart';
-import 'package:x_router/src/state/x_router_state.dart';
 
 // responsible of keeping track of the history
 
 class XRouterHistory {
   final List<XActivatedRoute> _history = [];
-  StreamSubscription? _stateChangeSubscription;
 
-  XActivatedRoute? get previousRoute => _history.elementAt(1);
+  int get length => _history.length;
+
+  XActivatedRoute? get previousRoute =>
+      length > 1 ? _history.elementAt(_history.length - 2) : null;
 
   XRouterHistory();
 
-  listenToStateChanges() {
-    XRouterState.instance.eventStream
-        .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((event) => _history.insert(0, event.activatedRoute));
+  add(XActivatedRoute activatedRoute) {
+    _history.add(activatedRoute);
   }
 
-  dispose() {
-    _stateChangeSubscription?.cancel();
+  replaceLast(XActivatedRoute activatedRoute) {
+    _history[_history.length - 1] = activatedRoute;
+  }
+
+  removeLast() {
+    _history.removeLast();
   }
 }

@@ -66,7 +66,7 @@ class XActivatedRouteBuilder {
     _state.addEvent(ActivatedRouteBuildStart(target: path));
     final parsed = route.parse(path);
     final activatedRoute = XActivatedRoute(
-      path: path,
+      requestedPath: path,
       route: route,
       effectivePath: parsed.matchingPath,
       pathParameters: parsed.pathParameters,

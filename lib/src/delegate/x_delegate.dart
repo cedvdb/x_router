@@ -27,7 +27,7 @@ class XRouterDelegate extends RouterDelegate<String>
   });
 
   initRendering() {
-    currentConfiguration = _activatedRoute.path;
+    currentConfiguration = _activatedRoute.effectivePath;
     notifyListeners();
   }
 

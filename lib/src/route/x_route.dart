@@ -27,11 +27,11 @@ typedef XPageBuilder = Widget Function(
 /// {@endtemplate}
 ///
 /// {@template matchChildren}
-/// The [matchChildren] whether the path will match the child paths.
+/// The [matchChildren] represents whether the path will match the child paths.
 ///
 /// By default matchChildren is true, meaning that when we go to:
 /// `/products/:id`, the routes `/`, `/products` and `/products/:id` will be in the navigator
-/// stack when displaying `/products/123`. A little arrow ⬅ will be displayed in the app bar
+/// up stack when displaying `/products/123`. A little arrow ⬅ will be displayed in the app bar
 /// to go up the stack to `/products` then `/`.
 ///
 /// If `matchChildren: false` was added to the `/` route then the stack would be `/products`, `/products/:id`.
