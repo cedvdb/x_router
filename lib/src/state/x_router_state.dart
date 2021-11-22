@@ -15,18 +15,8 @@ class XRouterState {
       _eventController.stream.asBroadcastStream();
   final StreamController<XRouterEvent> _eventController = StreamController();
 
-  /// the current activated route
-  XActivatedRoute get activatedRoute => _activatedRoute;
-  XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
-
-  /// current url path
-  String get currentUrl => _activatedRoute.effectivePath;
-
   /// adds an event to the event stream
   void addEvent(XRouterEvent event) {
-    if (event is BuildEnd) {
-      _activatedRoute = event.activatedRoute;
-    }
     _eventController.add(event);
   }
 }

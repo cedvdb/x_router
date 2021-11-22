@@ -76,20 +76,17 @@ class UrlParsingEvent extends XRouterEvent {
 
 class UrlParsingStart extends UrlParsingEvent {
   final Map<String, String>? params;
-  final String currentUrl;
 
   const UrlParsingStart({
     required String target,
     required this.params,
-    required this.currentUrl,
   }) : super(target);
 
   @override
-  List<Object?> get props => [target, params, currentUrl];
+  List<Object?> get props => [target, params];
 
   @override
-  String toString() =>
-      'UrlParsingStart(target:$target, params: $params, currentUrl: $currentUrl)';
+  String toString() => 'UrlParsingStart(target:$target, params: $params,)';
 }
 
 class UrlParsingEnd extends UrlParsingEvent {

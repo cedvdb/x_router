@@ -44,7 +44,7 @@ class XRouter {
   }) {
     _resolver = XRouterResolver(
       // when the state of a reactive guard changes we resolve the current url
-      onStateChanged: () => goTo(state.currentUrl),
+      onStateChanged: () => goTo(_history.currentRoute.effectivePath),
       resolvers: resolvers,
     );
     // the page stack (activatedRoute) builder
@@ -78,8 +78,8 @@ class XRouter {
 
   /// goTo route above the current one in the page stack if any
   static void pop() {
-    if (state.activatedRoute.upstack.isNotEmpty) {
-      final up = state.activatedRoute.upstack.first;
+    if (_history.currentRoute.upstack.isNotEmpty) {
+      final up = _history.currentRoute.upstack.first;
       state.addEvent(
           NavigationPopStart(target: up.effectivePath, params: up.pathParams));
     }
@@ -111,7 +111,7 @@ class XRouter {
   }
 
   void _navigate(String target, Map<String, String>? params) {
-    final parsed = _parse(target, params, state.currentUrl);
+    final parsed = _parse(target, params);
     final resolved = _resolve(parsed, params);
     final activatedRoute =
         _buildStack(resolved.target, builderOverride: resolved.builderOverride);
@@ -121,12 +121,9 @@ class XRouter {
   }
 
   /// parses an url by setting its parameter
-  ///
-  /// if the url starts with ./ will parse relative to current route
-  String _parse(String target, Map<String, String>? params, String currentUrl) {
-    state.addEvent(UrlParsingStart(
-        target: target, params: params, currentUrl: currentUrl));
-    final parser = XRoutePattern.maybeRelative(target, currentUrl);
+  String _parse(String target, Map<String, String>? params) {
+    state.addEvent(UrlParsingStart(target: target, params: params));
+    final parser = XRoutePattern(target);
     final parsed = parser.addParameters(params);
     state.addEvent(UrlParsingEnd(target: target));
     return parsed;
