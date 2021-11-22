@@ -79,6 +79,12 @@ class _HomeLayoutState extends State<HomeLayout>
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () => XRouter.goTo(AppRoutes.preferences),
+            icon: Icon(Icons.settings),
+          )
+        ],
         bottom: TabBar(
           controller: _tabController,
           onTap: (index) => _navigate(index),
