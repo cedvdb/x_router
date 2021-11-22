@@ -16,14 +16,12 @@ class XRouterDelegate extends RouterDelegate<String>
 
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
-  final Function onDispose;
 
   /// the routes that we need to display
   XActivatedRoute get _activatedRoute => XRouterState.instance.activatedRoute;
 
   XRouterDelegate({
     required this.onNewRoute,
-    required this.onDispose,
   });
 
   initRendering() {
@@ -87,11 +85,5 @@ class XRouterDelegate extends RouterDelegate<String>
   Future<void> setNewRoutePath(String target) {
     onNewRoute(target);
     return SynchronousFuture(null);
-  }
-
-  @override
-  void dispose() {
-    onDispose();
-    super.dispose();
   }
 }

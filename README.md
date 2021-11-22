@@ -227,3 +227,8 @@ A series of resolvers are provided by the library:
  - XRedirect: to redirect a specific path
  - XSimpleResolver: A simple resolver for creating resolvers in line via its constructor
 
+
+
+# Why don't I need context to access the XRouter
+
+As stated in the core idea section, the page displayed is a function of the URL. There is only one URL.

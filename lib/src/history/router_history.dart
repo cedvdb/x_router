@@ -10,6 +10,8 @@ class XRouterHistory {
   XActivatedRoute? get previousRoute =>
       length > 1 ? _history.elementAt(_history.length - 2) : null;
 
+  bool get hasPreviousRoute => previousRoute != null;
+
   XRouterHistory();
 
   add(XActivatedRoute activatedRoute) {

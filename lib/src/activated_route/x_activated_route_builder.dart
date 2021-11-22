@@ -21,8 +21,8 @@ class XActivatedRouteBuilder {
   /// `[ProductDetailsPage, ProductsPage]`
   XActivatedRoute build(String target, {XPageBuilder? builderOverride}) {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
+    final isFound = matchings.isNotEmpty;
 
-    var isFound = matchings.length > 0;
     if (!isFound) {
       matchings = [XDefaultRoutes.notFoundRoute];
     }
@@ -34,10 +34,12 @@ class XActivatedRouteBuilder {
     }
 
     final upstack = matchings
-        .map((parentRoute) => _toActivatedRoute(
-              target,
-              parentRoute,
-            ))
+        .map(
+          (parentRoute) => _toActivatedRoute(
+            target,
+            parentRoute,
+          ),
+        )
         .toList();
 
     final activatedRoute = _toActivatedRoute(
