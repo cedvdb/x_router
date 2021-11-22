@@ -7,7 +7,7 @@ class ReactiveResolver extends XResolver<bool> {
   ReactiveResolver() : super(initialState: false);
 
   @override
-  Future<String> resolve(String target) async {
+  XResolverAction resolve(String target) async {
     if (state == true) {
       return '/true';
     }
