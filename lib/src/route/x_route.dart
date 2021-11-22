@@ -5,8 +5,7 @@ import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
-typedef XPageBuilder = Widget Function(
-    BuildContext context, Map<String, String> params);
+import 'x_page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user
 ///

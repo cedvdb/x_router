@@ -9,6 +9,7 @@ import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_events.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
+import 'route/x_page_builder.dart';
 import 'route_pattern/x_route_pattern.dart';
 
 /// Handles navigation

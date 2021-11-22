@@ -31,11 +31,6 @@ class Redirect extends XResolverAction {
   const Redirect(this.target);
 }
 
-class End extends XResolverAction {
-  final String target;
-  const End(this.target);
-}
-
 /// this is useful for not redirecting to a loading page when the state is unknow
 /// the canonical example is for authentication status
 ///

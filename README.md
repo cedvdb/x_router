@@ -1,37 +1,37 @@
 # x_router
 
-Flutter routing 2.0 requires a lot of setup. The goal of this package is to make that setup easy by providing a simpler API.
+The goal of this package is to make flutter navigation setup easy by providing a simple API.
+
+
+
 
 # Features
 
-  - Navigator 2.0
-  - Child / nested Routing
-  - Reactive Guards / resolvers
-  - Simple Api
 
-
-# Philosophy
+# Core idea
 
 Flutter brings web navigation and app navigation together with Navigator 2.0. 
 
 One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the icon ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an up button, usually the icon ⬅ at the top of the app bar, to navigate up in the stack of pages that are superimposed on each others. In this doc, the word **upstack** is used to refer to the stack of pages accessible when pressing ⬅.
 (for more information see https://developer.android.com/guide/navigation/navigation-principles)
 
-The philosophy of this package is to use the url to create the upstack. 
+The main idea of this package is that the __upstack is a function of the url__ 
+
+That is that for an url like `/products/123` we have a stack of two pages `[ProductsPage, ProductsDetailsPage]`
 
 Let's take this fairly common and complex scenario:
 
 ```
   '/loading' => user access this page when the authentication state is unknown
   '/sign-in' => user access this page when unauthenticated
-  '/sign-in/phone' => user can access this nested page when unauthenticated 
+  '/sign-in/verify_phone' => user can access this nested page when unauthenticated 
   '/create-profile' => when user is authenticated but doesn't have a profile 
   '/dashboard' => when the user is authenticated & has a profile, the dashboard
   '/products' => when the user is authenticated & has a profile and clicked on a menu item to see the products
   '/products/:id' => when the user wants to see a specific product
 ```
 
-In this scenario it is apparent that the **upstack** can be defined as a function of the url path where each segment is a screen in the stack.
+In this scenario it is apparent that the **upstack** can be defined as a function of the url path where each segment of the path is a screen in the stack.
 For example when on the '/products/:id' route the **upstack** will look like this:
 
 ```
@@ -43,6 +43,14 @@ This is the approach this library takes to create the **upstack** by default.
 
 # Usage
 
+  - simple api
+  - router history
+  - redirection
+  - reactive guards
+  - tab support
+  - tested
+
+
 ## Simple usage
 
 A very simple routing scenario might look like this:
@@ -51,11 +59,11 @@ A very simple routing scenario might look like this:
 
 XRouter(
   routes: [
-    XRoute( path: '/dashboard, builder: (ctx, params) => DashboardPage()),
-    XRoute( path: '/products', builder: (ctx, params) => ProductsPage()),
+    XRoute( path: '/dashboard, builder: (ctx, activatedRoute) => DashboardPage()),
+    XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
     XRoute(
       path: '/products/:id',
-      builder: (ctx, params) => ProductDetailsPage(params['id']),
+      builder: (ctx, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
     ),
   ],
 );
@@ -79,24 +87,24 @@ final router = XRouter(
     ),
     XRoute(
       path: AppRoutes.dashboard,
-      builder: (ctx, params) => DashboardPage(),
+      builder: (_, __) => DashboardPage(),
     ),
     XRoute(
       path: AppRoutes.products,
-      builder: (ctx, params) => ProductsPage(),
+      builder: (_, __) => ProductsPage(),
     ),
     XRoute(
       resolvers: [ProductExists]
       path: AppRoutes.productDetail,
-      builder: (ctx, params) => ProductDetailsPage(params['id']),
+      builder: (_, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
     ),
     XRoute(
       path: AppRoutes.loading,
-      builder: (ctx, params) => LoadingPage(),
+      builder: (_, __) => LoadingPage(),
     ),
     XRoute(
       path: AppRoutes.signIn,
-      builder: (ctx, params) => SignInPage(),
+      builder: (_, __) => SignInPage(),
     )
   ],
   // onEvent: (ev) => print(ev),
@@ -132,8 +140,7 @@ For navigation you can use the static method `XRoute.goTo(location)`
   XRouter.goTo('/products/:id', params: { 'id': '123x' });
 ```
 
-While the first way is more common in routers, the second way of putting parameters separately can be useful if you have your routes
-is a static class:
+While the first way is more common in routers, the second way of putting parameters separately can be useful if you have your routes in a static class:
 
 ```
   XRouter.goTo(AppRoute.productDetails, params: { 'id': '123x' });
@@ -219,30 +226,4 @@ A series of resolvers are provided by the library:
  - XNotFoundResolver: to redirect when no route is found
  - XRedirect: to redirect a specific path
  - XSimpleResolver: A simple resolver for creating resolvers in line via its constructor
-
-
-# Child Router (alpha)
-
-To create a child router use the XRouter.child constructor and add it to the parent:
-
-```
-final childRouter = XRouter.child(
-  basePath: '/products/:id',
-  routes: [
-    XRoute(path: '/products/:id/info', builder: (_, __) => ProductInfo()),
-    XRoute(
-      path: '/products/:id/comments',
-      builder: (_, __) => ProductComments(),
-    ),
-  ],
-)
-```
-
-and add it to the router
-
-```dart
-
-XRouter(...)
-  ..addChildren([childRouter])
-```
 
