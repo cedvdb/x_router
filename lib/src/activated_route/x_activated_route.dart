@@ -11,8 +11,13 @@ class XActivatedRoute {
   /// the part of the path that is matching. eg: `/team/123`
   final String effectivePath;
 
-  /// parameters found in the route
-  final Map<String, String> parameters;
+  /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
+  /// parameters = { 'id': '123' }
+  final Map<String, String> pathParameters;
+
+  /// parameters found in the path, eg: for /products?orderBy=creationDate
+  /// queryParameters = { 'orderBy': 'creationDate' }
+  final Map<String, String> queryParameters;
 
   /// the parents matching routes, the upstack
   final List<XActivatedRoute> upstack;
@@ -21,12 +26,13 @@ class XActivatedRoute {
     required this.path,
     required this.route,
     required this.effectivePath,
-    this.parameters = const {},
+    this.pathParameters = const {},
+    this.queryParameters = const {},
     this.upstack = const [],
   });
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $path, route: ${route.path}, effectivePath: $effectivePath, parameters: $parameters, upstack.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $path, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParameters, queryParameters: $queryParameters, upstack.length: ${upstack.length})';
   }
 }

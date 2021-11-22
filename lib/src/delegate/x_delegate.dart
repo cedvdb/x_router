@@ -60,7 +60,7 @@ class XRouterDelegate extends RouterDelegate<String>
       key: route.pageKey,
       child: builder(
         context,
-        activatedRoute.parameters,
+        activatedRoute.pathParameters,
       ),
       restorationId: route.pageKey.toString(),
     );

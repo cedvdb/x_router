@@ -133,6 +133,7 @@ class XRouter {
     XActivatedRoute activatedRoute;
     activatedRoute = _activatedRouteBuilder.add(
       target,
+      [state.activatedRoute, ...state.activatedRoute.upstack],
       builderOverride: builderOverride,
     );
     state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));

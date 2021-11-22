@@ -48,11 +48,14 @@ class XActivatedRouteBuilder {
   }
 
   /// adds an entry to the current page stack
-  XActivatedRoute add(String target, {XPageBuilder? builderOverride}) {
-    final current = _state.activatedRoute;
+  XActivatedRoute add(
+    String target,
+    List<XActivatedRoute> upstack, {
+    XPageBuilder? builderOverride,
+  }) {
     final matchings = _getOrderedPartiallyMatchingRoutes(target);
     final route = matchings.removeAt(0);
-    return _toActivatedRoute(target, route, [current, ...current.upstack]);
+    return _toActivatedRoute(target, route, upstack);
   }
 
   XActivatedRoute _toActivatedRoute(
@@ -66,7 +69,8 @@ class XActivatedRouteBuilder {
       path: path,
       route: route,
       effectivePath: parsed.matchingPath,
-      parameters: parsed.parameters,
+      pathParameters: parsed.pathParameters,
+      queryParameters: parsed.queryParameters,
       upstack: upstack,
     );
     _state.addEvent(
