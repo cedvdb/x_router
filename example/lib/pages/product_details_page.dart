@@ -14,13 +14,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('product details (Nested routing)')),
+      appBar: AppBar(title: Text('product details: ${widget.product!.name}')),
       body: Center(
-        child: Card(
-          child: widget.product != null
-              ? Text(widget.product!.name)
-              : Text('unknwon product'),
-        ),
+        child: widget.product != null
+            ? Text(widget.product!.name)
+            : Text('unknwon product'),
       ),
     );
   }

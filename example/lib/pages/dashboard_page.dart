@@ -1,3 +1,4 @@
+import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -16,12 +17,19 @@ class DashboardPage extends StatelessWidget {
                 'Content of the example:',
                 style: Theme.of(context).textTheme.headline5,
               ),
-              Text(
-                  '- Authentication resolver: When logging out via the drawer we are redirected'),
-              Text('- Child / nested router in products details page'),
+              Text('- Authentication resolver: When logging we are redirected'),
+              Text('- Tabs change url'),
               Text('- Passing parameters in product details page'),
               Text('- When route is not found we are redirected to home'),
               Text('- Redirection of home route towards /dashboard'),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () => AuthService.instance.signOut(),
+                  child: Text(
+                    'Sing out',
+                  ))
             ],
           ),
         ),

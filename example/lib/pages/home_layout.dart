@@ -9,11 +9,9 @@ import 'package:x_router/x_router.dart';
 
 class HomeLayout extends StatefulWidget {
   final String title;
-  final int index;
   const HomeLayout({
     Key? key,
     required this.title,
-    required this.index,
   }) : super(key: key);
 
   @override
@@ -31,7 +29,6 @@ class _HomeLayoutState extends State<HomeLayout>
     _tabController = TabController(
       length: 3,
       vsync: this,
-      // initialIndex: widget.index,
     );
     navSubscription = XRouter.state.eventStream
         .where((event) => event is NavigationEnd)
@@ -71,6 +68,8 @@ class _HomeLayoutState extends State<HomeLayout>
       XRouter.goTo(AppRoutes.dashboard);
     } else if (index == 1) {
       XRouter.goTo(AppRoutes.products);
+    } else if (index == 2) {
+      XRouter.goTo(AppRoutes.favorites);
     }
   }
 

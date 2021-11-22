@@ -1,4 +1,5 @@
 import 'package:example/pages/loading_page.dart';
+import 'package:example/pages/preferences_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
@@ -29,26 +30,27 @@ class AppRoutes {
       builder: (ctx, route) => SignInPage(),
     ),
     XRoute(
+      path: AppRoutes.preferences,
+      builder: (ctx, route) => PreferencesPage(),
+    ),
+    XRoute(
       title: 'dashboard',
       path: dashboard,
       builder: (ctx, route) => HomeLayout(
-        index: 0,
         title: 'dashboard',
+      ),
+    ),
+    XRoute(
+      path: favorites,
+      builder: (ctx, route) => HomeLayout(
+        title: 'favorites',
       ),
     ),
     XRoute(
       path: products,
       title: 'products',
       builder: (ctx, route) => HomeLayout(
-        index: 1,
         title: 'products',
-      ),
-    ),
-    XRoute(
-      path: favorites,
-      builder: (ctx, route) => HomeLayout(
-        index: 2,
-        title: 'favorites',
       ),
     ),
     XRoute(
