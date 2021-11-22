@@ -72,8 +72,8 @@ class XActivatedRouteBuilder {
       requestedPath: path,
       route: route,
       effectivePath: parsed.matchingPath,
-      pathParameters: parsed.pathParameters,
-      queryParameters: parsed.queryParameters,
+      pathParams: parsed.pathParameters,
+      queryParams: parsed.queryParameters,
       upstack: upstack,
     );
     _state.addEvent(

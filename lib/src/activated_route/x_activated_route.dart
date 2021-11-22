@@ -16,11 +16,11 @@ class XActivatedRoute with EquatableMixin {
 
   /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
   /// parameters = { 'id': '123' }
-  final Map<String, String> pathParameters;
+  final Map<String, String> pathParams;
 
   /// parameters found in the path, eg: for /products?orderBy=creationDate
   /// queryParameters = { 'orderBy': 'creationDate' }
-  final Map<String, String> queryParameters;
+  final Map<String, String> queryParams;
 
   /// the parents matching routes, the upstack
   final List<XActivatedRoute> upstack;
@@ -29,8 +29,8 @@ class XActivatedRoute with EquatableMixin {
     required this.route,
     required this.requestedPath,
     required this.effectivePath,
-    this.pathParameters = const {},
-    this.queryParameters = const {},
+    this.pathParams = const {},
+    this.queryParams = const {},
     this.upstack = const [],
   });
 
@@ -53,7 +53,7 @@ class XActivatedRoute with EquatableMixin {
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParameters, queryParameters: $queryParameters, upstack.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParams, queryParameters: $queryParams, upstack.length: ${upstack.length})';
   }
 
   @override
@@ -61,8 +61,8 @@ class XActivatedRoute with EquatableMixin {
         requestedPath,
         route,
         effectivePath,
-        pathParameters,
-        queryParameters,
+        pathParams,
+        queryParams,
         upstack,
       ];
 }
