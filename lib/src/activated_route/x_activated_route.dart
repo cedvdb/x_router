@@ -1,9 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its upstack
-class XActivatedRoute {
+class XActivatedRoute with EquatableMixin {
   /// the requested path eg: `/team/123/route/44`
   final String requestedPath;
 
@@ -50,4 +51,14 @@ class XActivatedRoute {
   String toString() {
     return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParameters, queryParameters: $queryParameters, upstack.length: ${upstack.length})';
   }
+
+  @override
+  List<Object?> get props => [
+        requestedPath,
+        route,
+        effectivePath,
+        pathParameters,
+        queryParameters,
+        upstack,
+      ];
 }

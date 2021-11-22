@@ -1,10 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
-abstract class XRouterEvent {
+abstract class XRouterEvent with EquatableMixin {
   final String target;
 
   const XRouterEvent(this.target);
+
+  @override
+  List<Object?> get props => [target];
 
   @override
   String toString() => '$runtimeType(target: $target)';
@@ -26,6 +30,9 @@ class NavigationStart extends NavigationEvent {
   }) : super(target);
 
   @override
+  List<Object?> get props => [target, params, forcePush];
+
+  @override
   String toString() =>
       'NavigationStart(target: $target, params: $params, forcePush: $forcePush)';
 }
@@ -35,6 +42,12 @@ class NavigationEnd extends NavigationEvent {
   NavigationEnd({
     required this.activatedRoute,
   }) : super(activatedRoute.effectivePath);
+
+  @override
+  List<Object?> get props => [target, activatedRoute];
+
+  @override
+  String toString() => 'NavigationEnd(activatedRoute: $activatedRoute)';
 }
 
 // url parsing
@@ -51,6 +64,9 @@ class UrlParsingStart extends UrlParsingEvent {
     required this.params,
     required this.currentUrl,
   }) : super(target);
+
+  @override
+  List<Object?> get props => [target, params, currentUrl];
 
   @override
   String toString() =>
@@ -73,6 +89,8 @@ class ResolvingStart extends ResolvingEvent {
 class ResolvingEnd extends ResolvingEvent {
   final XRouterResolveResult result;
   ResolvingEnd(this.result) : super(result.target);
+  @override
+  List<Object?> get props => [target, result];
 }
 
 // build
@@ -94,4 +112,6 @@ class BuildEnd extends BuildEvent {
   @override
   String toString() =>
       'BuildEnd(target: $target, activatedRoute: $activatedRoute)';
+  @override
+  List<Object?> get props => [target, activatedRoute];
 }
