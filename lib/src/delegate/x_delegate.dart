@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/history/router_history.dart';
-import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -18,13 +16,16 @@ class XRouterDelegate extends RouterDelegate<String>
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
 
+  /// the routes that we need to display
+  XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
 
   XRouterDelegate({
     required this.onNewRoute,
   });
 
   initRendering(XActivatedRoute activatedRoute) {
-    currentConfiguration = ;
+    currentConfiguration = activatedRoute.effectivePath;
+    _activatedRoute = activatedRoute;
     notifyListeners();
   }
 
@@ -75,14 +76,14 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   pop() {
-    if (_activatedRoute.upstack.length >= 1) {
+    if (_activatedRoute.upstack.isNotEmpty) {
       setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
     }
   }
 
   @override
-  Future<void> setNewRoutePath(String target) {
-    onNewRoute(target);
+  Future<void> setNewRoutePath(String configuration) {
+    onNewRoute(configuration);
     return SynchronousFuture(null);
   }
 }

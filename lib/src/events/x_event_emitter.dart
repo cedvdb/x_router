@@ -1,14 +1,12 @@
 import 'dart:async';
 
-import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/state/x_router_events.dart';
-import 'package:x_router/x_router.dart';
+import 'package:x_router/src/events/x_router_events.dart';
 
 /// Keeps track of the router state
-class XRouterState {
+class XEventEmitter {
   // singleton
-  static final XRouterState instance = XRouterState._();
-  XRouterState._();
+  static final XEventEmitter instance = XEventEmitter._();
+  XEventEmitter._();
 
   /// Streams all router events
   late final Stream<XRouterEvent> eventStream =

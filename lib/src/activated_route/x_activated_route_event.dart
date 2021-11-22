@@ -1,5 +1,5 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/state/x_router_events.dart';
+import 'package:x_router/src/events/x_router_events.dart';
 
 class ActivatedRouteBuildStart extends BuildEvent {
   ActivatedRouteBuildStart({

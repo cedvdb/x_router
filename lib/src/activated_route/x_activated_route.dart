@@ -25,7 +25,7 @@ class XActivatedRoute with EquatableMixin {
   /// the parents matching routes, the upstack
   final List<XActivatedRoute> upstack;
 
-  XActivatedRoute({
+  const XActivatedRoute({
     required this.route,
     required this.requestedPath,
     required this.effectivePath,

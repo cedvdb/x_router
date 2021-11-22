@@ -30,7 +30,7 @@ class _HomeLayoutState extends State<HomeLayout>
       length: 3,
       vsync: this,
     );
-    navSubscription = XRouter.state.eventStream
+    navSubscription = XRouter._eventEmitter.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((nav) {

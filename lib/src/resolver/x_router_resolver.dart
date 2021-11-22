@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/state/x_router_state.dart';
 
 import 'x_resolver_event.dart';
 
 class XRouterResolver {
   final List<XResolver> resolvers;
   final void Function() onStateChanged;
-  final XRouterState _routerState = XRouterState.instance;
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
   List<StreamSubscription> _resolversSubscriptions = [];
 
   XRouterResolver({
@@ -69,11 +69,11 @@ class XRouterResolver {
     XResolver resolver,
     String path,
   ) {
-    _routerState
+    _eventEmitter
         .addEvent(ResolverResolveStart(resolver: resolver, target: path));
 
     final resolved = resolver.resolve(path);
-    _routerState.addEvent(ResolverResolveEnd(
+    _eventEmitter.addEvent(ResolverResolveEnd(
         resolver: resolver, target: path, resolved: resolved));
     return resolved;
   }

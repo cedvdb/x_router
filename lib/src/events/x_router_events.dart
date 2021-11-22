@@ -17,13 +17,13 @@ abstract class XRouterEvent with EquatableMixin {
 
 // navigation
 class NavigationEvent extends XRouterEvent {
-  const NavigationEvent(String target) : super(target);
+  NavigationEvent(String target) : super(target);
 }
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
 
-  const NavigationStart({
+  NavigationStart({
     required String target,
     required this.params,
   }) : super(target);
@@ -36,28 +36,28 @@ class NavigationStart extends NavigationEvent {
 }
 
 class NavigationReplaceStart extends NavigationStart {
-  const NavigationReplaceStart({
+  NavigationReplaceStart({
     required String target,
     required Map<String, String>? params,
   }) : super(target: target, params: params);
 }
 
 class NavigationBackStart extends NavigationStart {
-  const NavigationBackStart({
+  NavigationBackStart({
     required String target,
     required Map<String, String>? params,
   }) : super(target: target, params: params);
 }
 
 class NavigationPopStart extends NavigationStart {
-  const NavigationPopStart({
+  NavigationPopStart({
     required String target,
     required Map<String, String>? params,
   }) : super(target: target, params: params);
 }
 
 class NavigationEnd extends NavigationEvent {
-  XActivatedRoute activatedRoute;
+  final XActivatedRoute activatedRoute;
   NavigationEnd({
     required this.activatedRoute,
   }) : super(activatedRoute.effectivePath);
@@ -71,13 +71,13 @@ class NavigationEnd extends NavigationEvent {
 
 // url parsing
 class UrlParsingEvent extends XRouterEvent {
-  const UrlParsingEvent(String target) : super(target);
+  UrlParsingEvent(String target) : super(target);
 }
 
 class UrlParsingStart extends UrlParsingEvent {
   final Map<String, String>? params;
 
-  const UrlParsingStart({
+  UrlParsingStart({
     required String target,
     required this.params,
   }) : super(target);
@@ -90,16 +90,16 @@ class UrlParsingStart extends UrlParsingEvent {
 }
 
 class UrlParsingEnd extends UrlParsingEvent {
-  const UrlParsingEnd({required String target}) : super(target);
+  UrlParsingEnd({required String target}) : super(target);
 }
 
 // resolving
 class ResolvingEvent extends XRouterEvent {
-  const ResolvingEvent(String target) : super(target);
+  ResolvingEvent(String target) : super(target);
 }
 
 class ResolvingStart extends ResolvingEvent {
-  const ResolvingStart({required String target}) : super(target);
+  ResolvingStart({required String target}) : super(target);
 }
 
 class ResolvingEnd extends ResolvingEvent {
@@ -111,7 +111,7 @@ class ResolvingEnd extends ResolvingEvent {
 
 // build
 class BuildEvent extends XRouterEvent {
-  const BuildEvent(String target) : super(target);
+  BuildEvent(String target) : super(target);
 }
 
 class BuildStart extends BuildEvent {

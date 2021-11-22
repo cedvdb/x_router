@@ -2,14 +2,13 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
+import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/history/router_history.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_route.dart';
-import 'package:x_router/src/state/x_router_events.dart';
-import 'package:x_router/src/state/x_router_state.dart';
-
+import 'events/x_router_events.dart';
 import 'route/x_page_builder.dart';
 import 'route_pattern/x_route_pattern.dart';
 
@@ -17,13 +16,17 @@ import 'route_pattern/x_route_pattern.dart';
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
-  /// the current state of the navigation, with event stream
-  static final XRouterState state = XRouterState.instance;
+  /// emits the different steps of the navigation with event stream
+  static final XEventEmitter _eventEmitter = XEventEmitter.instance;
+
+  /// streams all router event
+  static Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
 
   /// chronological history
   static final XRouterHistory _history = XRouterHistory();
 
-  /// For flutter Router 2: responsible of resolving a string path to (maybe) another
+  /// For flutter Router: responsible of resolving a string path to (maybe) another
+  /// data representation.
   final XRouteInformationParser informationParser = XRouteInformationParser();
 
   /// renderer
@@ -51,7 +54,7 @@ class XRouter {
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,
     );
-    state.eventStream.listen((event) {
+    _eventEmitter.eventStream.listen((event) {
       onEvent?.call(event);
       _onNavigationEvent(event);
     });
@@ -66,21 +69,22 @@ class XRouter {
     Map<String, String>? params,
   }) {
     // event emitted so the XRouter instance can take care of it
-    state.addEvent(NavigationStart(target: target, params: params));
+    _eventEmitter.addEvent(NavigationStart(target: target, params: params));
   }
 
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
   static void replace(String target, {Map<String, String>? params}) {
-    state.addEvent(NavigationReplaceStart(target: target, params: params));
+    _eventEmitter
+        .addEvent(NavigationReplaceStart(target: target, params: params));
   }
 
   /// goTo route above the current one in the page stack if any
   static void pop() {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
-      state.addEvent(
+      _eventEmitter.addEvent(
           NavigationPopStart(target: up.effectivePath, params: up.pathParams));
     }
   }
@@ -89,7 +93,7 @@ class XRouter {
   static void back() {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
-      state.addEvent(
+      _eventEmitter.addEvent(
         NavigationBackStart(
           target: previousRoute.effectivePath,
           params: previousRoute.pathParams,
@@ -117,39 +121,40 @@ class XRouter {
         _buildStack(resolved.target, builderOverride: resolved.builderOverride);
     _history.add(activatedRoute);
     _render(activatedRoute);
-    state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
+    _eventEmitter.addEvent(NavigationEnd(activatedRoute: activatedRoute));
   }
 
   /// parses an url by setting its parameter
   String _parse(String target, Map<String, String>? params) {
-    state.addEvent(UrlParsingStart(target: target, params: params));
+    _eventEmitter.addEvent(UrlParsingStart(target: target, params: params));
     final parser = XRoutePattern(target);
     final parsed = parser.addParameters(params);
-    state.addEvent(UrlParsingEnd(target: target));
+    _eventEmitter.addEvent(UrlParsingEnd(target: target));
     return parsed;
   }
 
   /// goes through all resolvers to see the final endpoint after redirection
   XRouterResolveResult _resolve(String target, Map<String, String>? params) {
-    state.addEvent(ResolvingStart(target: target));
+    _eventEmitter.addEvent(ResolvingStart(target: target));
     final resolved = _resolver.resolve(target, params);
-    state.addEvent(ResolvingEnd(resolved));
+    _eventEmitter.addEvent(ResolvingEnd(resolved));
     return resolved;
   }
 
   /// builds the page stack
   XActivatedRoute _buildStack(String target, {XPageBuilder? builderOverride}) {
-    state.addEvent(BuildStart(target: target));
+    _eventEmitter.addEvent(BuildStart(target: target));
     final activatedRoute = _activatedRouteBuilder.build(
       target,
       builderOverride: builderOverride,
     );
-    state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
+    _eventEmitter
+        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 
   /// renders page stack on screen
   void _render(XActivatedRoute activatedRoute) {
-    delegate.initRendering();
+    delegate.initRendering(activatedRoute);
   }
 }
