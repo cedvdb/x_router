@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:example/main.dart';
 import 'package:example/pages/dashboard_page.dart';
+import 'package:example/pages/favorites_page.dart';
 import 'package:example/pages/products_page.dart';
-import 'package:example/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
@@ -43,6 +44,10 @@ class _HomeLayoutState extends State<HomeLayout>
       if (nav.target.startsWith(AppRoutes.dashboard) &&
           _tabController.index != 0) {
         _tabController.animateTo(0);
+      }
+      if (nav.target.startsWith(AppRoutes.favorites) &&
+          _tabController.index != 2) {
+        _tabController.animateTo(2);
       }
     });
     super.initState();
@@ -89,7 +94,7 @@ class _HomeLayoutState extends State<HomeLayout>
         children: [
           DashboardPage(),
           ProductsPage(),
-          ProductsPage(),
+          FavoritesPage(),
         ],
       ),
     );

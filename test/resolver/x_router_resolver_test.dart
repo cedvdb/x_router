@@ -26,21 +26,16 @@ void main() {
         path: '/redirected',
         builder: (context, params) => Container(),
       ),
-      XRoute(
-        path: '/route-resolvers',
-        builder: (context, params) => Container(),
-        resolvers: [
-          XSimpleResolver((target) async {
-            return '/success';
-          }),
-        ],
-      )
     ];
 
     test('RedirectResolver', () async {
       final redirectResolver = XRedirectResolver(from: '/', to: '/dashboard');
+      final redirectWithParamsResolver =
+          XRedirectResolver(from: '/products/:id', to: '/products/:id/info');
       expect(redirectResolver.resolve('/'), equals('/dashboard'));
       expect(redirectResolver.resolve('/other'), equals('/other'));
+      expect(redirectWithParamsResolver.resolve('/products/123'),
+          equals('/products/123/info'));
     });
 
     test(
@@ -59,11 +54,11 @@ void main() {
         equals('/redirected'),
       );
       expect(
-        await notFoundResolver.resolve('/redirected'),
+        notFoundResolver.resolve('/redirected'),
         equals('/redirected'),
       );
       expect(
-        await notFoundResolver.resolve('/not-found'),
+        notFoundResolver.resolve('/not-found'),
         equals('/redirected'),
       );
     });
@@ -93,7 +88,7 @@ void main() {
         // state change is async
         await Future.value(true);
         expect(stateChangeCalled, equals(true));
-        expect(await routerResolver.resolve('/target'), equals('/true'));
+        expect(routerResolver.resolve('/target'), equals('/true'));
       },
     );
 
@@ -111,16 +106,10 @@ void main() {
             )
           ]);
 
-        expect(await routerResolver.resolve('/route'), equals('/true'));
-        expect(await routerResolver.resolve('/route/child'), equals('/true'));
-        expect(await routerResolver.resolve('/not-route'), isNot('/true'));
+        expect(routerResolver.resolve('/route'), equals('/true'));
+        expect(routerResolver.resolve('/route/child'), equals('/true'));
+        expect(routerResolver.resolve('/not-route'), isNot('/true'));
       },
     );
-  });
-
-  test(
-      'Route resolver should only notify state change when we are on their path',
-      () {
-    // todo
   });
 }

@@ -36,7 +36,7 @@ class Redirect extends XResolverAction with EquatableMixin {
   final String target;
   const Redirect(this.target);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [target];
 }
 
 /// this is useful for not redirecting to a loading page when the state is unknow
@@ -50,5 +50,5 @@ class Loading extends XResolverAction with EquatableMixin {
   final Widget loadingScreen;
   const Loading(this.loadingScreen);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [loadingScreen];
 }

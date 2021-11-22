@@ -24,11 +24,10 @@ class XRouter {
   static final XRouterHistory _history = XRouterHistory();
 
   /// For flutter Router 2: responsible of resolving a string path to (maybe) another
-  static final XRouteInformationParser informationParser =
-      XRouteInformationParser();
+  final XRouteInformationParser informationParser = XRouteInformationParser();
 
   /// renderer
-  static final XRouterDelegate delegate = XRouterDelegate(
+  final XRouterDelegate delegate = XRouterDelegate(
     onNewRoute: (path) => goTo(path),
   );
 
@@ -47,7 +46,6 @@ class XRouter {
       // when the state of a reactive guard changes we resolve the current url
       onStateChanged: () => goTo(state.currentUrl),
       resolvers: resolvers,
-      routes: routes,
     );
     // the page stack (activatedRoute) builder
     _activatedRouteBuilder = XActivatedRouteBuilder(
@@ -112,12 +110,9 @@ class XRouter {
     }
   }
 
-  void _navigate(
-    String target,
-    Map<String, String>? params,
-  ) {
+  void _navigate(String target, Map<String, String>? params) {
     final parsed = _parse(target, params, state.currentUrl);
-    final resolved = _resolve(parsed);
+    final resolved = _resolve(parsed, params);
     final activatedRoute =
         _buildStack(resolved.target, builderOverride: resolved.builderOverride);
     _history.add(activatedRoute);
@@ -138,9 +133,9 @@ class XRouter {
   }
 
   /// goes through all resolvers to see the final endpoint after redirection
-  XRouterResolveResult _resolve(String target) {
+  XRouterResolveResult _resolve(String target, Map<String, String>? params) {
     state.addEvent(ResolvingStart(target: target));
-    final resolved = _resolver.resolve(target);
+    final resolved = _resolver.resolve(target, params);
     state.addEvent(ResolvingEnd(resolved));
     return resolved;
   }

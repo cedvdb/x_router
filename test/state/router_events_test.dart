@@ -31,18 +31,6 @@ void main() {
           ),
         ),
       );
-      expect(
-        const ev.NavigationPushStart(
-          target: 'target',
-          params: {'param': '1'},
-        ),
-        equals(
-          const ev.NavigationPushStart(
-            target: 'target',
-            params: {'param': '1'},
-          ),
-        ),
-      );
 
       expect(
         const ev.NavigationReplaceStart(

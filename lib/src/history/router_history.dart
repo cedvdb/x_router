@@ -5,6 +5,7 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 class XRouterHistory extends Iterable<XActivatedRoute> {
   final List<XActivatedRoute> _history = [];
 
+  // TODO  this is also on state
   XActivatedRoute get currentRoute =>
       _history.isNotEmpty ? _history.last : XActivatedRoute.nulled();
   XActivatedRoute? get previousRoute =>
@@ -17,7 +18,7 @@ class XRouterHistory extends Iterable<XActivatedRoute> {
   XRouterHistory();
 
   add(XActivatedRoute activatedRoute) {
-    if (activatedRoute.effectivePath != currentRoute?.effectivePath) {
+    if (activatedRoute.effectivePath != currentRoute.effectivePath) {
       _history.add(activatedRoute);
     }
   }

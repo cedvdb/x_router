@@ -49,9 +49,6 @@ class XRoute {
   /// {@macro matchChildren}
   final bool matchChildren;
 
-  /// {@macro resolvers}
-  final List<XResolver> resolvers;
-
   /// browser tab title
   final String? title;
 
@@ -62,7 +59,6 @@ class XRoute {
     required this.builder,
     this.pageKey,
     this.title,
-    this.resolvers = const [],
     this.matchChildren = true,
   }) : _parser = XRoutePattern(path);
 
@@ -71,9 +67,7 @@ class XRoute {
   /// if [matchChildren] isn't specified the matchChildren of property this route is used, which is true by default
   /// {@macro matchType}
   bool match(String path, {bool? matchChildren}) {
-    if (matchChildren == null) {
-      matchChildren = this.matchChildren;
-    }
+    matchChildren ??= this.matchChildren;
     return _parser.match(path, matchChildren: matchChildren);
   }
 
@@ -82,9 +76,7 @@ class XRoute {
   /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
   /// {@macro matchType}
   XParsingResult parse(String path, {bool? matchChildren}) {
-    if (matchChildren == null) {
-      matchChildren = this.matchChildren;
-    }
+    matchChildren ??= this.matchChildren;
     return _parser.parse(path, matchChildren: matchChildren);
   }
 
@@ -101,7 +93,6 @@ class XRoute {
       path: path,
       builder: builder ?? this.builder,
       matchChildren: matchChildren,
-      resolvers: resolvers,
     );
   }
 }

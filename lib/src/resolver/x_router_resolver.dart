@@ -2,40 +2,21 @@ import 'dart:async';
 
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
 import 'x_resolver_event.dart';
 
 class XRouterResolver {
-  List<XResolver> _resolvers = [];
-  final void Function() _onStateChanged;
+  final List<XResolver> resolvers;
+  final void Function() onStateChanged;
   final XRouterState _routerState = XRouterState.instance;
   List<StreamSubscription> _resolversSubscriptions = [];
 
   XRouterResolver({
-    required void Function() onStateChanged,
-    required List<XRoute> routes,
-    required List<XResolver> resolvers,
-  }) : _onStateChanged = onStateChanged {
-    _resolvers.addAll(resolvers);
-    _resolvers.addAll(_getRoutesResolvers(routes));
+    required this.onStateChanged,
+    required this.resolvers,
+  }) {
     _resolversSubscriptions = _listenResolversStateChanges(resolvers);
-  }
-
-  /// gets the resolvers from the routes
-  List<XResolver> _getRoutesResolvers(List<XRoute> routes) {
-    routes = routes
-        // we are only interested in routes that have resolvers
-        .where((route) => route.resolvers.isNotEmpty)
-        .toList()
-      // sorting the routes by path length so children are after parents.
-      ..sort((a, b) => a.path.length.compareTo(b.path.length));
-    final routesResolvers = routes.fold<List<XResolver>>(
-      [],
-      (previousValue, route) => previousValue..addAll(route.resolvers),
-    ).toList();
-    return routesResolvers;
   }
 
   /// resolve target path against the list of resolvers
@@ -44,14 +25,15 @@ class XRouterResolver {
   /// the calls attribute is to keep track of the number of times this fn
   /// was called recursively
   XRouterResolveResult resolve(
-    String path, {
+    String path,
+    Map<String, String>? params, {
     bool isRedirect = false,
     int calls = 0,
   }) {
     _checkInfiniteLoop(calls);
     var next = path;
 
-    for (final resolver in _resolvers) {
+    for (final resolver in resolvers) {
       final resolved = _useResolver(resolver, next);
 
       if (resolved is Loading) {
@@ -69,6 +51,7 @@ class XRouterResolver {
       if (resolved is Redirect) {
         return resolve(
           resolved.target,
+          params,
           isRedirect: true,
           calls: calls + 1,
         );
@@ -82,7 +65,10 @@ class XRouterResolver {
   }
 
   /// resolve path against a specific resolver
-  XResolverAction _useResolver(XResolver resolver, String path) {
+  XResolverAction _useResolver(
+    XResolver resolver,
+    String path,
+  ) {
     _routerState
         .addEvent(ResolverResolveStart(resolver: resolver, target: path));
 
@@ -107,11 +93,13 @@ class XRouterResolver {
   List<StreamSubscription> _listenResolversStateChanges(
       List<XResolver> resolvers) {
     return resolvers
-        .map((resolver) => resolver.state$.listen((_) => _onStateChanged()))
+        .map((resolver) => resolver.state$.listen((_) => onStateChanged()))
         .toList();
   }
 
   dispose() {
-    _resolversSubscriptions.forEach((sub) => sub.cancel());
+    for (var sub in _resolversSubscriptions) {
+      sub.cancel();
+    }
   }
 }

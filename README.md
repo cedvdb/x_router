@@ -115,6 +115,8 @@ XRouter(
 In any real world application however, you might have an authentication status, redirectors, and take care of not found routes. Therefor your code, in a real world scenario will look more like this:
 
 ```dart
+
+
 final router = XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
@@ -157,6 +159,7 @@ Then you can use the router in a material app
 
 ```
 class MyApp extends StatelessWidget {
+  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -175,16 +178,13 @@ class MyApp extends StatelessWidget {
 For navigation you can use the static method `XRoute.goTo(location)`
 
 ```
-  // to access the /products/:id page you can:
-  XRouter.goTo('/products/123x');
-  // or you can:
-  XRouter.goTo('/products/:id', params: { 'id': '123x' });
+  XRouter.goTo('/products/:id', params: { 'id': '123' });
 ```
 
-While the first way is more common in routers, the second way of putting parameters separately can be useful if you have your routes in a static class:
+Generally you will store your routes somewhere however:
 
 ```
-  XRouter.goTo(AppRoute.productDetails, params: { 'id': '123x' });
+  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
 ```
 
 ### All navigation methods

@@ -1,4 +1,4 @@
-import 'package:example/router/routes.dart';
+import 'package:example/main.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
