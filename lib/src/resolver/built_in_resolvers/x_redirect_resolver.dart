@@ -18,7 +18,9 @@ class XRedirectResolver extends XResolver {
     final parsed = from.parse(target, matchChildren: matchChildren);
     if (parsed.matches) {
       // we add the params to the redirect
-      return Redirect(to.addParameters(parsed.parameters));
+      // so if we are on /products/1234 and want to redirect to /products/1234/info
+      // the parameters are added
+      return Redirect(to.addParameters(parsed.pathParameters));
     }
     return const Next();
   }

@@ -59,7 +59,7 @@ class XRouterResolver {
         // so this is the end, but we override the builder
         // so the client can display a loading screen
         return XRouterResolveResult(
-          builder: (_, __) => resolved.loadingScreen,
+          builderOverride: (_, __) => resolved.loadingScreen,
           origin: path,
           target: next,
         );

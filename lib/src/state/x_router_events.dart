@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
@@ -21,20 +22,45 @@ class NavigationEvent extends XRouterEvent {
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
-  final bool forcePush;
 
   const NavigationStart({
     required String target,
     required this.params,
-    this.forcePush = false,
   }) : super(target);
 
   @override
-  List<Object?> get props => [target, params, forcePush];
+  List<Object?> get props => [target, params];
 
   @override
-  String toString() =>
-      'NavigationStart(target: $target, params: $params, forcePush: $forcePush)';
+  String toString() => '$runtimeType(target: $target, params: $params)';
+}
+
+class NavigationPushStart extends NavigationStart {
+  const NavigationPushStart({
+    required String target,
+    required Map<String, String>? params,
+  }) : super(target: target, params: params);
+}
+
+class NavigationReplaceStart extends NavigationStart {
+  const NavigationReplaceStart({
+    required String target,
+    required Map<String, String>? params,
+  }) : super(target: target, params: params);
+}
+
+class NavigationBackStart extends NavigationStart {
+  const NavigationBackStart({
+    required String target,
+    required Map<String, String>? params,
+  }) : super(target: target, params: params);
+}
+
+class NavigationPopStart extends NavigationStart {
+  const NavigationPopStart({
+    required String target,
+    required Map<String, String>? params,
+  }) : super(target: target, params: params);
 }
 
 class NavigationEnd extends NavigationEvent {

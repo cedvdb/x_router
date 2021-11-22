@@ -8,31 +8,76 @@ void main() {
     test('Should have simple equality', () {
       final activatedRoute = XActivatedRoute.nulled();
       expect(
-        ev.NavigationStart(target: 'target', params: const {'param': '1'}),
+        const ev.NavigationStart(
+          target: 'target',
+          params: {'param': '1'},
+        ),
         equals(
-            ev.NavigationStart(target: 'target', params: const {'param': '1'})),
+          const ev.NavigationStart(
+            target: 'target',
+            params: {'param': '1'},
+          ),
+        ),
+      );
+      expect(
+        const ev.NavigationBackStart(
+          target: 'target',
+          params: {'param': '1'},
+        ),
+        equals(
+          const ev.NavigationBackStart(
+            target: 'target',
+            params: {'param': '1'},
+          ),
+        ),
+      );
+      expect(
+        const ev.NavigationPushStart(
+          target: 'target',
+          params: {'param': '1'},
+        ),
+        equals(
+          const ev.NavigationPushStart(
+            target: 'target',
+            params: {'param': '1'},
+          ),
+        ),
+      );
+
+      expect(
+        const ev.NavigationReplaceStart(
+          target: 'target',
+          params: {'param': '1'},
+        ),
+        equals(
+          const ev.NavigationReplaceStart(
+            target: 'target',
+            params: {'param': '1'},
+          ),
+        ),
       );
       expect(
         ev.NavigationEnd(activatedRoute: activatedRoute),
         equals(ev.NavigationEnd(activatedRoute: activatedRoute)),
       );
       expect(
-        ev.UrlParsingStart(currentUrl: '', params: const {}, target: ''),
+        const ev.UrlParsingStart(currentUrl: '', params: {}, target: ''),
         equals(
-            ev.UrlParsingStart(currentUrl: '', params: const {}, target: '')),
+            const ev.UrlParsingStart(currentUrl: '', params: {}, target: '')),
       );
       expect(
-        ev.UrlParsingEnd(target: ''),
-        equals(ev.UrlParsingEnd(target: '')),
+        const ev.UrlParsingEnd(target: ''),
+        equals(const ev.UrlParsingEnd(target: '')),
       );
 
       expect(
-        ev.ResolvingStart(target: ''),
-        equals(ev.ResolvingStart(target: '')),
+        const ev.ResolvingStart(target: ''),
+        equals(const ev.ResolvingStart(target: '')),
       );
       expect(
-        ev.ResolvingEnd(XRouterResolveResult(origin: '', target: '')),
-        equals(ev.ResolvingEnd(XRouterResolveResult(origin: '', target: ''))),
+        ev.ResolvingEnd(const XRouterResolveResult(origin: '', target: '')),
+        equals(ev.ResolvingEnd(
+            const XRouterResolveResult(origin: '', target: ''))),
       );
 
       expect(

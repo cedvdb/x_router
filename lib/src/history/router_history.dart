@@ -2,7 +2,7 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 
 // responsible of keeping track of the history
 
-class XRouterHistory {
+class XRouterHistory extends Iterable<XActivatedRoute> {
   final List<XActivatedRoute> _history = [];
 
   XActivatedRoute? get currentRoute => _history.last;
@@ -10,6 +10,7 @@ class XRouterHistory {
       length > 1 ? _history.elementAt(_history.length - 2) : null;
 
   bool get hasPreviousRoute => previousRoute != null;
+  @override
   int get length => _history.length;
 
   XRouterHistory();
@@ -27,4 +28,7 @@ class XRouterHistory {
   removeLast() {
     _history.removeLast();
   }
+
+  @override
+  Iterator<XActivatedRoute> get iterator => _history.iterator;
 }

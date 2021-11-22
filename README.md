@@ -1,18 +1,23 @@
 # x_router
 
-The goal of this package is to make flutter navigation setup easy by providing a simple API.
-
-
-
+Flutter navigation made easy by providing a simple API.
 
 # Features
+
+  - router history
+  - tabs support
+  - nested router support
+  - redirects
+  - reactive guards
+  - simple
+  - event driven
 
 
 # Core idea
 
 Flutter brings web navigation and app navigation together with Navigator 2.0. 
 
-One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the icon ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an up button, usually the icon ⬅ at the top of the app bar, to navigate up in the stack of pages that are superimposed on each others. In this doc, the word **upstack** is used to refer to the stack of pages accessible when pressing ⬅.
+One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the browser arrow ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an up button, usually the icon ⬅ at the top of the app bar, to navigate up in the stack of pages that are superimposed on each others. In this doc, the word **upstack** is used to refer to the stack of pages accessible when pressing ⬅ and popping the current page.
 (for more information see https://developer.android.com/guide/navigation/navigation-principles)
 
 The main idea of this package is that the __upstack is a function of the url__ 
@@ -22,7 +27,6 @@ That is that for an url like `/products/123` we have a stack of two pages `[Prod
 Let's take this fairly common and complex scenario:
 
 ```
-  '/loading' => user access this page when the authentication state is unknown
   '/sign-in' => user access this page when unauthenticated
   '/sign-in/verify_phone' => user can access this nested page when unauthenticated 
   '/create-profile' => when user is authenticated but doesn't have a profile 
@@ -41,25 +45,62 @@ For example when on the '/products/:id' route the **upstack** will look like thi
 
 This is the approach this library takes to create the **upstack** by default.
 
+
 # Usage
 
-  - simple api
-  - router history
-  - redirection
-  - reactive guards
-  - tab support
-  - tested
+## 1. Simple usage
 
+The router in its simplest form defines a series of routes and builders associated with them
 
-## Simple usage
-
-A very simple routing scenario might look like this:
-
-```
-
+```dart
 XRouter(
   routes: [
-    XRoute( path: '/dashboard, builder: (ctx, activatedRoute) => DashboardPage()),
+    XRoute( path: '/sign-in', builder: (ctx, activatedRoute) => SignInPage()),
+    XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
+    XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
+    XRoute(
+      path: '/products/:id',
+      builder: (ctx, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
+    ),
+  ],
+);
+```
+
+## 2. Add redirects
+
+The next step is to add a series of redirect so the user on the web are always redirected where you want
+
+```dart
+XRouter(
+  resolvers: [
+    XNotFoundResolver(redirectTo: '/'),
+    XRedirectResolver(from: '/', to: 'dashboard'),
+  ],
+  routes: [
+    XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
+    XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
+    XRoute(
+      path: '/products/:id',
+      builder: (ctx, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
+    ),
+  ],
+);
+```
+
+## 3. Guard your routes 
+
+Usually your app will have authentication where the authentication is in 3 possible state (unauthenticated, authenticated, unkow). You want to protect pages that are not supposed to
+be accessible.
+
+```dart
+XRouter(
+  resolvers: [
+    XNotFoundResolver(redirectTo: '/'),
+    XRedirectResolver(from: '/', to: 'dashboard'),
+    MyAuthGuard()
+  ],
+  routes: [
+    XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
     XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
     XRoute(
       path: '/products/:id',
@@ -145,6 +186,15 @@ While the first way is more common in routers, the second way of putting paramet
 ```
   XRouter.goTo(AppRoute.productDetails, params: { 'id': '123x' });
 ```
+
+### All navigation methods
+
+  - `goTo`: goes to location adding the target to history
+  - `push`: adds the location on top of the current stack, adding it to history
+  - `replace`: removes current location from history and `goTo` location
+  - `pop`: if upstack is not empty `goTo` first location in upstack
+  - `back`: go back chronologically
+
 
 
 # Reactive guards / resolvers

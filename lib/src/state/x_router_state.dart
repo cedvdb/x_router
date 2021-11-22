@@ -24,7 +24,7 @@ class XRouterState {
 
   /// adds an event to the event stream
   void addEvent(XRouterEvent event) {
-    if (event is NavigationEnd) {
+    if (event is BuildEnd) {
       _activatedRoute = event.activatedRoute;
     }
     _eventController.add(event);
