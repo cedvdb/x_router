@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its upstack
@@ -30,6 +32,19 @@ class XActivatedRoute {
     this.queryParameters = const {},
     this.upstack = const [],
   });
+
+  // Used as a placeholder at the start of the app to
+  // not have a nullable
+  factory XActivatedRoute.nulled() {
+    return XActivatedRoute(
+      route: XRoute(
+        path: '',
+        builder: (ctx, params) => Container(),
+      ),
+      path: '',
+      effectivePath: '',
+    );
+  }
 
   @override
   String toString() {

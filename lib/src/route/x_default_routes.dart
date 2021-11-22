@@ -15,9 +15,4 @@ class XDefaultRoutes {
         Read the documentation for more info.
       '''),
   );
-
-  static final initialRoute = XRoute(
-    path: '',
-    builder: (ctx, params) => Container(),
-  );
 }

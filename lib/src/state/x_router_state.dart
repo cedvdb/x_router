@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/state/x_router_events.dart';
+import 'package:x_router/x_router.dart';
 
 class XRouterState {
   static final XRouterState instance = XRouterState._();
@@ -11,11 +11,7 @@ class XRouterState {
   late final Stream<XRouterEvent> eventStream =
       _eventController.stream.asBroadcastStream();
 
-  XActivatedRoute _activatedRoute = XActivatedRoute(
-    route: XDefaultRoutes.initialRoute,
-    path: '',
-    effectivePath: '',
-  );
+  XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
   XActivatedRoute get activatedRoute => _activatedRoute;
 
   XRouterState._();
