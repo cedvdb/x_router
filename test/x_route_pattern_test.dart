@@ -18,13 +18,14 @@ void main() {
     });
 
     test('should create path with relative url', () {
-      expect(XRoutePattern.relative('./rel', '/home/route').path,
+      expect(XRoutePattern.maybeRelative('./rel', '/home/route').path,
           equals('/home/rel'));
-      expect(XRoutePattern.relative('./rel', 'home/route').path,
+      expect(XRoutePattern.maybeRelative('./rel', 'home/route').path,
           equals('/home/rel'));
+      expect(XRoutePattern.maybeRelative('/rel', '/home/route').path,
+          equals('/rel'));
       expect(
-          XRoutePattern.relative('/rel', '/home/route').path, equals('/rel'));
-      expect(XRoutePattern.relative('./rel', '/home').path, equals('/rel'));
+          XRoutePattern.maybeRelative('./rel', '/home').path, equals('/rel'));
     });
 
     test('should match exact route', () {

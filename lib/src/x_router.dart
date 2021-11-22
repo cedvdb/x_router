@@ -101,7 +101,7 @@ class XRouter {
   String _parse(String target, Map<String, String>? params, String currentUrl) {
     state.addEvent(UrlParsingStart(
         target: target, params: params, currentUrl: currentUrl));
-    final parser = XRoutePattern.relative(target, currentUrl);
+    final parser = XRoutePattern.maybeRelative(target, currentUrl);
     final parsed = parser.addParameters(params);
     state.addEvent(UrlParsingEnd(target: target));
     return parsed;

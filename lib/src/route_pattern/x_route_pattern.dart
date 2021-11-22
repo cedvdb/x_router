@@ -12,7 +12,7 @@ class XRoutePattern {
   XRoutePattern(String path) : path = sanitize(path);
 
   /// creates a route pattern relative to another if the path starts with ./
-  XRoutePattern.relative(String path, String relativeTo)
+  XRoutePattern.maybeRelative(String path, String relativeTo)
       : path = sanitize(getRelativePath(path, relativeTo));
 
   /// matches a path against this route.

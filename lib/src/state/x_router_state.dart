@@ -14,6 +14,10 @@ class XRouterState {
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
   XActivatedRoute get activatedRoute => _activatedRoute;
 
+  late List<XActivatedRoute> _history = [
+    _activatedRoute,
+  ];
+
   XRouterState._();
 
   String _currentUrl = '';
@@ -25,6 +29,7 @@ class XRouterState {
     }
     if (event is NavigationEnd) {
       _currentUrl = event.target;
+      _history.add(event.activatedRoute);
     }
     _eventController.add(event);
   }
