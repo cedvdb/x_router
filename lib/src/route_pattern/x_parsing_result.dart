@@ -1,19 +1,22 @@
+import 'package:equatable/equatable.dart';
+
 /// The result of trying to match a path against a route.
-class XParsingResult {
-  XParsingResult({
+class XParsingResult with EquatableMixin {
+  const XParsingResult({
     required this.matches,
     required this.path,
     required this.patternPath,
     required this.matchingPath,
     required this.pathParameters,
+    required this.queryParameters,
   });
 
   /// The route path that was matched
   ///
-  /// ie `/route/123`
+  /// ie `/route/123/something-else`
   final String path;
 
-  /// The part of the route
+  /// The part of the path that is matching the patternPath
   ///
   /// ie `/route/123` when the path is `/route/123` and the route pattern is `/route/:id`
   final String matchingPath;
@@ -34,19 +37,20 @@ class XParsingResult {
   /// The query parameters from route query
   ///
   /// ie `{'foo': 'hey'}` from `/route?foo=hey`
-  late final Map<String, String> queryParameters =
-      Uri.parse(path).queryParameters;
-
-  /// The query parameters from [pathParameters] and [queryParameters]
-  ///
-  /// Priority will be given to path parameters if there is a key collision.
-  late final Map<String, String> parameters = {
-    ...queryParameters,
-    ...pathParameters
-  };
+  final Map<String, String> queryParameters;
 
   @override
   String toString() {
     return 'ParsingResult(path: $path, pattern: $patternPath, matches: $matches, pathParameters: $pathParameters)';
   }
+
+  @override
+  List<Object?> get props => [
+        matches,
+        path,
+        patternPath,
+        matchingPath,
+        pathParameters,
+        queryParameters,
+      ];
 }

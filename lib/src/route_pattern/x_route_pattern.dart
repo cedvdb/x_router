@@ -90,6 +90,7 @@ class XRoutePattern {
       path: path,
       patternPath: _uri.path,
       matchingPath: '/' + matchingSegments.join('/'),
+      queryParameters: Uri.parse(path).queryParameters,
     );
   }
 
