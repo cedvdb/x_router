@@ -1,6 +1,6 @@
 import '../../x_router.dart';
 
-/// Holds information about the currently displayed route
+/// Holds information about the currently displayed route and its upstack
 class XActivatedRoute {
   /// the path of the route. eg: `/team/123/route/44`
   final String path;

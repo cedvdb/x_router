@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/route/x_default_routes.dart';
+import 'package:x_router/src/state/x_router_state.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -19,19 +19,14 @@ class XRouterDelegate extends RouterDelegate<String>
   final Function onDispose;
 
   /// the routes that we need to display
-  XActivatedRoute _activatedRoute = XActivatedRoute(
-    route: XDefaultRoutes.initialRoute,
-    path: '',
-    effectivePath: '',
-  );
+  XActivatedRoute get _activatedRoute => XRouterState.instance.activatedRoute;
 
   XRouterDelegate({
     required this.onNewRoute,
     required this.onDispose,
   });
 
-  initBuild(XActivatedRoute activatedRoute) {
-    _activatedRoute = activatedRoute;
+  initRendering() {
     currentConfiguration = _activatedRoute.path;
     notifyListeners();
   }

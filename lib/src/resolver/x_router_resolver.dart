@@ -65,7 +65,7 @@ class XRouterResolver {
         // if it is loading we need to wait for an effective result
         // so this is the end, but we override the builder
         // so the client can display a loading screen
-        return XRouterResolveLoading(
+        return XRouterResolveResult(
           builder: (_, __) => resolved.loadingScreen,
           origin: path,
           target: next,

@@ -17,20 +17,24 @@ class NavigationEvent extends XRouterEvent {
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
+  final bool forcePush;
 
   const NavigationStart({
     required String target,
     required this.params,
+    this.forcePush = false,
   }) : super(target);
 
   @override
-  String toString() => 'NavigationStart(target: $target, params: $params)';
+  String toString() =>
+      'NavigationStart(target: $target, params: $params, forcePush: $forcePush)';
 }
 
 class NavigationEnd extends NavigationEvent {
-  const NavigationEnd({
-    required String target,
-  }) : super(target);
+  XActivatedRoute activatedRoute;
+  NavigationEnd({
+    required this.activatedRoute,
+  }) : super(activatedRoute.effectivePath);
 }
 
 // url parsing

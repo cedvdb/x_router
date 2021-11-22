@@ -15,7 +15,7 @@ import 'route_pattern/x_route_pattern.dart';
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
 class XRouter {
-  /// the current state of the navigation
+  /// the current state of the navigation, with event stream
   static XRouterState get state => XRouterState.instance;
 
   /// the resolver responsible of resolving a route path
@@ -37,8 +37,16 @@ class XRouter {
     onDispose: () {},
   );
 
-  static void goTo(String target, {Map<String, String>? params}) async {
+  static void goTo(
+    String target, {
+    Map<String, String>? params,
+  }) {
     state.addEvent(NavigationStart(target: target, params: params));
+  }
+
+  static void push(String target, {Map<String, String>? params}) {
+    state.addEvent(
+        NavigationStart(target: target, params: params, forcePush: true));
   }
 
   static void back() {
@@ -46,9 +54,8 @@ class XRouter {
   }
 
   static void pop() {
-    if (state.activatedRoute != null &&
-        state.activatedRoute!.upstack.length >= 1) {
-      goTo(state.activatedRoute!.upstack.last.effectivePath);
+    if (state.activatedRoute.upstack.length >= 1) {
+      goTo(state.activatedRoute.upstack.last.effectivePath);
     }
   }
 
@@ -75,12 +82,22 @@ class XRouter {
     if (event is NavigationStart) {
       final parsed = _parse(event.target, event.params, state.currentUrl);
       final resolved = _resolve(parsed);
-      final activatedRoute = _build(resolved);
-      delegate.initBuild(activatedRoute);
-      state.addEvent(NavigationEnd(target: event.target));
+      XActivatedRoute activatedRoute;
+      if (event.forcePush) {
+        activatedRoute =
+            _build(resolved.target, builderOverride: resolved.builder);
+      } else {
+        activatedRoute =
+            _push(resolved.target, builderOverride: resolved.builder);
+      }
+      _render(activatedRoute);
+      state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
     }
   }
 
+  /// parses an url by setting its parameter
+  ///
+  /// if the url starts with ./ will parse relative to current route
   String _parse(String target, Map<String, String>? params, String currentUrl) {
     state.addEvent(UrlParsingStart(
         target: target, params: params, currentUrl: currentUrl));
@@ -90,6 +107,7 @@ class XRouter {
     return parsed;
   }
 
+  /// goes through all resolvers to see the final endpoint after redirection
   XRouterResolveResult _resolve(String target) {
     state.addEvent(ResolvingStart(target: target));
     final resolved = _resolver.resolve(target);
@@ -97,18 +115,34 @@ class XRouter {
     return resolved;
   }
 
-  XActivatedRoute _build(XRouterResolveResult resolved) {
-    state.addEvent(BuildStart(target: resolved.target));
+  /// builds the page stack
+  XActivatedRoute _build(String target, {XPageBuilder? builderOverride}) {
+    state.addEvent(BuildStart(target: target));
     XActivatedRoute activatedRoute;
-    if (resolved is XRouterResolveLoading) {
-      activatedRoute = _activatedRouteBuilder.build(resolved.target,
-          builder: resolved.builder);
-    } else {
-      activatedRoute = _activatedRouteBuilder.build(resolved.target);
-    }
-    delegate.initBuild(activatedRoute);
-    state.addEvent(
-        BuildEnd(activatedRoute: activatedRoute, target: resolved.target));
+    activatedRoute = _activatedRouteBuilder.build(
+      target,
+      builderOverride: builderOverride,
+    );
+    state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
+  }
+
+  /// push new activated route on top of the current stack
+  XActivatedRoute _push(String target, {XPageBuilder? builderOverride}) {
+    state.addEvent(BuildStart(target: target));
+    XActivatedRoute activatedRoute;
+    activatedRoute = _activatedRouteBuilder.add(
+      target,
+      builderOverride: builderOverride,
+    );
+    state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
+    return activatedRoute;
+  }
+
+  /// renders page stack on screen
+  void _render(XActivatedRoute activatedRoute) {
+    state.addEvent(XRenderingStart());
+    delegate.initRendering();
+    state.addEvent(XRenderingEnd());
   }
 }

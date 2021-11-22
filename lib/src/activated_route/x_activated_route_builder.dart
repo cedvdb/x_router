@@ -1,5 +1,4 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/state/x_router_state.dart';
 
@@ -15,7 +14,11 @@ class XActivatedRouteBuilder {
     required List<XRoute> routes,
   }) : _routes = routes;
 
-  XActivatedRoute build(String target, {XPageBuilder? builder}) {
+  /// builds the page stack with the url
+  ///
+  /// That is if we access /products/:id, the page stack will consists of
+  /// `[ProductDetailsPage, ProductsPage]`
+  XActivatedRoute build(String target, {XPageBuilder? builderOverride}) {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
 
     var isFound = matchings.length > 0;
@@ -23,25 +26,33 @@ class XActivatedRouteBuilder {
       matchings = [XDefaultRoutes.notFoundRoute];
     }
 
-    var topRoute = matchings.removeAt(0);
+    var route = matchings.removeAt(0);
 
-    if (builder != null) {
-      topRoute = topRoute.copyWithBuilder(builder: builder);
+    if (builderOverride != null) {
+      route = route.copyWithBuilder(builder: builderOverride);
     }
 
     final upstack = matchings
-        .map((route) => _toActivatedRoute(
+        .map((parentRoute) => _toActivatedRoute(
               target,
-              route,
+              parentRoute,
             ))
         .toList();
 
     final activatedRoute = _toActivatedRoute(
       target,
-      topRoute,
+      route,
       upstack,
     );
     return activatedRoute;
+  }
+
+  /// adds an entry to the current page stack
+  XActivatedRoute add(String target, {XPageBuilder? builderOverride}) {
+    final current = _state.activatedRoute;
+    final matchings = _getOrderedPartiallyMatchingRoutes(target);
+    final route = matchings.removeAt(0);
+    return _toActivatedRoute(target, route, [current, ...current.upstack]);
   }
 
   XActivatedRoute _toActivatedRoute(
