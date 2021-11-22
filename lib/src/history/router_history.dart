@@ -5,17 +5,19 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 class XRouterHistory {
   final List<XActivatedRoute> _history = [];
 
-  int get length => _history.length;
-
+  XActivatedRoute? get currentRoute => _history.last;
   XActivatedRoute? get previousRoute =>
       length > 1 ? _history.elementAt(_history.length - 2) : null;
 
   bool get hasPreviousRoute => previousRoute != null;
+  int get length => _history.length;
 
   XRouterHistory();
 
   add(XActivatedRoute activatedRoute) {
-    _history.add(activatedRoute);
+    if (activatedRoute.effectivePath != currentRoute?.effectivePath) {
+      _history.add(activatedRoute);
+    }
   }
 
   replaceLast(XActivatedRoute activatedRoute) {

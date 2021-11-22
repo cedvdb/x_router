@@ -35,15 +35,19 @@ class XActivatedRoute with EquatableMixin {
   });
 
   // Used as a placeholder at the start of the app to
-  // not have a nullable
-  factory XActivatedRoute.nulled() {
+  // not have a nullable and for testing
+  factory XActivatedRoute.nulled([String path = '']) {
+    return XActivatedRoute.forPath('');
+  }
+
+  factory XActivatedRoute.forPath(String path) {
     return XActivatedRoute(
       route: XRoute(
-        path: '',
+        path: path,
         builder: (ctx, params) => Container(),
       ),
-      requestedPath: '',
-      effectivePath: '',
+      requestedPath: path,
+      effectivePath: path,
     );
   }
 
