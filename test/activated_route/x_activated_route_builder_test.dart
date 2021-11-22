@@ -58,12 +58,12 @@ void main() {
       );
 
       test('should have the correct parameters', () {
-        expect(activatedWithStack.pathParameters['id'], equals('123'));
+        expect(activatedWithStack.pathParams['id'], equals('123'));
       });
 
       test('should have the correct query parameters', () {
-        expect(activatedWithStack.queryParameters['orderBy'],
-            equals('creationDate'));
+        expect(
+            activatedWithStack.queryParams['orderBy'], equals('creationDate'));
       });
 
       test('should have the correct upstack', () {
