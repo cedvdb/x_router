@@ -72,13 +72,5 @@ void main() {
         expect(activatedWithStack.upstack.length, equals(1));
       });
     });
-
-    group('add', () {
-      test('should add to the upstack', () {
-        final added = activatedRouteBuilder.add('/preferences',
-            [activatedWithStack, ...activatedWithStack.upstack]);
-        expect(added.upstack.length, equals(2));
-      });
-    });
   });
 }

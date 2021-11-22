@@ -26,22 +26,16 @@ void main() {
       expect(history.length, equals(1));
     });
 
-    test('should replace last', () {
+    test('should remove from', () {
       history.add(XActivatedRoute.forPath('/home'));
-      expect(history.length, equals(1));
-      history.replaceLast(XActivatedRoute.forPath('/products'));
-      expect(history.length, equals(1));
-      expect(history.currentRoute?.effectivePath, equals('/products'));
-    });
-
-    test('should remove last', () {
-      history.add(XActivatedRoute.forPath('/home'));
-      expect(history.length, equals(1));
       history.add(XActivatedRoute.forPath('/products'));
-      expect(history.length, equals(2));
-      history.removeLast();
-      expect(history.length, equals(1));
-      expect(history.currentRoute?.effectivePath, equals('/home'));
+      history.add(XActivatedRoute.forPath('/preferences'));
+      history.add(XActivatedRoute.forPath('/settings'));
+      expect(history.length, equals(4));
+      history.removeFrom(history.previousRoute);
+      expect(history.currentRoute.effectivePath, equals('/products'));
+      history.removeFrom(history.currentRoute);
+      expect(history.currentRoute.effectivePath, equals('/home'));
     });
 
     test('should tell if it has previous route', () {

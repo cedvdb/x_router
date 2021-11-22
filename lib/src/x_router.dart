@@ -71,12 +71,6 @@ class XRouter {
     state.addEvent(NavigationStart(target: target, params: params));
   }
 
-  /// push a location on top of the current page stack. The location is added
-  /// to the history
-  static void push(String target, {Map<String, String>? params}) {
-    state.addEvent(NavigationPushStart(target: target, params: params));
-  }
-
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
@@ -109,57 +103,24 @@ class XRouter {
   void _onNavigationEvent(event) {
     // this method just calls the right method to get the result for the next event
     if (event is NavigationStart) {
-      final parsed = _parse(event.target, event.params, state.currentUrl);
-      final resolved = _resolve(parsed);
-
-      if (event is NavigationPushStart) {
-        _navigatePush(resolved.target, resolved.builderOverride);
-      } else if (event is NavigationReplaceStart) {
-        _navigateReplace(resolved.target, resolved.builderOverride);
-      } else if (event is NavigationPopStart) {
-        _navigate(resolved.target, resolved.builderOverride);
+      if (event is NavigationReplaceStart) {
+        _history.removeFrom(_history.currentRoute);
       } else if (event is NavigationBackStart) {
-        _navigateBack(resolved.target, resolved.builderOverride);
+        _history.removeFrom(_history.previousRoute);
       }
+      _navigate(event.target, event.params);
     }
-    throw 'Unknown event';
   }
 
-  void _navigate(String target, XPageBuilder? builderOverride) {
+  void _navigate(
+    String target,
+    Map<String, String>? params,
+  ) {
+    final parsed = _parse(target, params, state.currentUrl);
+    final resolved = _resolve(parsed);
     final activatedRoute =
-        _buildStack(target, builderOverride: builderOverride);
+        _buildStack(resolved.target, builderOverride: resolved.builderOverride);
     _history.add(activatedRoute);
-    _render(activatedRoute);
-    state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
-  }
-
-  void _navigatePush(String target, XPageBuilder? builderOverride) {
-    final activatedRoute =
-        _pushToStack(target, builderOverride: builderOverride);
-    _render(activatedRoute);
-    _history.add(activatedRoute);
-    state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
-  }
-
-  void _navigateReplace(String target, XPageBuilder? builderOverride) {
-    final activatedRoute = _buildStack(
-      target,
-      builderOverride: builderOverride,
-    );
-    _history.removeLast();
-    _history.add(activatedRoute);
-    _render(activatedRoute);
-    state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
-  }
-
-  void _navigateBack(String target, XPageBuilder? builderOverride) {
-    final activatedRoute =
-        _buildStack(target, builderOverride: builderOverride);
-    // remove current
-    _history.removeLast();
-    // remove last
-    _history.removeLast();
-    // readd current route in case the builder has been overriden
     _render(activatedRoute);
     state.addEvent(NavigationEnd(activatedRoute: activatedRoute));
   }
@@ -191,20 +152,6 @@ class XRouter {
       target,
       builderOverride: builderOverride,
     );
-    state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
-    return activatedRoute;
-  }
-
-  /// push new activated route on top of the current stack
-  XActivatedRoute _pushToStack(String target, {XPageBuilder? builderOverride}) {
-    state.addEvent(BuildStart(target: target));
-    XActivatedRoute activatedRoute;
-    activatedRoute = _activatedRouteBuilder.add(
-      target,
-      [state.activatedRoute, ...state.activatedRoute.upstack],
-      builderOverride: builderOverride,
-    );
-
     state.addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }

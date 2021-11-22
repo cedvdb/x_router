@@ -35,13 +35,6 @@ class NavigationStart extends NavigationEvent {
   String toString() => '$runtimeType(target: $target, params: $params)';
 }
 
-class NavigationPushStart extends NavigationStart {
-  const NavigationPushStart({
-    required String target,
-    required Map<String, String>? params,
-  }) : super(target: target, params: params);
-}
-
 class NavigationReplaceStart extends NavigationStart {
   const NavigationReplaceStart({
     required String target,

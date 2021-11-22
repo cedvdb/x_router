@@ -190,7 +190,6 @@ While the first way is more common in routers, the second way of putting paramet
 ### All navigation methods
 
   - `goTo`: goes to location adding the target to history
-  - `push`: adds the location on top of the current stack, adding it to history
   - `replace`: removes current location from history and `goTo` location
   - `pop`: if upstack is not empty `goTo` first location in upstack
   - `back`: go back chronologically

@@ -39,8 +39,8 @@ void main() {
 
     test('RedirectResolver', () async {
       final redirectResolver = XRedirectResolver(from: '/', to: '/dashboard');
-      expect(await redirectResolver.resolve('/'), equals('/dashboard'));
-      expect(await redirectResolver.resolve('/other'), equals('/other'));
+      expect(redirectResolver.resolve('/'), equals('/dashboard'));
+      expect(redirectResolver.resolve('/other'), equals('/other'));
     });
 
     test(
@@ -50,12 +50,12 @@ void main() {
           XNotFoundResolver(redirectTo: '/redirected', routes: routes);
       // found
       expect(
-        await notFoundResolver.resolve('/dashboard'),
+        notFoundResolver.resolve('/dashboard'),
         equals('/dashboard'),
       );
       // not found
       expect(
-        await notFoundResolver.resolve('/'),
+        notFoundResolver.resolve('/'),
         equals('/redirected'),
       );
       expect(
