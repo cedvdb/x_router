@@ -230,137 +230,94 @@ A series of resolvers are provided by the library:
 
 # Tabs
 
-For tabs, you need to redirect when a new tab is clicked
+First setup tab indexes
 
 ```dart
-  _navigate(int index) {
-    if (index == 0) {
-      XRouter.goTo(AppRoutes.dashboard);
-    } else if (index == 1) {
-      XRouter.goTo(AppRoutes.products);
-    } else if (index == 2) {
-      XRouter.goTo(AppRoutes.favorites);
+  final _tabsIndex = <String, int>{
+    AppRoutes.dashboard: 0,
+    AppRoutes.products: 1,
+    AppRoutes.favorites: 2,
+  };
+
+  int? _findTabIndex(String url) {
+    try {
+      return _tabsIndex.entries
+          .firstWhere((entry) => url.startsWith(entry.key))
+          .value;
+    } catch (e) {
+      return null;
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('tabs'),
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _navigate(index),
-          tabs: [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.favorite)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          DashboardPage(),
-          ProductsPage(),
-          FavoritesPage(),
-        ],
-      ),
-    );
+  String _findUrlForTabIndex(int index) {
+    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+  }
+```
+
+For tabs the process is a bit involved, you need to redirect when a new tab is clicked
+
+```dart
+  _navigate(int index) {
+    XRouter.goTo(_findUrlForTabIndex(index));
+  }
 ```
 
 You also need to change the tab when the url changes:
 
 ```dart
-class _HomeLayoutState extends State<HomeLayout>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  StreamSubscription? navSubscription;
 
-  @override
-  void initState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
     navSubscription = XRouter.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((nav) {
-      if (nav.target.startsWith(AppRoutes.products) &&
-          _tabController.index != 1) {
-        _tabController.animateTo(1);
-      }
-      if (nav.target.startsWith(AppRoutes.dashboard) &&
-          _tabController.index != 0) {
-        _tabController.animateTo(0);
-      }
-      if (nav.target.startsWith(AppRoutes.favorites) &&
-          _tabController.index != 2) {
-        _tabController.animateTo(2);
+      final foundIndex = _findTabIndex(XRouter.history.currentUrl);
+      if (foundIndex != null) {
+        _tabController.animateTo(foundIndex);
       }
     });
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // _tabController.animateTo(widget.index);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    navSubscription?.cancel();
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  _navigate(int index) {
-    if (index == 0) {
-      XRouter.goTo(AppRoutes.dashboard);
-    } else if (index == 1) {
-      XRouter.goTo(AppRoutes.products);
-    } else if (index == 2) {
-      XRouter.goTo(AppRoutes.favorites);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('tabs'),
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _navigate(index),
-          tabs: [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.favorite)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          DashboardPage(),
-          ProductsPage(),
-          FavoritesPage(),
-        ],
-      ),
-    );
-  }
-}
-
 ```
 
-finally you have to setup your routes in such a way that page transition does not happen,
-here the `HomeLayout`
+and you also need to set the initial index when the page is first loaded
 
 ```dart
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: _findTabIndex(XRouter.history.currentUrl) ?? 0,
+    );
 
 ```
+
+finally you have to setup your routes in such a way that page transition does not happen
+
+```dart
+    XRoute(
+      title: 'dashboard', // browser tab title
+      pageKey: const ValueKey('home-layout'),
+      path: dashboard,
+      builder: (ctx, route) => const HomeLayout(
+        title: 'dashboard',
+      ),
+    ),
+    XRoute(
+      title: 'favorites'
+      path: favorites,
+      pageKey: const ValueKey('home-layout'),
+      builder: (ctx, route) => const HomeLayout(
+        title: 'favorites',
+      ),
+    ),
+    XRoute(
+      title: 'products',
+      path: products,
+      pageKey: const ValueKey('home-layout'),
+      builder: (ctx, route) => const HomeLayout(
+        title: 'products',
+      ),
+    ),
+```
+
+You can check the full code in the example
 
 
 ### Why don't I need context to access the XRouter

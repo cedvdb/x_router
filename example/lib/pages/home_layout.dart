@@ -29,28 +29,34 @@ class _HomeLayoutState extends State<HomeLayout>
     AppRoutes.favorites: 2,
   };
 
+  int? _findTabIndex(String url) {
+    try {
+      return _tabsIndex.entries
+          .firstWhere((entry) => url.startsWith(entry.key))
+          .value;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String _findUrlForTabIndex(int index) {
+    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+  }
+
   @override
   void initState() {
     _tabController = TabController(
       length: 3,
       vsync: this,
-      initialIndex: _tabsIndex[XRouter.history.currentUrl]!,
+      initialIndex: _findTabIndex(XRouter.history.currentUrl) ?? 0,
     );
     navSubscription = XRouter.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((nav) {
-      if (nav.target.startsWith(AppRoutes.products) &&
-          _tabController.index != 1) {
-        _tabController.animateTo(1);
-      }
-      if (nav.target.startsWith(AppRoutes.dashboard) &&
-          _tabController.index != 0) {
-        _tabController.animateTo(0);
-      }
-      if (nav.target.startsWith(AppRoutes.favorites) &&
-          _tabController.index != 2) {
-        _tabController.animateTo(2);
+      final foundIndex = _findTabIndex(XRouter.history.currentUrl);
+      if (foundIndex != null) {
+        _tabController.animateTo(foundIndex);
       }
     });
     super.initState();
@@ -69,13 +75,7 @@ class _HomeLayoutState extends State<HomeLayout>
   }
 
   _navigate(int index) {
-    if (index == 0) {
-      XRouter.goTo(AppRoutes.dashboard);
-    } else if (index == 1) {
-      XRouter.goTo(AppRoutes.products);
-    } else if (index == 2) {
-      XRouter.goTo(AppRoutes.favorites);
-    }
+    XRouter.goTo(_findUrlForTabIndex(index));
   }
 
   @override
