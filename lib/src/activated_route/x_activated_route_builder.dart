@@ -9,7 +9,7 @@ import 'x_activated_route_event.dart';
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {
   final List<XRoute> _routes;
-  final XEventEmitter _state = XEventEmitter.instance;
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   XActivatedRouteBuilder({
     required List<XRoute> routes,
@@ -20,6 +20,7 @@ class XActivatedRouteBuilder {
   /// That is if we access /products/:id, the page stack will consists of
   /// `[ProductDetailsPage, ProductsPage]`
   XActivatedRoute build(String target, {XPageBuilder? builderOverride}) {
+    _eventEmitter.addEvent(BuildStart(target: target));
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     final isFound = matchings.isNotEmpty;
 
@@ -47,6 +48,8 @@ class XActivatedRouteBuilder {
       route,
       upstack,
     );
+    _eventEmitter
+        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 
@@ -55,9 +58,8 @@ class XActivatedRouteBuilder {
     XRoute route, [
     List<XActivatedRoute> upstack = const [],
   ]) {
-    _state.addEvent(ActivatedRouteBuildStart(target: path));
     final parsed = route.parse(path);
-    final activatedRoute = XActivatedRoute(
+    return XActivatedRoute(
       requestedPath: path,
       route: route,
       effectivePath: parsed.matchingPath,
@@ -65,9 +67,6 @@ class XActivatedRouteBuilder {
       queryParams: parsed.queryParameters,
       upstack: upstack,
     );
-    _state.addEvent(
-        ActivatedRouteBuildEnd(activatedRoute: activatedRoute, target: path));
-    return activatedRoute;
   }
 
   List<XRoute> _getOrderedPartiallyMatchingRoutes(String path) {

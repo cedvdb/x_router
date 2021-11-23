@@ -13,6 +13,9 @@ class ResolverResolveStart extends ResolvingEvent {
   @override
   String toString() =>
       '    ${resolver.runtimeType} ResolveStart(target: $target)';
+
+  @override
+  List<Object?> get props => [resolver, target];
 }
 
 class ResolverResolveEnd extends ResolvingEvent {
@@ -28,4 +31,7 @@ class ResolverResolveEnd extends ResolvingEvent {
   @override
   String toString() =>
       '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target)';
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
 }

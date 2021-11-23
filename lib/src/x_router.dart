@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
@@ -15,7 +17,7 @@ import 'route_pattern/x_route_pattern.dart';
 /// Handles navigation
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
-class XRouter {
+class XRouter extends RouteInformationParser<XActivatedRoute> {
   /// emits the different steps of the navigation with event stream
   static final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
@@ -123,22 +125,22 @@ class XRouter {
     }
   }
 
-  void _navigate(String target, Map<String, String>? params) {
-    final parsed = _parse(target, params);
-    final resolved = _resolve(parsed);
-    final activatedRoute = _buildActivatedRoute(resolved.target,
-        builderOverride: resolved.builderOverride);
+  void _navigate(String target, Map<String, String>? params) async {
+    final parsed = _parseUrl(target, params);
+    final activatedRoute =
+        await parseRouteInformation(RouteInformation(location: parsed));
     _history.add(activatedRoute);
     _render(activatedRoute);
-    _eventEmitter.addEvent(NavigationEnd(activatedRoute: activatedRoute));
+    _eventEmitter.addEvent(
+        NavigationEnd(activatedRoute: activatedRoute, target: target));
   }
 
   /// parses an url by setting its parameter
-  String _parse(String target, Map<String, String>? params) {
+  String _parseUrl(String target, Map<String, String>? params) {
     _eventEmitter.addEvent(UrlParsingStart(target: target, params: params));
     final parser = XRoutePattern(target);
     final parsed = parser.addParameters(params);
-    _eventEmitter.addEvent(UrlParsingEnd(target: target));
+    _eventEmitter.addEvent(UrlParsingEnd(target: target, parsed: parsed));
     return parsed;
   }
 
@@ -146,7 +148,7 @@ class XRouter {
   XRouterResolveResult _resolve(String target) {
     _eventEmitter.addEvent(ResolvingStart(target: target));
     final resolved = _resolver.resolve(target);
-    _eventEmitter.addEvent(ResolvingEnd(resolved));
+    _eventEmitter.addEvent(ResolvingEnd(target: target, result: resolved));
     return resolved;
   }
 
@@ -160,18 +162,33 @@ class XRouter {
     String target, {
     XPageBuilder? builderOverride,
   }) {
-    _eventEmitter.addEvent(BuildStart(target: target));
     final activatedRoute = _activatedRouteBuilder.build(
       target,
       builderOverride: builderOverride,
     );
-    _eventEmitter
-        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
+
     return activatedRoute;
   }
 
   /// renders page stack on screen
   void _render(XActivatedRoute activatedRoute) {
     delegate.initRendering(activatedRoute);
+  }
+
+  @override
+  Future<XActivatedRoute> parseRouteInformation(
+    RouteInformation routeInformation,
+  ) {
+    final location = routeInformation.location;
+    if (location == null) {
+      return SynchronousFuture(XActivatedRoute.nulled());
+    }
+    // maybe redirects
+    final resolved = _resolve(location);
+    final activatedRoute = _buildActivatedRoute(
+      resolved.target,
+      builderOverride: resolved.builderOverride,
+    );
+    return SynchronousFuture(activatedRoute);
   }
 }
