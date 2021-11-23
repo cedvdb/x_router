@@ -62,9 +62,8 @@ void main() {
         equals(ev.ResolvingStart(target: '')),
       );
       expect(
-        ev.ResolvingEnd(const XRouterResolveResult(origin: '', target: '')),
-        equals(ev.ResolvingEnd(
-            const XRouterResolveResult(origin: '', target: ''))),
+        ev.ResolvingEnd(const XRouterResolveResult(target: '')),
+        equals(ev.ResolvingEnd(const XRouterResolveResult(target: ''))),
       );
 
       expect(

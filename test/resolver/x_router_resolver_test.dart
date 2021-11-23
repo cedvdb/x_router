@@ -76,10 +76,8 @@ void main() {
         ],
         onStateChanged: () {},
       );
-      expect(
-          routerResolver.resolve('/'),
-          equals(
-              const XRouterResolveResult(origin: '/', target: '/dashboard')));
+      expect(routerResolver.resolve('/'),
+          equals(const XRouterResolveResult(target: '/dashboard')));
     });
 
     test(

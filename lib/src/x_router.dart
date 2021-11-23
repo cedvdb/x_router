@@ -64,10 +64,7 @@ class XRouter {
   ///
   /// The upstack is generated with the url, if the url is /route1/route2
   /// the upstack will be [Route1Page, Route2Page]
-  static void goTo(
-    String target, {
-    Map<String, String>? params,
-  }) {
+  static void goTo(String target, {Map<String, String>? params}) {
     // event emitted so the XRouter instance can take care of it
     _eventEmitter.addEvent(NavigationStart(target: target, params: params));
   }
@@ -100,6 +97,17 @@ class XRouter {
         ),
       );
     }
+  }
+
+  /// alias for goTo(currentUrl)
+  static void refresh() {
+    // event emitted so the XRouter instance can take care of it
+    _eventEmitter.addEvent(
+      NavigationStart(
+        target: _history.currentRoute.effectivePath,
+        params: _history.currentRoute.pathParams,
+      ),
+    );
   }
 
   void _onNavigationEvent(event) {

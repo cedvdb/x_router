@@ -1,6 +1,7 @@
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/preferences_page.dart';
 import 'package:example/services/auth_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
@@ -92,14 +93,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthResolver extends XResolver<AuthStatus> {
-  AuthResolver() : super(initialState: AuthStatus.unknown) {
-    AuthService.instance.authStatus$.listen((status) => state = status);
+class AuthResolver with XResolver {
+  AuthStatus _status = AuthStatus.unknown;
+
+  AuthResolver() : super() {
+    AuthService.instance.authStatus$.listen((status) {
+      _status = status;
+      XRouter.refresh();
+    });
   }
 
   @override
   XResolverAction resolve(String target) {
-    switch (state) {
+    switch (_status) {
       case AuthStatus.authenticated:
         if (target.startsWith(AppRoutes.signIn))
           return Redirect(AppRoutes.home);
