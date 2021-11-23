@@ -33,7 +33,6 @@ Let's take this fairly common and complex scenario:
 ```
   '/sign-in' => user access this page when unauthenticated
   '/sign-in/verify_phone' => user can access this nested page when unauthenticated 
-  '/create-profile' => when user is authenticated but doesn't have a profile 
   '/dashboard' => when the user is authenticated & has a profile, the dashboard
   '/products' => when the user is authenticated & has a profile and clicked on a menu item to see the products
   '/products/:id' => when the user wants to see a specific product
