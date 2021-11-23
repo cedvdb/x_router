@@ -138,10 +138,10 @@ void main() {
         await tester.pumpAndSettle();
         XRouter.goTo(AppRoutes.products);
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
+        expect(XRouter.history.length, equals(2));
         XRouter.refresh();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
+        expect(XRouter.history.length, equals(2));
       });
     });
 
@@ -161,26 +161,29 @@ void main() {
       testWidgets('Should display loading if resolver is not ready',
           (tester) async {
         await tester.pumpWidget(MockApp(
-          resolvers: [
-            XRedirectResolver(from: AppRoutes.home, to: AppRoutes.products)
-          ],
+          resolvers: [MockAuthResolver()],
         ));
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(2));
-        expect(XRouter.history.currentRoute.effectivePath,
-            equals(AppRoutes.products));
+        expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
       });
 
       testWidgets('should redirect after refresh if redirector state changed',
           (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        final authResolver = MockAuthResolver();
+        await tester.pumpWidget(MockApp(
+          resolvers: [authResolver],
+        ));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        authResolver.signIn();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
-        XRouter.refresh();
+
+        expect(find.byKey(const ValueKey('loading-screen')), findsNothing);
+        expect(find.byKey(const ValueKey(AppRoutes.home)), findsOneWidget);
+        expect(find.byKey(const ValueKey(AppRoutes.signIn)), findsNothing);
+
+        authResolver.signOut();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
+        expect(find.byKey(const ValueKey(AppRoutes.signIn)), findsOneWidget);
       });
     });
   });

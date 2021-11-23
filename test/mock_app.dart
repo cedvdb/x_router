@@ -92,7 +92,9 @@ class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
           return const Redirect(AppRoutes.signIn);
         }
       default:
-        return const Loading(CircularProgressIndicator());
+        return Loading(Container(
+          key: const ValueKey('loading-screen'),
+        ));
     }
   }
 }
