@@ -4,13 +4,14 @@ Flutter navigation made easy by providing a simple API.
 
 # Features
 
-  - router history
-  - tabs support
-  - nested router support
   - redirects
   - reactive guards
+  - tabs support
+  - router history
+  - tab title
   - simple
   - event driven
+  - test coverage
 
 
 # Core idea
@@ -110,101 +111,14 @@ XRouter(
 );
 ```
 
-## Real world usage
-
-In any real world application however, you might have an authentication status, redirectors, and take care of not found routes. Therefor your code, in a real world scenario will look more like this:
-
-```dart
-
-
-final router = XRouter(
-  resolvers: [
-    XNotFoundResolver(redirectTo: '/'),
-    AuthResolver(),
-  ],
-  routes: [
-    XRoute(
-      path: AppRoutes.home, 
-      builder: null, 
-      resolvers[XRedirectResolver(from: AppRoutes.home, to: AppRoutes.dashboard),],
-    ),
-    XRoute(
-      path: AppRoutes.dashboard,
-      builder: (_, __) => DashboardPage(),
-    ),
-    XRoute(
-      path: AppRoutes.products,
-      builder: (_, __) => ProductsPage(),
-    ),
-    XRoute(
-      resolvers: [ProductExists]
-      path: AppRoutes.productDetail,
-      builder: (_, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
-    ),
-    XRoute(
-      path: AppRoutes.loading,
-      builder: (_, __) => LoadingPage(),
-    ),
-    XRoute(
-      path: AppRoutes.signIn,
-      builder: (_, __) => SignInPage(),
-    )
-  ],
-  // onEvent: (ev) => print(ev),
-);
-```
-
-Then you can use the router in a material app
-
-
-```
-class MyApp extends StatelessWidget {
-  
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: router.parser,
-      routerDelegate: router.delegate,
-      // ...
-    );
-  }
-}
-```
-
-
-## Navigating
-
-For navigation you can use the static method `XRoute.goTo(location)`
-
-```
-  XRouter.goTo('/products/:id', params: { 'id': '123' });
-```
-
-Generally you will store your routes somewhere however:
-
-```
-  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
-```
-
-### All navigation methods
-
-  - `goTo`: goes to location adding the target to history
-  - `replace`: removes current location from history and `goTo` location
-  - `pop`: if upstack is not empty `goTo` first location in upstack
-  - `back`: go back chronologically
-  - `refresh`: go to current location (useful for your resolvers have state)
-
-
 
 # Reactive guards / resolvers
 
 
-The XRouter class accepts resolvers as parameters. When a page is accessed via a path ('/route'). That route goes through each resolvers `resolve(String target)` sequentially and output a path which may or may not be the one received.
+When a page is accessed via a path ('/route'). That route goes through each resolvers provided to the router, sequentially and either `Redirect` or goest to the `Next` resolver.
 
-In other words if you access '/route', the resolving process first takes the first resolver, which may output '/not-found' then the second resolver receives '/not-found' and outputs '/sign-in.
 
-Here is an example of redirect resolver (a more complete version is available in the library):
+Here is an example of redirect resolver:
 
 ```dart
 // A redirect resolver is provided by the library 
@@ -218,48 +132,61 @@ class XRedirectResolver extends XResolver {
   });
 
   @override
-  Future<String> resolve(String target) async {
+  XResolverAction resolve(String target) async {
     if (target.startsWith(from)) {
-      return to;
+      return Redirect(to);
     }
-    return target;
+    return Next();
   }
 }
-
 ```
 
-Those resolvers have a state. If that state changes, then the current route is recalculated.
+resolvers can return 3 type of value:
 
-Here is an example of an authentication resolver:
+  - `Redirect`: redirects to a target (and go through each resolver again)
+  - `Next`: proceeds to the next resolver until we reach the end (no redirect)
+  - `Loading`: stops the resolving process and display a widget on screen until it is ready (see next section)
+
+## Reactive resolvers
+
+If you need your resolver to trigger on state change, you can simply implement any `Listenable` (ChangeNotifier, ValueNotifier,...).
+
+The canonical example of a reactive resolver use case is authentication. 
+
+In the following example, when the authentication status changes, the XRouter will be notified of
+such a change and will trigger `XRouter.refresh()` which will start the resolving process again.
+
+- If the user is authenticated he will be redirected to /home (if not already there)
+- If the user is unauthenticated he will be redirected to /sign-in (if not already there)
+- If the auth status is unknow a loadingScreen will be shown until `notifyListeners` or `XRouter.refresh()` is called.
+
 
 ```dart
-import 'package:example/services/auth_service.dart';
-import 'package:x_router/x_router.dart';
-
-class AuthResolver extends XResolver<AuthStatus> {
-  
-  AuthResolver() : super(initialState: AuthStatus.unknown) {
-    AuthService.instance.authStatus$
-      .listen((status) => state = status);
+class AuthResolver extends ValueNotifier with XResolver {
+  AuthResolver() : super(AuthStatus.unknown) {
+    AuthService.instance.authStatusStream.listen((authStatus) => value = authStatus);
   }
 
   @override
-  Future<String> resolve(String target) async {
-    switch (state) {
+  XResolverAction resolve(String target) {
+    switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith('/sign-in')) return '/';
-        if (target.startsWith('/loading')) {
-          // when we are on the loading page, the remaining part of 
-          // the url is where we want to navigate after.
-          return target.replaceFirst('/loading', '');
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Redirect(AppRoutes.home);
+        } else {
+          return const Next();
         }
-        return target;
       case AuthStatus.unautenticated:
-        return '/sign-in';
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Next();
+        } else {
+          return const Redirect(AppRoutes.signIn);
+        }
       case AuthStatus.unknown:
       default:
-        if (target.startsWith('/loading')) return target;
-        return '/loading$target';
+        return const Loading(
+          LoadingPage(text: 'Checking Auth Status'),
+        );
     }
   }
 }
@@ -267,7 +194,6 @@ class AuthResolver extends XResolver<AuthStatus> {
 
 This is powerful because you then don't need to worry about redirection on user authentication.
 
-Note: You can add resolvers on specific routes, in which case they will only be active on that route & children.
 
 ## Provided resolvers
 
@@ -275,8 +201,160 @@ A series of resolvers are provided by the library:
 
  - XNotFoundResolver: to redirect when no route is found
  - XRedirect: to redirect a specific path
- - XSimpleResolver: A simple resolver for creating resolvers in line via its constructor
 
+
+# Navigating
+
+For navigation you can use the static method `XRoute.goTo(location)`
+
+```dart
+  XRouter.goTo('/products/:id', params: { 'id': '123' });
+  // Generally you will store your routes somewhere:
+  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
+```
+
+## All navigation methods
+
+  - `goTo`: goes to location adding the target to history
+  - `replace`: removes current location from history and `goTo` location
+  - `pop`: if upstack is not empty `goTo` first location in upstack
+  - `back`: go back chronologically
+  - `refresh`: go to current location (useful for your resolvers have state)
+
+
+# Tabs
+
+For tabs, you need to redirect when a new tab is clicked
+
+```dart
+  _navigate(int index) {
+    if (index == 0) {
+      XRouter.goTo(AppRoutes.dashboard);
+    } else if (index == 1) {
+      XRouter.goTo(AppRoutes.products);
+    } else if (index == 2) {
+      XRouter.goTo(AppRoutes.favorites);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('tabs'),
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: (index) => _navigate(index),
+          tabs: [
+            Tab(icon: Icon(Icons.home)),
+            Tab(icon: Icon(Icons.star)),
+            Tab(icon: Icon(Icons.favorite)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(),
+          ProductsPage(),
+          FavoritesPage(),
+        ],
+      ),
+    );
+```
+
+You also need to change the tab when the url changes:
+
+```dart
+class _HomeLayoutState extends State<HomeLayout>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  StreamSubscription? navSubscription;
+
+  @override
+  void initState() {
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+    );
+    navSubscription = XRouter.eventStream
+        .where((event) => event is NavigationEnd)
+        .cast<NavigationEnd>()
+        .listen((nav) {
+      if (nav.target.startsWith(AppRoutes.products) &&
+          _tabController.index != 1) {
+        _tabController.animateTo(1);
+      }
+      if (nav.target.startsWith(AppRoutes.dashboard) &&
+          _tabController.index != 0) {
+        _tabController.animateTo(0);
+      }
+      if (nav.target.startsWith(AppRoutes.favorites) &&
+          _tabController.index != 2) {
+        _tabController.animateTo(2);
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // _tabController.animateTo(widget.index);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    navSubscription?.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  _navigate(int index) {
+    if (index == 0) {
+      XRouter.goTo(AppRoutes.dashboard);
+    } else if (index == 1) {
+      XRouter.goTo(AppRoutes.products);
+    } else if (index == 2) {
+      XRouter.goTo(AppRoutes.favorites);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('tabs'),
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: (index) => _navigate(index),
+          tabs: [
+            Tab(icon: Icon(Icons.home)),
+            Tab(icon: Icon(Icons.star)),
+            Tab(icon: Icon(Icons.favorite)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(),
+          ProductsPage(),
+          FavoritesPage(),
+        ],
+      ),
+    );
+  }
+}
+
+```
+
+finally you have to setup your routes in such a way that page transition does not happen,
+here the `HomeLayout`
+
+```dart
+
+```
 
 
 # Why don't I need context to access the XRouter
