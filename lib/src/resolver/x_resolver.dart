@@ -1,18 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class XResolver<G> extends ChangeNotifier {
-  // final StreamController<G?> _state$ = StreamController<G?>();
-  // late final Stream<G?> state$ = _state$.stream.asBroadcastStream();
-  G? _state;
-  G? get state => _state;
-  set state(G? state) {
-    _state = state;
-    notifyListeners();
-  }
-
-  XResolver({G? initialState}) : _state = initialState;
-
+mixin XResolver {
   /// resolve a route with the current state
   XResolverAction resolve(String target);
 }

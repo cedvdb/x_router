@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
+import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
-class ReactiveResolver extends XResolver<bool> {
-  ReactiveResolver() : super(initialState: false);
+class ReactiveResolver extends ValueNotifier<bool> with XResolver {
+  ReactiveResolver() : super(false);
 
   @override
   XResolverAction resolve(String target) {
-    if (state == true) {
+    if (value) {
       return const Redirect('/true');
     }
     return const Redirect('/false');
@@ -28,15 +29,14 @@ void main() {
       ),
     ];
 
-    group('buil ins', () {
+    group('built ins =>', () {
       test('RedirectResolver', () async {
         final redirectResolver = XRedirectResolver(from: '/', to: '/dashboard');
         final redirectWithParamsResolver =
             XRedirectResolver(from: '/products/:id', to: '/products/:id/info');
         expect(redirectResolver.resolve('/'),
             equals(const Redirect('/dashboard')));
-        expect(redirectResolver.resolve('/other'),
-            equals(const Redirect('/other')));
+        expect(redirectResolver.resolve('/other'), equals(const Next()));
         expect(redirectWithParamsResolver.resolve('/products/123'),
             equals(const Redirect('/products/123/info')));
       });
@@ -76,7 +76,10 @@ void main() {
         ],
         onStateChanged: () {},
       );
-      expect(routerResolver.resolve('/'), equals(const Redirect('/dashboard')));
+      expect(
+          routerResolver.resolve('/'),
+          equals(
+              const XRouterResolveResult(origin: '/', target: '/dashboard')));
     });
 
     test(
@@ -90,7 +93,8 @@ void main() {
           ],
           onStateChanged: () => stateChanged = true,
         );
-        reactiveResolver.state = true;
+        reactiveResolver.value = true;
+        await Future.value(true);
         expect(stateChanged, isTrue);
       },
     );

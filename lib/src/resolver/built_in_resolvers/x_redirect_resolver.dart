@@ -1,7 +1,7 @@
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
-class XRedirectResolver extends XResolver {
+class XRedirectResolver with XResolver {
   final XRoutePattern from;
   final XRoutePattern to;
   final bool matchChildren;

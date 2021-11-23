@@ -98,7 +98,7 @@ void main() {
         const path = '/teams/:teamId/users/:userId';
         final params = XRoutePattern(path)
             .parse('/teams/x/users/y?sortBy=creationDate')
-            .pathParameters;
+            .queryParameters;
         expect(params['sortBy'], equals('creationDate'));
         expect(params.length, equals(1));
       });

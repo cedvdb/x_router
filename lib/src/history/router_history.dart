@@ -1,15 +1,17 @@
+import 'dart:collection';
+
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
 // responsible of keeping track of the history
 
-class XRouterHistory extends Iterable<XActivatedRoute> {
+class XRouterHistory with IterableMixin<XActivatedRoute> {
+  // most recent history items added at the start
   final List<XActivatedRoute> _history = [];
 
   XActivatedRoute get currentRoute =>
-      isNotEmpty ? last : XActivatedRoute.nulled();
+      isNotEmpty ? first : XActivatedRoute.nulled();
 
-  XActivatedRoute? get previousRoute =>
-      length > 1 ? elementAt(_history.length - 2) : null;
+  XActivatedRoute? get previousRoute => length > 1 ? elementAt(1) : null;
 
   bool get hasPreviousRoute => previousRoute != null;
 
@@ -17,18 +19,18 @@ class XRouterHistory extends Iterable<XActivatedRoute> {
 
   add(XActivatedRoute activatedRoute) {
     if (activatedRoute.effectivePath != currentRoute.effectivePath) {
-      _history.add(activatedRoute);
+      _history.insert(0, activatedRoute);
     }
   }
 
   removeFrom(XActivatedRoute? activatedRoute) {
     if (activatedRoute == null) return;
-    for (var i = _history.length; i < 0; i++) {
+    for (var i = 0; i < _history.length; i++) {
       if (_history[i] == activatedRoute) {
-        _history.removeLast();
+        _history.removeAt(0);
         break;
       }
-      _history.removeLast();
+      _history.removeAt(0);
     }
   }
 

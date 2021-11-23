@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
@@ -38,7 +39,6 @@ class XRouterResolver {
         // so the client can display a loading screen
         return XRouterResolveResult(
           builderOverride: (_, __) => resolved.loadingScreen,
-          origin: path,
           target: next,
         );
       }
@@ -53,10 +53,7 @@ class XRouterResolver {
       }
     }
     // if we reach here we have resolved the final route
-    return XRouterResolveResult(
-      origin: path,
-      target: next,
-    );
+    return XRouterResolveResult(target: next);
   }
 
   /// resolve path against a specific resolver
@@ -87,13 +84,17 @@ class XRouterResolver {
 
   void _listenResolversStateChanges(List<XResolver> resolvers) {
     for (final resolver in resolvers) {
-      resolver.addListener(onStateChanged);
+      if (resolver is Listenable) {
+        (resolver as Listenable).addListener(onStateChanged);
+      }
     }
   }
 
   dispose() {
     for (final resolver in resolvers) {
-      resolver.dispose();
+      if (resolver is Listenable) {
+        (resolver as Listenable).removeListener(onStateChanged);
+      }
     }
   }
 }
