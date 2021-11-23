@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
 // responsible of keeping track of the history
@@ -14,6 +12,8 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
       isNotEmpty ? first : XActivatedRoute.nulled();
 
   XActivatedRoute? get previousRoute => length > 1 ? elementAt(1) : null;
+
+  String get currentUrl => currentRoute.effectivePath;
 
   bool get hasPreviousRoute => previousRoute != null;
 

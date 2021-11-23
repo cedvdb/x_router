@@ -22,19 +22,21 @@ class _HomeLayoutState extends State<HomeLayout>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   StreamSubscription? navSubscription;
+
   final _tabsIndex = <String, int>{
     AppRoutes.dashboard: 0,
     AppRoutes.products: 1,
     AppRoutes.favorites: 2,
   };
 
+  // TODO simplify this
+
   @override
   void initState() {
-    print('======> init state');
     _tabController = TabController(
       length: 3,
       vsync: this,
-      initialIndex: _tabsIndex[XRouter.history.currentRoute.effectivePath]!,
+      initialIndex: _tabsIndex[XRouter.history.currentUrl]!,
     );
     navSubscription = XRouter.eventStream
         .where((event) => event is NavigationEnd)
@@ -58,7 +60,6 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void didChangeDependencies() {
-    // _tabController.animateTo(widget.index);
     super.didChangeDependencies();
   }
 
