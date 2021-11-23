@@ -2,7 +2,7 @@
 
 Flutter navigation made easy by providing a simple API.
 
-![Alt text](/recording.gif?raw=true "Recording")
+![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recording.gif)
 
 
 # Features
