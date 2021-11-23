@@ -20,8 +20,14 @@ void main() {
         ),
       );
       expect(
-        ev.NavigationEnd(activatedRoute: activatedRoute, target: ''),
-        equals(ev.NavigationEnd(activatedRoute: activatedRoute, target: '')),
+        ev.NavigationEnd(
+            activatedRoute: activatedRoute,
+            target: '',
+            previous: activatedRoute),
+        equals(ev.NavigationEnd(
+            activatedRoute: activatedRoute,
+            target: '',
+            previous: activatedRoute)),
       );
       expect(
         const ev.UrlParsingStart(params: {}, target: ''),

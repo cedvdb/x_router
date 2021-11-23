@@ -12,12 +12,17 @@ void main() {
         emitter.eventStream,
         emitsInOrder([
           const NavigationStart(target: '', params: {}),
-          NavigationEnd(activatedRoute: activatedRoute, target: ''),
+          NavigationEnd(
+              activatedRoute: activatedRoute,
+              target: '',
+              previous: activatedRoute),
         ]),
       );
       emitter.addEvent(const NavigationStart(target: '', params: {}));
-      emitter
-          .addEvent(NavigationEnd(activatedRoute: activatedRoute, target: ''));
+      emitter.addEvent(NavigationEnd(
+          activatedRoute: activatedRoute,
+          target: '',
+          previous: activatedRoute));
     });
   });
 }
