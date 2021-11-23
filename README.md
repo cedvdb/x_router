@@ -2,6 +2,9 @@
 
 Flutter navigation made easy by providing a simple API.
 
+![Alt text](/recording.gif?raw=true "Recording")
+
+
 # Features
 
   - redirects
@@ -49,7 +52,29 @@ This is the approach this library takes to create the **upstack** by default.
 
 # Usage
 
-## 1. Simple usage
+
+## Navigating
+
+For navigation you can use the static method `XRoute.goTo(location)`
+
+```dart
+  XRouter.goTo('/products/:id', params: { 'id': '123' });
+  // Generally you will store your routes somewhere:
+  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
+```
+
+### All navigation methods
+
+  - `goTo`: goes to location adding the target to history
+  - `replace`: removes current location from history and `goTo` location
+  - `pop`: if upstack is not empty `goTo` first location in upstack
+  - `back`: go back chronologically
+  - `refresh`: go to current location (useful for your resolvers have state)
+
+
+# Setup
+
+## 1. Simple setup
 
 The router in its simplest form defines a series of routes and builders associated with them
 
@@ -195,31 +220,12 @@ class AuthResolver extends ValueNotifier with XResolver {
 This is powerful because you then don't need to worry about redirection on user authentication.
 
 
-## Provided resolvers
+### Provided resolvers
 
 A series of resolvers are provided by the library:
 
  - XNotFoundResolver: to redirect when no route is found
  - XRedirect: to redirect a specific path
-
-
-# Navigating
-
-For navigation you can use the static method `XRoute.goTo(location)`
-
-```dart
-  XRouter.goTo('/products/:id', params: { 'id': '123' });
-  // Generally you will store your routes somewhere:
-  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
-```
-
-## All navigation methods
-
-  - `goTo`: goes to location adding the target to history
-  - `replace`: removes current location from history and `goTo` location
-  - `pop`: if upstack is not empty `goTo` first location in upstack
-  - `back`: go back chronologically
-  - `refresh`: go to current location (useful for your resolvers have state)
 
 
 # Tabs
@@ -357,6 +363,6 @@ here the `HomeLayout`
 ```
 
 
-# Why don't I need context to access the XRouter
+### Why don't I need context to access the XRouter
 
 As stated in the core idea section, the page displayed is a function of the URL. There is only one URL.
