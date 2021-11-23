@@ -131,8 +131,10 @@ class XRouter {
     if (event is NavigationStart) {
       final activatedRoute =
           _navigate(event.target, event.params, event.removeHistoryThrough);
-      _eventEmitter.addEvent(
-          NavigationEnd(activatedRoute: activatedRoute, target: event.target));
+      _eventEmitter.addEvent(NavigationEnd(
+          activatedRoute: activatedRoute,
+          target: event.target,
+          previous: _history.previousRoute));
     }
   }
 

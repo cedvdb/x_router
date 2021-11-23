@@ -38,17 +38,19 @@ class NavigationStart extends NavigationEvent {
 
 class NavigationEnd extends NavigationEvent {
   final XActivatedRoute activatedRoute;
+  final XActivatedRoute? previous;
   const NavigationEnd({
     required String target,
     required this.activatedRoute,
+    required this.previous,
   }) : super(target);
 
   @override
-  List<Object?> get props => [target, activatedRoute];
+  List<Object?> get props => [target, activatedRoute, previous];
 
   @override
   String toString() =>
-      'NavigationEnd(target: $target, activatedRoute: $activatedRoute)';
+      'NavigationEnd(target: $target, activatedRoute: $activatedRoute, previousRoute: $previous)';
 }
 
 // url parsing events
