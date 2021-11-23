@@ -60,6 +60,14 @@ class XRouter {
     });
   }
 
+  XRouter.child({
+    required List<XRoute> routes,
+  }) {
+    _activatedRouteBuilder = XActivatedRouteBuilder(
+      routes: routes,
+    );
+  }
+
   /// goes to a location and adds it to the history
   ///
   /// The upstack is generated with the url, if the url is /route1/route2
