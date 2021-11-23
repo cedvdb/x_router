@@ -76,8 +76,13 @@ class XRouter {
   ///
   /// The page stack follows the same process as [goTo]
   static void replace(String target, {Map<String, String>? params}) {
-    _eventEmitter
-        .addEvent(NavigationReplaceStart(target: target, params: params));
+    _eventEmitter.addEvent(
+      NavigationStart(
+        target: target,
+        params: params,
+        removeHistoryThrough: _history.currentRoute,
+      ),
+    );
   }
 
   /// goTo route above the current one in the page stack if any
@@ -85,7 +90,11 @@ class XRouter {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
       _eventEmitter.addEvent(
-          NavigationPopStart(target: up.effectivePath, params: up.pathParams));
+        NavigationStart(
+          target: up.effectivePath,
+          params: up.pathParams,
+        ),
+      );
     }
   }
 
@@ -94,9 +103,10 @@ class XRouter {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
       _eventEmitter.addEvent(
-        NavigationBackStart(
+        NavigationStart(
           target: previousRoute.effectivePath,
           params: previousRoute.pathParams,
+          removeHistoryThrough: previousRoute,
         ),
       );
     }
@@ -116,22 +126,29 @@ class XRouter {
   void _onNavigationEvent(event) {
     // this method just calls the right method to get the result for the next event
     if (event is NavigationStart) {
-      if (event is NavigationReplaceStart) {
-        _history.removeFrom(_history.currentRoute);
-      } else if (event is NavigationBackStart) {
-        _history.removeFrom(_history.previousRoute);
-      }
-      _navigate(event.target, event.params);
+      final activatedRoute =
+          _navigate(event.target, event.params, event.removeHistoryThrough);
+      _eventEmitter.addEvent(
+          NavigationEnd(activatedRoute: activatedRoute, target: event.target));
     }
   }
 
-  void _navigate(String target, Map<String, String>? params) async {
+  XActivatedRoute _navigate(
+    String target,
+    Map<String, String>? params,
+    XActivatedRoute? removeHistoryThrough,
+  ) {
     final parsed = _parseUrl(target, params);
-    final activatedRoute = _buildActivatedRoute(parsed);
-    _history.add(activatedRoute);
+    final resolved = _resolve(parsed);
+    final activatedRoute = _buildActivatedRoute(
+      resolved.target,
+      builderOverride: resolved.builderOverride,
+    );
     _render(activatedRoute);
-    _eventEmitter.addEvent(
-        NavigationEnd(activatedRoute: activatedRoute, target: target));
+
+    _history.removeThrough(removeHistoryThrough);
+    _history.add(activatedRoute);
+    return activatedRoute;
   }
 
   /// parses an url by setting its parameter
@@ -161,11 +178,14 @@ class XRouter {
     String target, {
     XPageBuilder? builderOverride,
   }) {
+    _eventEmitter.addEvent(BuildStart(target: target));
     final activatedRoute = _activatedRouteBuilder.build(
       target,
       builderOverride: builderOverride,
     );
 
+    _eventEmitter
+        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 

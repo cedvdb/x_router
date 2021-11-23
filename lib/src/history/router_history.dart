@@ -19,13 +19,14 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
 
   XRouterHistory();
 
-  add(XActivatedRoute activatedRoute) {
+  void add(XActivatedRoute activatedRoute) {
     if (activatedRoute.effectivePath != currentRoute.effectivePath) {
       _history.insert(0, activatedRoute);
     }
   }
 
-  removeFrom(XActivatedRoute? activatedRoute) {
+  // removes history from the current route to the [activatedRoute] included.
+  void removeThrough(XActivatedRoute? activatedRoute) {
     if (activatedRoute == null) return;
     for (var i = 0; i < _history.length; i++) {
       if (_history[i] == activatedRoute) {
@@ -36,7 +37,7 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
     }
   }
 
-  _removeLast() {
+  void _removeLast() {
     // should remove from browser history here too
     _history.removeAt(0);
   }

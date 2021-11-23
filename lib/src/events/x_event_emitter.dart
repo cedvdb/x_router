@@ -14,7 +14,5 @@ class XEventEmitter {
   final StreamController<XRouterEvent> _eventController = StreamController();
 
   /// adds an event to the event stream
-  void addEvent(XRouterEvent event) {
-    _eventController.add(event);
-  }
+  void addEvent(XRouterEvent event) => _eventController.add(event);
 }

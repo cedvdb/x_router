@@ -11,7 +11,7 @@ abstract class XRouterEvent with EquatableMixin {
   String toString() => '$runtimeType(target: $target)';
 }
 
-// navigation
+// navigation events
 
 class NavigationEvent extends XRouterEvent {
   const NavigationEvent(String target) : super(target);
@@ -21,10 +21,12 @@ class NavigationEvent extends XRouterEvent {
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
+  final XActivatedRoute? removeHistoryThrough;
 
   const NavigationStart({
     required String target,
     required this.params,
+    this.removeHistoryThrough,
   }) : super(target);
 
   @override
@@ -32,27 +34,6 @@ class NavigationStart extends NavigationEvent {
 
   @override
   String toString() => '$runtimeType(target: $target, params: $params)';
-}
-
-class NavigationReplaceStart extends NavigationStart {
-  const NavigationReplaceStart({
-    required String target,
-    required Map<String, String>? params,
-  }) : super(target: target, params: params);
-}
-
-class NavigationBackStart extends NavigationStart {
-  const NavigationBackStart({
-    required String target,
-    required Map<String, String>? params,
-  }) : super(target: target, params: params);
-}
-
-class NavigationPopStart extends NavigationStart {
-  const NavigationPopStart({
-    required String target,
-    required Map<String, String>? params,
-  }) : super(target: target, params: params);
 }
 
 class NavigationEnd extends NavigationEvent {
@@ -70,7 +51,8 @@ class NavigationEnd extends NavigationEvent {
       'NavigationEnd(target: $target, activatedRoute: $activatedRoute)';
 }
 
-// url parsing
+// url parsing events
+
 abstract class UrlParsingEvent extends XRouterEvent {
   const UrlParsingEvent(String target) : super(target);
 
@@ -90,7 +72,7 @@ class UrlParsingStart extends UrlParsingEvent {
   List<Object?> get props => [target, params];
 
   @override
-  String toString() => 'UrlParsingStart(target:$target, params: $params,)';
+  String toString() => '  UrlParsingStart(target:$target, params: $params,)';
 }
 
 class UrlParsingEnd extends UrlParsingEvent {
@@ -99,7 +81,8 @@ class UrlParsingEnd extends UrlParsingEvent {
       : super(target);
 }
 
-// resolving
+// resolving event
+
 abstract class ResolvingEvent extends XRouterEvent {
   const ResolvingEvent(String target) : super(target);
 }
@@ -117,4 +100,38 @@ class ResolvingEnd extends ResolvingEvent {
       : super(target);
   @override
   List<Object?> get props => [target, result];
+}
+
+// build events
+
+abstract class BuildEvent extends XRouterEvent {
+  const BuildEvent(String target) : super(target);
+}
+
+class BuildStart extends BuildEvent {
+  const BuildStart({
+    required String target,
+  }) : super(target);
+
+  @override
+  List<Object?> get props => [target];
+
+  @override
+  String toString() => '  BuildStart(target: $target)';
+}
+
+class BuildEnd extends BuildEvent {
+  final XActivatedRoute activatedRoute;
+
+  const BuildEnd({
+    required this.activatedRoute,
+    required String target,
+  }) : super(target);
+
+  @override
+  String toString() =>
+      '  BuildEnd(target: $target, activatedRoute: $activatedRoute)';
+
+  @override
+  List<Object?> get props => [target, activatedRoute];
 }

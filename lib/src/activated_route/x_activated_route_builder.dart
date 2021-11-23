@@ -4,12 +4,10 @@ import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/route/x_page_builder.dart';
 
 import '../route/x_route.dart';
-import 'x_activated_route_event.dart';
 
 /// builds an Activated route when provided a `path`.
 class XActivatedRouteBuilder {
   final List<XRoute> _routes;
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   XActivatedRouteBuilder({
     required List<XRoute> routes,
@@ -20,7 +18,6 @@ class XActivatedRouteBuilder {
   /// That is if we access /products/:id, the page stack will consists of
   /// `[ProductDetailsPage, ProductsPage]`
   XActivatedRoute build(String target, {XPageBuilder? builderOverride}) {
-    _eventEmitter.addEvent(BuildStart(target: target));
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     final isFound = matchings.isNotEmpty;
 
@@ -48,8 +45,6 @@ class XActivatedRouteBuilder {
       route,
       upstack,
     );
-    _eventEmitter
-        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 

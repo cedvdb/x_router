@@ -20,31 +20,6 @@ void main() {
         ),
       );
       expect(
-        const ev.NavigationBackStart(
-          target: 'target',
-          params: {'param': '1'},
-        ),
-        equals(
-          const ev.NavigationBackStart(
-            target: 'target',
-            params: {'param': '1'},
-          ),
-        ),
-      );
-
-      expect(
-        const ev.NavigationReplaceStart(
-          target: 'target',
-          params: {'param': '1'},
-        ),
-        equals(
-          const ev.NavigationReplaceStart(
-            target: 'target',
-            params: {'param': '1'},
-          ),
-        ),
-      );
-      expect(
         ev.NavigationEnd(activatedRoute: activatedRoute, target: ''),
         equals(ev.NavigationEnd(activatedRoute: activatedRoute, target: '')),
       );
