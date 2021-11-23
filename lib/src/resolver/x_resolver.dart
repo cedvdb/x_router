@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
-import 'package:x_router/src/x_router.dart';
 
 mixin XResolver<T> {
   /// resolve a route with the current state

@@ -8,17 +8,17 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('sign in page'),
+        title: const Text('sign in page'),
       ),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('sign in to access the app'),
+            const Text('sign in to access the app'),
             ElevatedButton(
-              child: Text('sign in'),
+              child: const Text('sign in'),
               onPressed: () => AuthService.instance.signIn(),
             ),
           ],

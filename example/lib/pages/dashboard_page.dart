@@ -17,17 +17,18 @@ class DashboardPage extends StatelessWidget {
                 'Content of the example:',
                 style: Theme.of(context).textTheme.headline5,
               ),
-              Text('- Authentication resolver: When logging we are redirected'),
-              Text('- Tabs change url, urls change tabs'),
-              Text('- Passing parameters in product details page'),
-              Text('- When route is not found we are redirected to home'),
-              Text('- Redirection of home route towards /dashboard'),
-              SizedBox(
+              const Text(
+                  '- Authentication resolver: When logging we are redirected'),
+              const Text('- Tabs change url, urls change tabs'),
+              const Text('- Passing parameters in product details page'),
+              const Text('- When route is not found we are redirected to home'),
+              const Text('- Redirection of home route towards /dashboard'),
+              const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
                   onPressed: () => AuthService.instance.signOut(),
-                  child: Text(
+                  child: const Text(
                     'Sing out',
                   ))
             ],

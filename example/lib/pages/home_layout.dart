@@ -29,8 +29,6 @@ class _HomeLayoutState extends State<HomeLayout>
     AppRoutes.favorites: 2,
   };
 
-  // TODO simplify this
-
   @override
   void initState() {
     _tabController = TabController(
@@ -88,13 +86,13 @@ class _HomeLayoutState extends State<HomeLayout>
         actions: [
           IconButton(
             onPressed: () => XRouter.goTo(AppRoutes.preferences),
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
           )
         ],
         bottom: TabBar(
           controller: _tabController,
           onTap: (index) => _navigate(index),
-          tabs: [
+          tabs: const [
             Tab(icon: Icon(Icons.home)),
             Tab(icon: Icon(Icons.star)),
             Tab(icon: Icon(Icons.favorite)),
@@ -106,7 +104,7 @@ class _HomeLayoutState extends State<HomeLayout>
         children: [
           DashboardPage(),
           ProductsPage(),
-          FavoritesPage(),
+          const FavoritesPage(),
         ],
       ),
     );

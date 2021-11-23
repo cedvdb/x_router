@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 

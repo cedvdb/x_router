@@ -5,13 +5,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 enum AuthStatus { unknown, authenticated, unautenticated }
 
 class AuthService {
-  BehaviorSubject<AuthStatus> _authStateSubject =
+  final _authStateSubject =
       BehaviorSubject<AuthStatus>.seeded(AuthStatus.unknown);
   late final Stream<AuthStatus> authStatusStream = _authStateSubject.stream;
 
   signIn() async {
     _authStateSubject.add(AuthStatus.unknown);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     _authStateSubject.add(AuthStatus.authenticated);
   }
 
@@ -39,7 +39,7 @@ class AuthService {
     });
 
     // setting the status to what it was before after 1sec
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       final bool? wasAuthenticated = authBox.get('authenticated');
       if (wasAuthenticated == null) {
         _authStateSubject.add(AuthStatus.unautenticated);

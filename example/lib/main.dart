@@ -32,20 +32,20 @@ class AppRoutes {
     ),
     XRoute(
       path: AppRoutes.preferences,
-      builder: (ctx, route) => PreferencesPage(),
+      builder: (ctx, route) => const PreferencesPage(),
     ),
     XRoute(
       title: 'dashboard',
       pageKey: const ValueKey('home-layout'),
       path: dashboard,
-      builder: (ctx, route) => HomeLayout(
+      builder: (ctx, route) => const HomeLayout(
         title: 'dashboard',
       ),
     ),
     XRoute(
       path: favorites,
       pageKey: const ValueKey('home-layout'),
-      builder: (ctx, route) => HomeLayout(
+      builder: (ctx, route) => const HomeLayout(
         title: 'favorites',
       ),
     ),
@@ -53,7 +53,7 @@ class AppRoutes {
       path: products,
       pageKey: const ValueKey('home-layout'),
       title: 'products',
-      builder: (ctx, route) => HomeLayout(
+      builder: (ctx, route) => const HomeLayout(
         title: 'products',
       ),
     ),
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
     ],
     routes: AppRoutes.routes,
     onEvent: (event) {
-      if (event is NavigationEnd) print(event);
+      // if (event is NavigationEnd) print(event);
     },
   );
 

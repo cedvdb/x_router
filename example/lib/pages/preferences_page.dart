@@ -16,7 +16,7 @@ class PreferencesPage extends StatelessWidget {
                 : XRouter.goTo(AppRoutes.dashboard);
           },
         ),
-        title: Text('preferences'),
+        title: const Text('preferences'),
       ),
     );
   }

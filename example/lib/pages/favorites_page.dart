@@ -9,7 +9,7 @@ class FavoritesPage extends StatelessWidget {
       children: [1, 2, 3, 4]
           .map(
             (v) => ListTile(
-              leading: Icon(Icons.favorite),
+              leading: const Icon(Icons.favorite),
               title: Text('product $v'),
             ),
           )

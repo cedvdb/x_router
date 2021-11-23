@@ -8,7 +8,7 @@ class XDefaultRoutes {
 
   static final notFoundRoute = XRoute(
     path: '/not-found',
-    builder: (ctx, params) => Text('''
+    builder: (ctx, params) => const Text('''
     
         Route path not found. 
         Consider using a XNotFoundResolver resolver to get the user to a known page.

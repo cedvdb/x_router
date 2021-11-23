@@ -18,7 +18,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       body: Center(
         child: widget.product != null
             ? Text(widget.product!.name)
-            : Text('unknwon product'),
+            : const Text('unknwon product'),
       ),
     );
   }
