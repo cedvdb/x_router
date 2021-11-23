@@ -5,14 +5,21 @@ import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends ValueNotifier<bool> with XResolver {
+  int calls = 0;
+
   ReactiveResolver() : super(false);
 
   @override
   XResolverAction resolve(String target) {
-    if (value) {
+    calls++;
+    print(calls);
+    if (value && target != '/true') {
       return const Redirect('/true');
+    } else if (target != '/false') {
+      return const Redirect('/false');
+    } else {
+      return const Next();
     }
-    return const Redirect('/false');
   }
 }
 
@@ -84,16 +91,19 @@ void main() {
       'Resolvers should notify when the state changes',
       () async {
         bool stateChanged = false;
+        callback() => stateChanged = true;
+
         final reactiveResolver = ReactiveResolver();
-        XRouterResolver(
+        final routerResolver = XRouterResolver(
           resolvers: [
-            ReactiveResolver(),
+            reactiveResolver,
           ],
-          onStateChanged: () => stateChanged = true,
+          onStateChanged: callback,
         );
         reactiveResolver.value = true;
-        await Future.value(true);
+        expect(reactiveResolver.value, isTrue);
         expect(stateChanged, isTrue);
+        routerResolver.dispose();
       },
     );
   });

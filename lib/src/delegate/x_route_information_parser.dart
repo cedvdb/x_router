@@ -1,19 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-// Note flutter furnish this class to transform a path
+// Note to reader: flutter furnish this class to transform a path
 // into an object of your choice.
 //
-// internally we use a XActivatedRoute. However it is not really used here.
+// Internally we use a XActivatedRoute. However transformation is not done
+// here (it could though) but instead in the XRouter.
 //
-// to use the logic that is inside the router should move here
+// An alternative approach that was taken was to make the XRoute extend RouteInformationParser.
+// It worked well, but it might be simpler to just forget about RouteInformationParser
+// which is what is essentially done here by just forwarding the location string.
 //
+// Therefor the reader can do as this file did not exist (until further changes).
 
 class XRouteInformationParser extends RouteInformationParser<String> {
-  // resolvers
-  // re
   @override
   Future<String> parseRouteInformation(RouteInformation routeInformation) {
+    // read comment above
     return SynchronousFuture(routeInformation.location ?? '');
   }
 

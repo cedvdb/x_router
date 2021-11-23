@@ -93,19 +93,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthResolver with XResolver {
-  AuthStatus _status = AuthStatus.unknown;
-
-  AuthResolver() : super() {
-    AuthService.instance.authStatus$.listen((status) {
-      _status = status;
-      XRouter.refresh();
-    });
+class AuthResolver extends ValueNotifier with XResolver {
+  AuthResolver() : super(AuthStatus.unknown) {
+    AuthService.instance.authStatus$.listen((status) => value = status);
   }
 
   @override
   XResolverAction resolve(String target) {
-    switch (_status) {
+    switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith(AppRoutes.signIn))
           return Redirect(AppRoutes.home);

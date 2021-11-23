@@ -31,6 +31,7 @@ class XRouter {
 
   /// renderer
   final XRouterDelegate delegate = XRouterDelegate(
+    // new route detected by the OS
     onNewRoute: (path) => goTo(path),
   );
 
@@ -47,7 +48,7 @@ class XRouter {
   }) {
     _resolver = XRouterResolver(
       // when the state of a reactive guard changes we resolve the current url
-      onStateChanged: () => goTo(_history.currentRoute.effectivePath),
+      onStateChanged: () => refresh(),
       resolvers: resolvers,
     );
     // the page stack (activatedRoute) builder
@@ -58,14 +59,6 @@ class XRouter {
       onEvent?.call(event);
       _onNavigationEvent(event);
     });
-  }
-
-  XRouter.child({
-    required List<XRoute> routes,
-  }) {
-    _activatedRouteBuilder = XActivatedRouteBuilder(
-      routes: routes,
-    );
   }
 
   /// goes to a location and adds it to the history
@@ -133,8 +126,8 @@ class XRouter {
   void _navigate(String target, Map<String, String>? params) {
     final parsed = _parse(target, params);
     final resolved = _resolve(parsed);
-    final activatedRoute =
-        _buildStack(resolved.target, builderOverride: resolved.builderOverride);
+    final activatedRoute = _buildActivatedRoute(resolved.target,
+        builderOverride: resolved.builderOverride);
     _history.add(activatedRoute);
     _render(activatedRoute);
     _eventEmitter.addEvent(NavigationEnd(activatedRoute: activatedRoute));
@@ -157,8 +150,16 @@ class XRouter {
     return resolved;
   }
 
+  // note: should builderOverride stay ?
+
   /// builds the page stack
-  XActivatedRoute _buildStack(String target, {XPageBuilder? builderOverride}) {
+  /// if [builderOverride] is present, the builder of activated
+  /// route will be [builderOverride] instead of the XRoute builder
+  /// This is to allow pages to be in a loading state
+  XActivatedRoute _buildActivatedRoute(
+    String target, {
+    XPageBuilder? builderOverride,
+  }) {
     _eventEmitter.addEvent(BuildStart(target: target));
     final activatedRoute = _activatedRouteBuilder.build(
       target,
