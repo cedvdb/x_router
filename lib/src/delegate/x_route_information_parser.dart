@@ -17,11 +17,13 @@ class XRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(RouteInformation routeInformation) {
     // read comment above
+    print('parse ${routeInformation.location}');
     return SynchronousFuture(routeInformation.location ?? '');
   }
 
   @override
   RouteInformation restoreRouteInformation(String configuration) {
+    print('restore $configuration');
     return RouteInformation(location: configuration);
   }
 }

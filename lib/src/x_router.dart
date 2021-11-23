@@ -17,7 +17,7 @@ import 'route_pattern/x_route_pattern.dart';
 /// Handles navigation
 ///
 /// To navigate simply call XRouter.goTo(routes, params) static method.
-class XRouter extends RouteInformationParser<XActivatedRoute> {
+class XRouter {
   /// emits the different steps of the navigation with event stream
   static final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
@@ -127,8 +127,7 @@ class XRouter extends RouteInformationParser<XActivatedRoute> {
 
   void _navigate(String target, Map<String, String>? params) async {
     final parsed = _parseUrl(target, params);
-    final activatedRoute =
-        await parseRouteInformation(RouteInformation(location: parsed));
+    final activatedRoute = _buildActivatedRoute(parsed);
     _history.add(activatedRoute);
     _render(activatedRoute);
     _eventEmitter.addEvent(
@@ -173,22 +172,5 @@ class XRouter extends RouteInformationParser<XActivatedRoute> {
   /// renders page stack on screen
   void _render(XActivatedRoute activatedRoute) {
     delegate.initRendering(activatedRoute);
-  }
-
-  @override
-  Future<XActivatedRoute> parseRouteInformation(
-    RouteInformation routeInformation,
-  ) {
-    final location = routeInformation.location;
-    if (location == null) {
-      return SynchronousFuture(XActivatedRoute.nulled());
-    }
-    // maybe redirects
-    final resolved = _resolve(location);
-    final activatedRoute = _buildActivatedRoute(
-      resolved.target,
-      builderOverride: resolved.builderOverride,
-    );
-    return SynchronousFuture(activatedRoute);
   }
 }
