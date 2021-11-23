@@ -36,6 +36,7 @@ class AppRoutes {
     ),
     XRoute(
       title: 'dashboard',
+      pageKey: const ValueKey('home-layout'),
       path: dashboard,
       builder: (ctx, route) => HomeLayout(
         title: 'dashboard',
@@ -43,12 +44,14 @@ class AppRoutes {
     ),
     XRoute(
       path: favorites,
+      pageKey: const ValueKey('home-layout'),
       builder: (ctx, route) => HomeLayout(
         title: 'favorites',
       ),
     ),
     XRoute(
       path: products,
+      pageKey: const ValueKey('home-layout'),
       title: 'products',
       builder: (ctx, route) => HomeLayout(
         title: 'products',

@@ -25,7 +25,6 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void initState() {
-    print('======> init state');
     _tabController = TabController(
       length: 3,
       vsync: this,
