@@ -18,7 +18,7 @@ class DashboardPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline5,
               ),
               Text('- Authentication resolver: When logging we are redirected'),
-              Text('- Tabs change url'),
+              Text('- Tabs change url, urls change tabs'),
               Text('- Passing parameters in product details page'),
               Text('- When route is not found we are redirected to home'),
               Text('- Redirection of home route towards /dashboard'),
