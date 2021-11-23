@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
@@ -10,13 +8,12 @@ class XRouterResolver {
   final List<XResolver> resolvers;
   final void Function() onStateChanged;
   final XEventEmitter _eventEmitter = XEventEmitter.instance;
-  List<StreamSubscription> _resolversSubscriptions = [];
 
   XRouterResolver({
     required this.onStateChanged,
     required this.resolvers,
   }) {
-    _resolversSubscriptions = _listenResolversStateChanges(resolvers);
+    _listenResolversStateChanges(resolvers);
   }
 
   /// resolve target path against the list of resolvers
@@ -25,8 +22,7 @@ class XRouterResolver {
   /// the calls attribute is to keep track of the number of times this fn
   /// was called recursively
   XRouterResolveResult resolve(
-    String path,
-    Map<String, String>? params, {
+    String path, {
     bool isRedirect = false,
     int calls = 0,
   }) {
@@ -51,7 +47,6 @@ class XRouterResolver {
       if (resolved is Redirect) {
         return resolve(
           resolved.target,
-          params,
           isRedirect: true,
           calls: calls + 1,
         );
@@ -90,16 +85,15 @@ class XRouterResolver {
     }
   }
 
-  List<StreamSubscription> _listenResolversStateChanges(
-      List<XResolver> resolvers) {
-    return resolvers
-        .map((resolver) => resolver.state$.listen((_) => onStateChanged()))
-        .toList();
+  void _listenResolversStateChanges(List<XResolver> resolvers) {
+    for (final resolver in resolvers) {
+      resolver.addListener(onStateChanged);
+    }
   }
 
   dispose() {
-    for (var sub in _resolversSubscriptions) {
-      sub.cancel();
+    for (final resolver in resolvers) {
+      resolver.dispose();
     }
   }
 }

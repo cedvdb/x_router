@@ -6,14 +6,12 @@ class XRouterHistory extends Iterable<XActivatedRoute> {
   final List<XActivatedRoute> _history = [];
 
   XActivatedRoute get currentRoute =>
-      _history.isNotEmpty ? _history.last : XActivatedRoute.nulled();
+      isNotEmpty ? last : XActivatedRoute.nulled();
 
   XActivatedRoute? get previousRoute =>
-      length > 1 ? _history.elementAt(_history.length - 2) : null;
+      length > 1 ? elementAt(_history.length - 2) : null;
 
   bool get hasPreviousRoute => previousRoute != null;
-  @override
-  int get length => _history.length;
 
   XRouterHistory();
 
@@ -25,8 +23,8 @@ class XRouterHistory extends Iterable<XActivatedRoute> {
 
   removeFrom(XActivatedRoute? activatedRoute) {
     if (activatedRoute == null) return;
-    for (final route in _history) {
-      if (route == activatedRoute) {
+    for (var i = _history.length; i < 0; i++) {
+      if (_history[i] == activatedRoute) {
         _history.removeLast();
         break;
       }

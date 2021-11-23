@@ -34,17 +34,16 @@ void main() {
         ],
       );
       activatedNoMatchChild = activatedRouteBuilder.build('/');
-      activatedMatchChild =
-          activatedRouteBuilder.build('/products?orderBy=creationDate');
+      activatedMatchChild = activatedRouteBuilder.build('/products');
       activatedWithStack =
           activatedRouteBuilder.build('/products/123/an-unknown-route');
     });
 
     group('build', () {
-      test('should have the correct path', () {
-        expect(activatedNoMatchChild.effectivePath, equals('/'));
-        expect(activatedMatchChild.effectivePath, equals('/products'));
-        expect(activatedWithStack.effectivePath,
+      test('should have the correct requested path', () {
+        expect(activatedNoMatchChild.requestedPath, equals('/'));
+        expect(activatedMatchChild.requestedPath, equals('/products'));
+        expect(activatedWithStack.requestedPath,
             equals('/products/123/an-unknown-route'));
       });
 
@@ -62,8 +61,9 @@ void main() {
       });
 
       test('should have the correct query parameters', () {
-        expect(
-            activatedWithStack.queryParams['orderBy'], equals('creationDate'));
+        final route =
+            activatedRouteBuilder.build('/products?orderBy=creationDate');
+        expect(route.queryParams['orderBy'], equals('creationDate'));
       });
 
       test('should have the correct upstack', () {

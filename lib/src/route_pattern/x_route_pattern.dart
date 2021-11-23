@@ -5,9 +5,9 @@ import 'dart:math';
 /// example
 class XRoutePattern {
   final String path;
-  late final Uri _uri = Uri(path: sanitize(path));
+  late final Uri _uri = Uri.parse(sanitize(path));
 
-  List<String> get _segments => _uri.pathSegments;
+  List<String> get segments => _uri.pathSegments;
 
   XRoutePattern(String path) : path = sanitize(path);
 
@@ -40,15 +40,15 @@ class XRoutePattern {
     return '/' + segments.join('/');
   }
 
-  /// parses path against this route
+  /// parses path against this route pattern
   XParsingResult parse(String path, {bool matchChildren = false}) {
     final toMatch = XRoutePattern(path);
     final matches = <bool>[];
     final params = <String, String>{};
     final matchingSegments = [];
-    final toMatchIsShorter = toMatch._segments.length < _segments.length;
-    final toMatchIsLonger = toMatch._segments.length > _segments.length;
-    final minLength = min(_segments.length, toMatch._segments.length);
+    final toMatchIsShorter = toMatch.segments.length < segments.length;
+    final toMatchIsLonger = toMatch.segments.length > segments.length;
+    final minLength = min(segments.length, toMatch.segments.length);
 
     // if toMatch is shorter it's defacto not a match
     if (toMatchIsShorter) {
@@ -61,8 +61,8 @@ class XRoutePattern {
     }
 
     for (var i = 0; i < minLength; i++) {
-      final patternSegment = _segments[i];
-      final toMatchSegment = toMatch._segments[i];
+      final patternSegment = segments[i];
+      final toMatchSegment = toMatch.segments[i];
 
       // we extract the param
       if (patternSegment.startsWith(':')) {

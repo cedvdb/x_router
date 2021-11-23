@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
-abstract class XResolver<G> {
-  final StreamController<G?> _state$ = StreamController<G?>();
-  late final Stream<G?> state$ = _state$.stream.asBroadcastStream();
+abstract class XResolver<G> extends ChangeNotifier {
+  // final StreamController<G?> _state$ = StreamController<G?>();
+  // late final Stream<G?> state$ = _state$.stream.asBroadcastStream();
   G? _state;
   G? get state => _state;
   set state(G? state) {
     _state = state;
-    _state$.add(_state);
+    notifyListeners();
   }
 
   XResolver({G? initialState}) : _state = initialState;

@@ -116,7 +116,7 @@ class XRouter {
 
   void _navigate(String target, Map<String, String>? params) {
     final parsed = _parse(target, params);
-    final resolved = _resolve(parsed, params);
+    final resolved = _resolve(parsed);
     final activatedRoute =
         _buildStack(resolved.target, builderOverride: resolved.builderOverride);
     _history.add(activatedRoute);
@@ -134,9 +134,9 @@ class XRouter {
   }
 
   /// goes through all resolvers to see the final endpoint after redirection
-  XRouterResolveResult _resolve(String target, Map<String, String>? params) {
+  XRouterResolveResult _resolve(String target) {
     _eventEmitter.addEvent(ResolvingStart(target: target));
-    final resolved = _resolver.resolve(target, params);
+    final resolved = _resolver.resolve(target);
     _eventEmitter.addEvent(ResolvingEnd(resolved));
     return resolved;
   }

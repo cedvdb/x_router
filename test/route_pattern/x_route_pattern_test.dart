@@ -113,6 +113,13 @@ void main() {
       });
     });
 
+    test('Should be a match despite query params', () {
+      expect(XRoutePattern('/segments?query=dart').segments[0],
+          equals('segments'));
+      // expect(XRoutePattern('/test').parse('/test?sort=creationDate'),
+      //     const IsMatch());
+    });
+
     test('Should reverse params', () {
       const params = {'id': '3', 'otherId': '4'};
       expect(XRoutePattern('/route/:id').addParameters(params),
