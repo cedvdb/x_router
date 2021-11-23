@@ -193,6 +193,7 @@ Generally you will store your routes somewhere however:
   - `replace`: removes current location from history and `goTo` location
   - `pop`: if upstack is not empty `goTo` first location in upstack
   - `back`: go back chronologically
+  - `refresh`: go to current location (useful for your resolvers have state)
 
 
 

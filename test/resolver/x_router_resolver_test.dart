@@ -12,7 +12,6 @@ class ReactiveResolver extends ValueNotifier<bool> with XResolver {
   @override
   XResolverAction resolve(String target) {
     calls++;
-    print(calls);
     if (value && target != '/true') {
       return const Redirect('/true');
     } else if (target != '/false') {

@@ -36,7 +36,8 @@ class AppRoutes {
     XRoute(
       path: productDetail,
       builder: (ctx, route) => Container(
-          key: ValueKey('${AppRoutes.productDetail}${route.pathParams["id"]}')),
+          key:
+              ValueKey('${AppRoutes.productDetail}-${route.pathParams["id"]}')),
     ),
   ];
 }
@@ -69,29 +70,29 @@ class MockApp extends StatelessWidget {
   }
 }
 
-// class AuthResolver extends ValueNotifier with XResolver {
-//   AuthResolver() : super(AuthStatus.unknown) {
-//     AuthService.instance.authStatus$.listen((status) => value = status);
-//   }
+class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
+  MockAuthResolver() : super(null);
 
-//   @override
-//   XResolverAction resolve(String target) {
-//     switch (value) {
-//       case AuthStatus.authenticated:
-//         if (target.startsWith(AppRoutes.signIn))
-//           return Redirect(AppRoutes.home);
-//         else
-//           return Next();
-//       case AuthStatus.unautenticated:
-//         if (target.startsWith(AppRoutes.signIn))
-//           return Next();
-//         else
-//           return Redirect(AppRoutes.signIn);
-//       case AuthStatus.unknown:
-//       default:
-//         return Loading(
-//           LoadingPage(text: 'Checking Auth Status'),
-//         );
-//     }
-//   }
-// }
+  signIn() => value = true;
+  signOut() => value = false;
+
+  @override
+  XResolverAction resolve(String target) {
+    switch (value) {
+      case true:
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Redirect(AppRoutes.home);
+        } else {
+          return const Next();
+        }
+      case false:
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Next();
+        } else {
+          return const Redirect(AppRoutes.signIn);
+        }
+      default:
+        return const Loading(CircularProgressIndicator());
+    }
+  }
+}

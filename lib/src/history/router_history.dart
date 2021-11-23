@@ -37,6 +37,10 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
     }
   }
 
+  void clear() {
+    _history.clear();
+  }
+
   void _removeLast() {
     // should remove from browser history here too
     _history.removeAt(0);

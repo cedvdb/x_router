@@ -14,7 +14,9 @@ import 'route_pattern/x_route_pattern.dart';
 
 /// Handles navigation
 ///
-/// To navigate simply call XRouter.goTo(routes, params) static method.
+/// # Navigation
+///
+///
 class XRouter {
   /// emits the different steps of the navigation with event stream
   static final XEventEmitter _eventEmitter = XEventEmitter.instance;
@@ -57,6 +59,7 @@ class XRouter {
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,
     );
+    // subscribing to static events so the instance will start processing those
     _eventEmitter.eventStream.listen((event) {
       onEvent?.call(event);
       _onNavigationEvent(event);

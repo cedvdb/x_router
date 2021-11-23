@@ -5,18 +5,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 enum AuthStatus { unknown, authenticated, unautenticated }
 
 class AuthService {
-  BehaviorSubject<AuthStatus> _authStateSubj$ =
+  BehaviorSubject<AuthStatus> _authStateSubject =
       BehaviorSubject<AuthStatus>.seeded(AuthStatus.unknown);
-  late final Stream<AuthStatus> authStatus$ = _authStateSubj$.stream;
+  late final Stream<AuthStatus> authStatusStream = _authStateSubject.stream;
 
   signIn() async {
-    _authStateSubj$.add(AuthStatus.unknown);
-    await Future.delayed(Duration(seconds: 2));
-    _authStateSubj$.add(AuthStatus.authenticated);
+    _authStateSubject.add(AuthStatus.unknown);
+    await Future.delayed(Duration(seconds: 1));
+    _authStateSubject.add(AuthStatus.authenticated);
   }
 
   signOut() {
-    _authStateSubj$.add(AuthStatus.unautenticated);
+    _authStateSubject.add(AuthStatus.unautenticated);
   }
 
   // singleton
@@ -30,7 +30,7 @@ class AuthService {
 
     final authBox = await Hive.openBox('authBox');
     // listen for auth changes and saves it in storage
-    _authStateSubj$.stream.listen((state) {
+    _authStateSubject.stream.listen((state) {
       if (state == AuthStatus.unknown) {
         return;
       }
@@ -42,9 +42,9 @@ class AuthService {
     Future.delayed(Duration(seconds: 2), () {
       final bool? wasAuthenticated = authBox.get('authenticated');
       if (wasAuthenticated == null) {
-        _authStateSubj$.add(AuthStatus.unautenticated);
+        _authStateSubject.add(AuthStatus.unautenticated);
       } else {
-        _authStateSubj$.add(
+        _authStateSubject.add(
           wasAuthenticated
               ? AuthStatus.authenticated
               : AuthStatus.unautenticated,

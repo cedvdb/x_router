@@ -95,25 +95,29 @@ class MyApp extends StatelessWidget {
 
 class AuthResolver extends ValueNotifier with XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatus$.listen((status) => value = status);
+    AuthService.instance.authStatusStream.listen((authStatus) {
+      value = authStatus;
+    });
   }
 
   @override
   XResolverAction resolve(String target) {
     switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith(AppRoutes.signIn))
-          return Redirect(AppRoutes.home);
-        else
-          return Next();
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Redirect(AppRoutes.home);
+        } else {
+          return const Next();
+        }
       case AuthStatus.unautenticated:
-        if (target.startsWith(AppRoutes.signIn))
-          return Next();
-        else
-          return Redirect(AppRoutes.signIn);
+        if (target.startsWith(AppRoutes.signIn)) {
+          return const Next();
+        } else {
+          return const Redirect(AppRoutes.signIn);
+        }
       case AuthStatus.unknown:
       default:
-        return Loading(
+        return const Loading(
           LoadingPage(text: 'Checking Auth Status'),
         );
     }
