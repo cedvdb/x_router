@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
@@ -26,6 +24,8 @@ class XRouter {
 
   /// chronological history
   static final XRouterHistory _history = XRouterHistory();
+
+  static XRouterHistory get history => _history;
 
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.

@@ -7,9 +7,10 @@ import 'package:flutter/foundation.dart';
 // Internally we use a XActivatedRoute. However transformation is not done
 // here (it could though) but instead in the XRouter.
 //
+// However the processus is buggy especially with back press
+//
 // An alternative approach that was taken was to make the XRoute extend RouteInformationParser.
-// It worked well, but it might be simpler to just forget about RouteInformationParser
-// which is what is essentially done here by just forwarding the location string.
+// It worked somewhat but the approach chosen was to ditch this class until the bugs are resolved.
 //
 // Therefor the reader can do as this file did not exist (until further changes).
 
@@ -17,13 +18,11 @@ class XRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(RouteInformation routeInformation) {
     // read comment above
-    print('parse ${routeInformation.location}');
     return SynchronousFuture(routeInformation.location ?? '');
   }
 
   @override
   RouteInformation restoreRouteInformation(String configuration) {
-    print('restore $configuration');
     return RouteInformation(location: configuration);
   }
 }

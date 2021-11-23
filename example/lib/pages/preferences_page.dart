@@ -1,3 +1,4 @@
+import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
@@ -10,7 +11,9 @@ class PreferencesPage extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            XRouter.back();
+            XRouter.history.hasPreviousRoute
+                ? XRouter.back()
+                : XRouter.goTo(AppRoutes.dashboard);
           },
         ),
         title: Text('preferences'),

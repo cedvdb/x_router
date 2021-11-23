@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
 // responsible of keeping track of the history
@@ -27,11 +29,16 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
     if (activatedRoute == null) return;
     for (var i = 0; i < _history.length; i++) {
       if (_history[i] == activatedRoute) {
-        _history.removeAt(0);
+        _removeLast();
         break;
       }
-      _history.removeAt(0);
+      _removeLast();
     }
+  }
+
+  _removeLast() {
+    // should remove from browser history here too
+    _history.removeAt(0);
   }
 
   @override
