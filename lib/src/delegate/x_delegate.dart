@@ -39,7 +39,7 @@ class XRouterDelegate extends RouterDelegate<String>
     ];
     _setBrowserTitle(context, _activatedRoute.route.title);
     return Navigator(
-      key: navigatorKey,
+      key: const ValueKey('_root_nav'),
       pages: pages,
       onPopPage: (route, res) {
         pop();
