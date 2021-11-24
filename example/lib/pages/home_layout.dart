@@ -24,9 +24,9 @@ class _HomeLayoutState extends State<HomeLayout>
   StreamSubscription? navSubscription;
 
   final _tabsIndex = <String, int>{
-    AppRoutes.dashboard: 0,
-    AppRoutes.products: 1,
-    AppRoutes.favorites: 2,
+    RouteLocations.dashboard: 0,
+    RouteLocations.products: 1,
+    RouteLocations.favorites: 2,
   };
 
   int? _findTabIndex(String url) {
@@ -48,13 +48,13 @@ class _HomeLayoutState extends State<HomeLayout>
     _tabController = TabController(
       length: 3,
       vsync: this,
-      initialIndex: _findTabIndex(XRouter.history.currentUrl) ?? 0,
+      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
     );
-    navSubscription = XRouter.eventStream
+    navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((nav) {
-      final foundIndex = _findTabIndex(XRouter.history.currentUrl);
+      final foundIndex = _findTabIndex(router.history.currentUrl);
       if (foundIndex != null) {
         _tabController.animateTo(foundIndex);
       }
@@ -75,7 +75,7 @@ class _HomeLayoutState extends State<HomeLayout>
   }
 
   _navigate(int index) {
-    XRouter.goTo(_findUrlForTabIndex(index));
+    router.goTo(_findUrlForTabIndex(index));
   }
 
   @override
@@ -85,7 +85,7 @@ class _HomeLayoutState extends State<HomeLayout>
         title: Text(widget.title),
         actions: [
           IconButton(
-            onPressed: () => XRouter.goTo(AppRoutes.preferences),
+            onPressed: () => router.goTo(RouteLocations.preferences),
             icon: const Icon(Icons.settings),
           )
         ],

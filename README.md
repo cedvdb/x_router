@@ -57,9 +57,11 @@ This is the approach this library takes to create the **upstack** by default.
 For navigation you can use the static method `XRoute.goTo(location)`
 
 ```dart
-  XRouter.goTo('/products/:id', params: { 'id': '123' });
+  final router = XRouter(routes: []);
+
+  router.goTo('/products/:id', params: { 'id': '123' });
   // Generally you will store your routes somewhere:
-  XRouter.goTo(AppRoutes.productDetails, params: { 'id': '123' });
+  router.goTo(AppRoutes.productDetails, params: { 'id': '123' });
 ```
 
 ### All navigation methods
@@ -257,7 +259,7 @@ For tabs the process is a bit involved, you need to redirect when a new tab is c
 
 ```dart
   _navigate(int index) {
-    XRouter.goTo(_findUrlForTabIndex(index));
+    router.goTo(_findUrlForTabIndex(index));
   }
 ```
 
@@ -265,11 +267,11 @@ You also need to change the tab when the url changes:
 
 ```dart
 
-    navSubscription = XRouter.eventStream
+    navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((nav) {
-      final foundIndex = _findTabIndex(XRouter.history.currentUrl);
+      final foundIndex = _findTabIndex(router.history.currentUrl);
       if (foundIndex != null) {
         _tabController.animateTo(foundIndex);
       }
@@ -282,7 +284,7 @@ and you also need to set the initial index when the page is first loaded
     _tabController = TabController(
       length: 3,
       vsync: this,
-      initialIndex: _findTabIndex(XRouter.history.currentUrl) ?? 0,
+      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
     );
 
 ```

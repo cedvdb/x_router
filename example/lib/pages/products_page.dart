@@ -13,7 +13,7 @@ class ProductsPage extends StatelessWidget {
             ListTile(
               title: Text(product.name),
               subtitle: Text('\$ ' + product.price.toString()),
-              onTap: () => XRouter.goTo(AppRoutes.productDetail,
+              onTap: () => router.goTo(RouteLocations.productDetail,
                   params: {'id': product.id}),
             )
         ],

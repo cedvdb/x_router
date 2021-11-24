@@ -11,9 +11,9 @@ class PreferencesPage extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            XRouter.history.hasPreviousRoute
-                ? XRouter.back()
-                : XRouter.goTo(AppRoutes.dashboard);
+            router.history.hasPreviousRoute
+                ? router.back()
+                : router.goTo(RouteLocations.dashboard);
           },
         ),
         title: const Text('preferences'),

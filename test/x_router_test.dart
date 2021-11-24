@@ -6,163 +6,176 @@ import 'package:x_router/x_router.dart';
 import 'mock_app.dart';
 
 void main() {
-  group('XRouter', () {
-    setUp(() {
-      XRouter.history.clear();
-    });
+  group('router', () {
+    late XRouter router;
+
+    setUp(() => router = getTestRouter());
     group('initialization', () {
       testWidgets('should render initial page', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey(AppRoutes.home)), findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should have history of one', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
-        await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
-        expect(
-            XRouter.history.currentRoute.effectivePath, equals(AppRoutes.home));
+        await tester.pumpWidget(TestApp(router));
+        expect(router.history.length, equals(1));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.home));
       });
     });
 
     group('goTo', () {
       testWidgets('should render next page', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey(AppRoutes.products)), findsOneWidget);
+        expect(
+            find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
 
       testWidgets('should use parameters', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.productDetail, params: {'id': '123'});
+        router.goTo(RouteLocation.productDetail, params: {'id': '123'});
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey('${AppRoutes.productDetail}-123')),
+        expect(find.byKey(const ValueKey('${RouteLocation.productDetail}-123')),
             findsOneWidget);
       });
       testWidgets('should add to history', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(2));
-        expect(XRouter.history.currentRoute.effectivePath,
-            equals(AppRoutes.products));
-        expect(XRouter.history.previousRoute?.effectivePath,
-            equals(AppRoutes.home));
+        expect(router.history.length, equals(2));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.products));
+        expect(router.history.previousRoute?.effectivePath,
+            equals(RouteLocation.home));
       });
     });
     group('replace', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.replace(AppRoutes.products);
+        router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey(AppRoutes.products)), findsOneWidget);
+        expect(
+            find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should replace in history', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.replace(AppRoutes.products);
+        router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
-        expect(XRouter.history.currentRoute.effectivePath,
-            equals(AppRoutes.products));
+        expect(router.history.length, equals(1));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.products));
       });
     });
 
     group('pop', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.productDetail);
+        router.goTo(RouteLocation.productDetail);
         await tester.pumpAndSettle();
-        XRouter.pop();
+        router.pop();
         await tester.pumpAndSettle();
         // products is above in upstack
-        expect(find.byKey(const ValueKey(AppRoutes.products)), findsOneWidget);
+        expect(
+            find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should add in history', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        XRouter.pop();
+        router.pop();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(3));
-        expect(
-            XRouter.history.currentRoute.effectivePath, equals(AppRoutes.home));
+        expect(router.history.length, equals(3));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.home));
       });
     });
 
     group('back', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        XRouter.back();
+        router.back();
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey(AppRoutes.home)), findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should remove in history', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        XRouter.back();
+        router.back();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(1));
-        expect(
-            XRouter.history.currentRoute.effectivePath, equals(AppRoutes.home));
+        expect(router.history.length, equals(1));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.home));
       });
     });
 
     group('refresh', () {
       testWidgets('should stay on current route if no redirection',
           (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        XRouter.refresh();
+        router.refresh();
         await tester.pumpAndSettle();
-        expect(XRouter.history.currentRoute.effectivePath,
-            equals(AppRoutes.products));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.products));
       });
 
       testWidgets('history does not increase', (tester) async {
-        await tester.pumpWidget(MockApp(resolvers: const []));
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        XRouter.goTo(AppRoutes.products);
+        router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(2));
-        XRouter.refresh();
+        expect(router.history.length, equals(2));
+        router.refresh();
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(2));
+        expect(router.history.length, equals(2));
       });
     });
 
     group('resolvers', () {
       testWidgets('Should render with redirect', (tester) async {
-        await tester.pumpWidget(MockApp(
+        final router = getTestRouter(
           resolvers: [
-            XRedirectResolver(from: AppRoutes.home, to: AppRoutes.products)
+            XRedirectResolver(
+                from: RouteLocation.home, to: RouteLocation.products),
+            XRedirectResolver(
+                from: RouteLocation.preferences, to: RouteLocation.home),
           ],
-        ));
+        );
+        await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
-        expect(XRouter.history.length, equals(2));
-        expect(XRouter.history.currentRoute.effectivePath,
-            equals(AppRoutes.products));
+        expect(router.history.length, equals(1));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.products));
+        // goes back to first redirect
+        router.goTo(RouteLocation.preferences);
+        expect(router.history.length, equals(1));
+        expect(router.history.currentRoute.effectivePath,
+            equals(RouteLocation.products));
       });
 
       testWidgets('Should display loading if resolver is not ready',
           (tester) async {
-        await tester.pumpWidget(MockApp(
+        final router = getTestRouter(
           resolvers: [MockAuthResolver()],
-        ));
+        );
+        await tester.pumpWidget(TestApp(router));
+
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
       });
@@ -170,20 +183,23 @@ void main() {
       testWidgets('should redirect after refresh if redirector state changed',
           (tester) async {
         final authResolver = MockAuthResolver();
-        await tester.pumpWidget(MockApp(
+        final router = getTestRouter(
           resolvers: [authResolver],
-        ));
+        );
+        await tester.pumpWidget(TestApp(router));
+
         await tester.pumpAndSettle();
         authResolver.signIn();
         await tester.pumpAndSettle();
 
         expect(find.byKey(const ValueKey('loading-screen')), findsNothing);
-        expect(find.byKey(const ValueKey(AppRoutes.home)), findsOneWidget);
-        expect(find.byKey(const ValueKey(AppRoutes.signIn)), findsNothing);
+        expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.signIn)), findsNothing);
 
         authResolver.signOut();
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey(AppRoutes.signIn)), findsOneWidget);
+        expect(
+            find.byKey(const ValueKey(RouteLocation.signIn)), findsOneWidget);
       });
     });
   });

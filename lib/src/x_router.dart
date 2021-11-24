@@ -14,27 +14,31 @@ import 'route_pattern/x_route_pattern.dart';
 
 /// Handles navigation
 ///
-/// # Navigation
+/// One instance of XRouter should be created by an application.
 ///
-///
+/// To navigate use one of:
+///   - goTo
+///   - replace
+///   - back
+///   - pop (This is usually handled by flutter)
 class XRouter {
   /// emits the different steps of the navigation with event stream
-  static final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   /// streams all router event
-  static Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
+  Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
 
   /// chronological history
-  static final XRouterHistory _history = XRouterHistory();
+  final XRouterHistory _history = XRouterHistory();
 
-  static XRouterHistory get history => _history;
+  XRouterHistory get history => _history;
 
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.
   final XRouteInformationParser informationParser = XRouteInformationParser();
 
   /// renderer
-  final XRouterDelegate delegate = XRouterDelegate(
+  late final XRouterDelegate delegate = XRouterDelegate(
     // new route detected by the OS
     onNewRoute: (path) => goTo(path),
   );
@@ -48,7 +52,6 @@ class XRouter {
   XRouter({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
-    Function(XRouterEvent)? onEvent,
   }) {
     _resolver = XRouterResolver(
       // when the state of a reactive guard changes we resolve the current url
@@ -59,90 +62,70 @@ class XRouter {
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,
     );
-    // subscribing to static events so the instance will start processing those
-    _eventEmitter.eventStream.listen((event) {
-      onEvent?.call(event);
-      _onNavigationEvent(event);
-    });
   }
 
   /// goes to a location and adds it to the history
   ///
   /// The upstack is generated with the url, if the url is /route1/route2
   /// the upstack will be [Route1Page, Route2Page]
-  static void goTo(String target, {Map<String, String>? params}) {
-    // event emitted so the XRouter instance can take care of it
-    _eventEmitter.addEvent(NavigationStart(target: target, params: params));
+  void goTo(String target, {Map<String, String>? params}) {
+    _navigate(target, params);
   }
 
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
-  static void replace(String target, {Map<String, String>? params}) {
-    _eventEmitter.addEvent(
-      NavigationStart(
-        target: target,
-        params: params,
-        removeHistoryThrough: _history.currentRoute,
-      ),
+  void replace(String target, {Map<String, String>? params}) {
+    _navigate(
+      target,
+      params,
+      removeHistoryThrough: _history.currentRoute,
     );
   }
 
-  /// goTo route above the current one in the page stack if any
-  static void pop() {
+  /// [goTo] route above the current one in the page stack if any
+  /// Usually this method is called by flutter. Consider using [back]
+  /// to go back chronologically
+  void pop() {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
-      _eventEmitter.addEvent(
-        NavigationStart(
-          target: up.effectivePath,
-          params: up.pathParams,
-        ),
+      _navigate(
+        up.effectivePath,
+        up.pathParams,
       );
     }
   }
 
   /// goes back chronologically
-  static void back() {
+  void back() {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
-      _eventEmitter.addEvent(
-        NavigationStart(
-          target: previousRoute.effectivePath,
-          params: previousRoute.pathParams,
-          removeHistoryThrough: previousRoute,
-        ),
+      _navigate(
+        previousRoute.effectivePath,
+        previousRoute.pathParams,
+        removeHistoryThrough: previousRoute,
       );
     }
   }
 
   /// alias for goTo(currentUrl)
-  static void refresh() {
-    // event emitted so the XRouter instance can take care of it
-    _eventEmitter.addEvent(
-      NavigationStart(
-        target: _history.currentRoute.effectivePath,
-        params: _history.currentRoute.pathParams,
-      ),
+  void refresh() {
+    _navigate(
+      _history.currentRoute.effectivePath,
+      _history.currentRoute.pathParams,
     );
-  }
-
-  void _onNavigationEvent(event) {
-    // this method just calls the right method to get the result for the next event
-    if (event is NavigationStart) {
-      final activatedRoute =
-          _navigate(event.target, event.params, event.removeHistoryThrough);
-      _eventEmitter.addEvent(NavigationEnd(
-          activatedRoute: activatedRoute,
-          target: event.target,
-          previous: _history.previousRoute));
-    }
   }
 
   XActivatedRoute _navigate(
     String target,
-    Map<String, String>? params,
+    Map<String, String>? params, {
     XActivatedRoute? removeHistoryThrough,
-  ) {
+  }) {
+    _eventEmitter.addEvent(NavigationStart(
+      target: target,
+      params: params,
+      removeHistoryThrough: removeHistoryThrough,
+    ));
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
     final activatedRoute = _buildActivatedRoute(
@@ -153,6 +136,11 @@ class XRouter {
 
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
+    _eventEmitter.addEvent(NavigationEnd(
+      activatedRoute: activatedRoute,
+      target: target,
+      previous: _history.previousRoute,
+    ));
     return activatedRoute;
   }
 

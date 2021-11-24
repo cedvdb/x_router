@@ -1,66 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-class AppRoutes {
+class RouteLocation {
   static const home = '/';
   static const products = '/products';
   static const preferences = '/preferences';
   static const productDetail = '/products/:id';
   static const signIn = '/sign-in';
-
-  static final routes = [
-    XRoute(
-      title: 'sign in !',
-      path: signIn,
-      builder: (ctx, route) => Container(
-        key: const ValueKey(AppRoutes.signIn),
-      ),
-    ),
-    XRoute(
-      path: preferences,
-      builder: (ctx, route) => Container(
-        key: const ValueKey(AppRoutes.preferences),
-      ),
-    ),
-    XRoute(
-      path: AppRoutes.home,
-      builder: (ctx, route) => Container(key: const ValueKey(AppRoutes.home)),
-    ),
-    XRoute(
-      path: products,
-      title: 'products',
-      builder: (ctx, route) => Container(
-        key: const ValueKey(AppRoutes.products),
-      ),
-    ),
-    XRoute(
-      path: productDetail,
-      builder: (ctx, route) => Container(
-          key:
-              ValueKey('${AppRoutes.productDetail}-${route.pathParams["id"]}')),
-    ),
-  ];
 }
 
-class MockApp extends StatelessWidget {
-  late final XRouter _router;
+XRouter getTestRouter({List<XResolver> resolvers = const []}) {
+  return XRouter(
+    resolvers: resolvers,
+    routes: [
+      XRoute(
+        title: 'sign in !',
+        path: RouteLocation.signIn,
+        builder: (ctx, route) => Container(
+          key: const ValueKey(RouteLocation.signIn),
+        ),
+      ),
+      XRoute(
+        path: RouteLocation.preferences,
+        builder: (ctx, route) => Container(
+          key: const ValueKey(RouteLocation.preferences),
+        ),
+      ),
+      XRoute(
+        path: RouteLocation.home,
+        builder: (ctx, route) =>
+            Container(key: const ValueKey(RouteLocation.home)),
+      ),
+      XRoute(
+        path: RouteLocation.products,
+        title: 'products',
+        builder: (ctx, route) => Container(
+          key: const ValueKey(RouteLocation.products),
+        ),
+      ),
+      XRoute(
+        path: RouteLocation.productDetail,
+        builder: (ctx, route) => Container(
+            key: ValueKey(
+                '${RouteLocation.productDetail}-${route.pathParams["id"]}')),
+      ),
+    ],
+  );
+}
 
-  MockApp({
-    required List<XResolver> resolvers,
+class TestApp extends StatelessWidget {
+  final XRouter router;
+
+  const TestApp(
+    this.router, {
     Key? key,
-  }) : super(key: key) {
-    _router = XRouter(
-      routes: AppRoutes.routes,
-      resolvers: resolvers,
-    );
-  }
+  }) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routeInformationParser: _router.informationParser,
-      routerDelegate: _router.delegate,
+      routeInformationParser: router.informationParser,
+      routerDelegate: router.delegate,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData(
@@ -80,16 +81,16 @@ class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
   XResolverAction resolve(String target) {
     switch (value) {
       case true:
-        if (target.startsWith(AppRoutes.signIn)) {
-          return const Redirect(AppRoutes.home);
+        if (target.startsWith(RouteLocation.signIn)) {
+          return const Redirect(RouteLocation.home);
         } else {
           return const Next();
         }
       case false:
-        if (target.startsWith(AppRoutes.signIn)) {
+        if (target.startsWith(RouteLocation.signIn)) {
           return const Next();
         } else {
-          return const Redirect(AppRoutes.signIn);
+          return const Redirect(RouteLocation.signIn);
         }
       default:
         return Loading(Container(

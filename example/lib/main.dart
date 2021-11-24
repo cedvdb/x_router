@@ -14,7 +14,7 @@ import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:flutter/cupertino.dart';
 
-class AppRoutes {
+class RouteLocations {
   static const home = '/app';
   static const dashboard = '$home/dashboard';
   static const products = '$home/products';
@@ -23,70 +23,70 @@ class AppRoutes {
   static const productDetail = '$home/products/:id';
   static const loading = '/loading';
   static const signIn = '/sign-in';
-
-  static final routes = [
-    XRoute(
-      title: 'sign in !',
-      path: signIn,
-      builder: (ctx, route) => SignInPage(),
-    ),
-    XRoute(
-      path: AppRoutes.preferences,
-      builder: (ctx, route) => const PreferencesPage(),
-    ),
-    XRoute(
-      title: 'dashboard',
-      pageKey: const ValueKey('home-layout'),
-      path: dashboard,
-      builder: (ctx, route) => const HomeLayout(
-        title: 'dashboard',
-      ),
-    ),
-    XRoute(
-      path: favorites,
-      pageKey: const ValueKey('home-layout'),
-      builder: (ctx, route) => const HomeLayout(
-        title: 'favorites',
-      ),
-    ),
-    XRoute(
-      path: products,
-      pageKey: const ValueKey('home-layout'),
-      title: 'products',
-      builder: (ctx, route) => const HomeLayout(
-        title: 'products',
-      ),
-    ),
-    XRoute(
-      path: productDetail,
-      builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
-    ),
-  ];
 }
+
+final _routes = [
+  XRoute(
+    title: 'sign in !',
+    path: RouteLocations.signIn,
+    builder: (ctx, route) => SignInPage(),
+  ),
+  XRoute(
+    path: RouteLocations.preferences,
+    builder: (ctx, route) => const PreferencesPage(),
+  ),
+  XRoute(
+    title: 'dashboard',
+    pageKey: const ValueKey('home-layout'),
+    path: RouteLocations.dashboard,
+    builder: (ctx, route) => const HomeLayout(
+      title: 'dashboard',
+    ),
+  ),
+  XRoute(
+    path: RouteLocations.favorites,
+    pageKey: const ValueKey('home-layout'),
+    builder: (ctx, route) => const HomeLayout(
+      title: 'favorites',
+    ),
+  ),
+  XRoute(
+    path: RouteLocations.products,
+    pageKey: const ValueKey('home-layout'),
+    title: 'products',
+    builder: (ctx, route) => const HomeLayout(
+      title: 'products',
+    ),
+  ),
+  XRoute(
+    path: RouteLocations.productDetail,
+    builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+  ),
+];
+
+// Usually you'd want to wrap the XRouter instance so you can
+// easily swap your routing dependency (use another package)
+// and just change the wrapper.
+final router = XRouter(
+  resolvers: [
+    AuthResolver(),
+    XRedirectResolver(from: RouteLocations.home, to: RouteLocations.dashboard),
+    XNotFoundResolver(redirectTo: RouteLocations.home, routes: _routes),
+  ],
+  routes: _routes,
+);
 
 void main() async {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  static final _router = XRouter(
-    resolvers: [
-      AuthResolver(),
-      XRedirectResolver(from: AppRoutes.home, to: AppRoutes.dashboard),
-      XNotFoundResolver(redirectTo: AppRoutes.home, routes: AppRoutes.routes),
-    ],
-    routes: AppRoutes.routes,
-    onEvent: (event) {
-      // if (event is NavigationEnd) print(event);
-    },
-  );
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routeInformationParser: _router.informationParser,
-      routerDelegate: _router.delegate,
+      routeInformationParser: router.informationParser,
+      routerDelegate: router.delegate,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData(
@@ -107,16 +107,16 @@ class AuthResolver extends ValueNotifier with XResolver {
   XResolverAction resolve(String target) {
     switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith(AppRoutes.signIn)) {
-          return const Redirect(AppRoutes.home);
+        if (target.startsWith(RouteLocations.signIn)) {
+          return const Redirect(RouteLocations.home);
         } else {
           return const Next();
         }
       case AuthStatus.unautenticated:
-        if (target.startsWith(AppRoutes.signIn)) {
+        if (target.startsWith(RouteLocations.signIn)) {
           return const Next();
         } else {
-          return const Redirect(AppRoutes.signIn);
+          return const Redirect(RouteLocations.signIn);
         }
       case AuthStatus.unknown:
       default:
