@@ -64,9 +64,6 @@ final _routes = [
   ),
 ];
 
-// Usually you'd want to wrap the XRouter instance so you can
-// easily swap your routing dependency (use another package)
-// and just change the wrapper.
 final router = XRouter(
   resolvers: [
     AuthResolver(),
@@ -75,26 +72,6 @@ final router = XRouter(
   ],
   routes: _routes,
 );
-
-void main() async {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: router.informationParser,
-      routerDelegate: router.delegate,
-      debugShowCheckedModeBanner: false,
-      title: 'XRouter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-    );
-  }
-}
 
 class AuthResolver extends ValueNotifier with XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
@@ -120,9 +97,29 @@ class AuthResolver extends ValueNotifier with XResolver {
         }
       case AuthStatus.unknown:
       default:
-        return const Loading(
-          LoadingPage(text: 'Guard: Checking Auth Status'),
+        return Loading(
+          (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
         );
     }
+  }
+}
+
+void main() async {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routeInformationParser: router.informationParser,
+      routerDelegate: router.delegate,
+      debugShowCheckedModeBanner: false,
+      title: 'XRouter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+    );
   }
 }

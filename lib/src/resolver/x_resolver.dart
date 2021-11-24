@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
+import 'package:x_router/src/route/x_page_builder.dart';
 
 mixin XResolver<T> {
   /// resolve a route with the current state
@@ -34,8 +34,8 @@ class Redirect extends XResolverAction with EquatableMixin {
 /// to redirect. That process is slightly more involved and error prone
 /// than just using Loading
 class Loading extends XResolverAction with EquatableMixin {
-  final Widget loadingScreen;
-  const Loading(this.loadingScreen);
+  final XPageBuilder loadingScreenBuilder;
+  const Loading(this.loadingScreenBuilder);
   @override
-  List<Object?> get props => [loadingScreen];
+  List<Object?> get props => [loadingScreenBuilder];
 }

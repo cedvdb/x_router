@@ -1,3 +1,7 @@
+
+## [0.0.3] - 24/11/2021
+- [Breakign]: made Loading screen receive a builder instead of a widget
+
 ## [0.0.2] - 24/11/2021
 
 - [Breaking]: static methods changed into instance method as deemed too much of an anti pattern

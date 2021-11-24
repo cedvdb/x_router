@@ -93,9 +93,11 @@ class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
           return const Redirect(RouteLocation.signIn);
         }
       default:
-        return Loading(Container(
-          key: const ValueKey('loading-screen'),
-        ));
+        return Loading(
+          (ctx, route) => Container(
+            key: const ValueKey('loading-screen'),
+          ),
+        );
     }
   }
 }

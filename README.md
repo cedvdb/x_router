@@ -211,7 +211,7 @@ class AuthResolver extends ValueNotifier with XResolver {
       case AuthStatus.unknown:
       default:
         return const Loading(
-          LoadingPage(text: 'Checking Auth Status'),
+          (_, __) => LoadingPage(text: 'Checking Auth Status'),
         );
     }
   }
