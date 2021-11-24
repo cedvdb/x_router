@@ -1,7 +1,10 @@
 
+## [0.0.4] - 24/11/2021
+- [Breakign]: made XRoute receive a titleBuilder instead of a String
+
+
 ## [0.0.3] - 24/11/2021
 - [Breakign]: made Loading screen receive a builder instead of a widget
-- [Breakign]: made XRoute receive a titleBuilder instead of a String
 
 ## [0.0.2] - 24/11/2021
 
