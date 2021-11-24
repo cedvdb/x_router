@@ -82,9 +82,14 @@ The router in its simplest form defines a series of routes and builders associat
 ```dart
 XRouter(
   routes: [
-    XRoute( path: '/sign-in', builder: (ctx, activatedRoute) => SignInPage()),
+    XRoute( path: '/sign-in', builder: (ctx, activatedRoute) => SignInPage(),),
     XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
-    XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
+    XRoute( 
+      path: '/products', 
+      builder: (ctx, activatedRoute) => ProductsPage(), 
+      // browser tab title
+      titleBuilder: (ctx, __) => translate(ctx, 'products')
+    ),
     XRoute(
       path: '/products/:id',
       builder: (ctx, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
@@ -289,19 +294,18 @@ and you also need to set the initial index when the page is first loaded
 
 ```
 
-finally you have to setup your routes in such a way that page transition does not happen
+finally you have to use the same widget for the different routes:
 
 ```dart
     XRoute(
-      title: 'dashboard', // browser tab title
       pageKey: const ValueKey('home-layout'),
       path: dashboard,
       builder: (ctx, route) => const HomeLayout(
         title: 'dashboard',
       ),
+      titleBuilder: (ctx, _) translate(ctx, 'dashboard'), // browser tab title
     ),
     XRoute(
-      title: 'favorites'
       path: favorites,
       pageKey: const ValueKey('home-layout'),
       builder: (ctx, route) => const HomeLayout(
@@ -309,7 +313,6 @@ finally you have to setup your routes in such a way that page transition does no
       ),
     ),
     XRoute(
-      title: 'products',
       path: products,
       pageKey: const ValueKey('home-layout'),
       builder: (ctx, route) => const HomeLayout(
@@ -321,6 +324,3 @@ finally you have to setup your routes in such a way that page transition does no
 You can check the full code in the example
 
 
-### Why don't I need context to access the XRouter
-
-As stated in the core idea section, the page displayed is a function of the URL. There is only one URL.

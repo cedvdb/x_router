@@ -49,7 +49,7 @@ class XRoute {
   final bool matchChildren;
 
   /// browser tab title
-  final String? title;
+  final XTitleBuilder? titleBuilder;
 
   final XRoutePattern _parser;
 
@@ -57,7 +57,7 @@ class XRoute {
     required this.path,
     required this.builder,
     this.pageKey,
-    this.title,
+    this.titleBuilder,
     this.matchChildren = true,
   }) : _parser = XRoutePattern(path);
 

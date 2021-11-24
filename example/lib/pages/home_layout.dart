@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
 class HomeLayout extends StatefulWidget {
-  final String title;
+  final String text;
   const HomeLayout({
     Key? key,
-    required this.title,
+    required this.text,
   }) : super(key: key);
 
   @override
@@ -82,7 +82,7 @@ class _HomeLayoutState extends State<HomeLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.text),
         actions: [
           IconButton(
             onPressed: () => router.goTo(RouteLocations.preferences),

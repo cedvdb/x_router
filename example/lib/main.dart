@@ -27,36 +27,32 @@ class RouteLocations {
 
 final _routes = [
   XRoute(
-    title: 'sign in !',
     path: RouteLocations.signIn,
     builder: (ctx, route) => SignInPage(),
+    titleBuilder: (ctx, route) => 'sign in ! (Browser tab title)',
   ),
   XRoute(
     path: RouteLocations.preferences,
     builder: (ctx, route) => const PreferencesPage(),
+    titleBuilder: (ctx, route) => translate(ctx, 'preferences'),
   ),
   XRoute(
-    title: 'dashboard',
     pageKey: const ValueKey('home-layout'),
     path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(
-      title: 'dashboard',
-    ),
+    builder: (ctx, route) => const HomeLayout(text: 'dashboard'),
+    titleBuilder: (_, __) => 'dashboard',
   ),
   XRoute(
     path: RouteLocations.favorites,
     pageKey: const ValueKey('home-layout'),
-    builder: (ctx, route) => const HomeLayout(
-      title: 'favorites',
-    ),
+    builder: (ctx, route) => const HomeLayout(text: 'favorites'),
+    titleBuilder: (_, __) => 'My favorites',
   ),
   XRoute(
     path: RouteLocations.products,
     pageKey: const ValueKey('home-layout'),
-    title: 'products',
-    builder: (ctx, route) => const HomeLayout(
-      title: 'products',
-    ),
+    titleBuilder: (_, __) => 'products',
+    builder: (ctx, route) => const HomeLayout(text: 'products'),
   ),
   XRoute(
     path: RouteLocations.productDetail,
@@ -123,3 +119,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// fake translate
+String translate(BuildContext ctx, String text) => text;

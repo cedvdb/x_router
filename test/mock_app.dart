@@ -14,7 +14,7 @@ XRouter getTestRouter({List<XResolver> resolvers = const []}) {
     resolvers: resolvers,
     routes: [
       XRoute(
-        title: 'sign in !',
+        titleBuilder: (_, __) => 'sign in !',
         path: RouteLocation.signIn,
         builder: (ctx, route) => Container(
           key: const ValueKey(RouteLocation.signIn),
@@ -33,7 +33,7 @@ XRouter getTestRouter({List<XResolver> resolvers = const []}) {
       ),
       XRoute(
         path: RouteLocation.products,
-        title: 'products',
+        titleBuilder: (_, __) => 'products',
         builder: (ctx, route) => Container(
           key: const ValueKey(RouteLocation.products),
         ),
