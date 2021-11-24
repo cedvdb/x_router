@@ -1,3 +1,7 @@
+## [0.0.2] - 
+
+- redirectTo in XNotFoundResolver now required as it felt too magical
+
 ## [0.0.1+3] - 05/11/2021
 
 * docs

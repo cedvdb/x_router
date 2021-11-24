@@ -1,12 +1,13 @@
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/x_router.dart';
 
 class XNotFoundResolver with XResolver {
   final String redirectTo;
-  final List<XRoute> routes;
+  List<XRoute> routes;
 
   XNotFoundResolver({
-    this.redirectTo = '/',
+    required this.redirectTo,
     required this.routes,
   });
 
