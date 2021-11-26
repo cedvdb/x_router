@@ -54,9 +54,9 @@ This is the approach this library takes to create the **upstack** by default.
 
 # Usage
 
-<h4 id="Navigation">
-Navigation
-</h4>
+<a id="navigation">
+## Navigation
+</a>
 
 For navigation you can use the static method `XRoute.goTo(location)`
 
@@ -68,7 +68,9 @@ For navigation you can use the static method `XRoute.goTo(location)`
   router.goTo(AppRoutes.productDetails, params: { 'id': '123' }); 
 ```
 
+<a id="relative-navigation">
 ## Relative navigation
+</a>
 
 You can also navigate relative to the current route
 
