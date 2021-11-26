@@ -17,7 +17,7 @@ class XChildRouter {
     onNewRoute: (path) => {},
   );
 
-  final XEventEmitter _eventEmitter;
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   /// the base path is the path where the child router is active
   final String basePath;
@@ -25,9 +25,8 @@ class XChildRouter {
 
   XChildRouter({
     required this.basePath,
-    required XEventEmitter eventEmitter,
     required List<XRoute> routes,
-  }) : _eventEmitter = eventEmitter {
+  }) {
     _basePattern = XRoutePattern(basePath);
     _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
     // the root resolver listens to navigation start and initialize the resolving

@@ -1,10 +1,10 @@
 import 'package:x_router/x_router.dart';
 
-class XChildRoutes {
+class XChildRouterConfig {
   final List<XRoute> routes;
   final List<XResolver> resolvers;
 
-  XChildRoutes({
+  XChildRouterConfig({
     this.resolvers = const [],
     required this.routes,
   });
@@ -14,7 +14,7 @@ class XChildRoutes {
   List<XResolver> findAllResolvers() {
     final allResolvers = [...resolvers];
     for (final route in routes) {
-      final children = route.children;
+      final children = route.childRouterConfig;
       if (children != null) {
         allResolvers.addAll(children.findAllResolvers());
       }

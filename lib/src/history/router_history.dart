@@ -13,7 +13,7 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
 
   XActivatedRoute? get previousRoute => length > 1 ? elementAt(1) : null;
 
-  String get currentUrl => currentRoute.matchingPath;
+  String get currentUrl => currentRoute.effectivePath;
 
   bool get hasPreviousRoute => previousRoute != null;
 

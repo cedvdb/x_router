@@ -6,23 +6,28 @@ import 'package:x_router/src/events/x_router_events.dart';
 void main() {
   group('Event emitter', () {
     test('Should emit events', () async {
-      XEventEmitter emitter = XEventEmitter();
+      XEventEmitter emitter = XEventEmitter.instance;
       final activatedRoute = XActivatedRoute.nulled();
       expect(
         emitter.eventStream,
-        emitsInOrder([
-          const NavigationStart(target: '', params: {}),
-          NavigationEnd(
-              activatedRoute: activatedRoute,
-              target: '',
-              previous: activatedRoute),
-        ]),
+        emitsInOrder(
+          [
+            const NavigationStart(target: '', params: {}),
+            NavigationEnd(
+                activatedRoute: activatedRoute,
+                target: '',
+                previous: activatedRoute),
+          ],
+        ),
       );
       emitter.addEvent(const NavigationStart(target: '', params: {}));
-      emitter.addEvent(NavigationEnd(
+      emitter.addEvent(
+        NavigationEnd(
           activatedRoute: activatedRoute,
           target: '',
-          previous: activatedRoute));
+          previous: activatedRoute,
+        ),
+      );
     });
   });
 }

@@ -36,7 +36,7 @@ import 'route_pattern/x_route_pattern.dart';
 ///   - pop (This is usually handled by flutter)
 class XRouter {
   /// emits the different steps of the navigation
-  final XEventEmitter _eventEmitter = XEventEmitter();
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   /// streams all router event
   Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
@@ -77,7 +77,6 @@ class XRouter {
       _resolver.addResolvers(route.findAllResolvers());
     }
     _childRouterStore = XChildRouterStore(
-      emitter: _eventEmitter,
       routes: routes,
     );
     // the page stack (activatedRoute) builder
@@ -168,6 +167,7 @@ class XRouter {
   /// parses an url by setting its parameter
   String _parseUrl(String target, Map<String, String>? params) {
     _eventEmitter.addEvent(UrlParsingStart(target: target, params: params));
+    // if url starts with ./ then it's relative to current url
     final parser = XRoutePattern.maybeRelative(target, _history.currentUrl);
     final parsed = parser.addParameters(params);
     _eventEmitter.addEvent(UrlParsingEnd(target: target, parsed: parsed));
@@ -182,7 +182,8 @@ class XRouter {
     return resolved;
   }
 
-  // note: should builderOverride stay ?
+  // note: should builderOverride stay ? It is annoying to have a builder
+  // popping up in the parsing process. It is however very useful here
 
   /// builds the page stack
   /// if [builderOverride] is present, the builder of activated

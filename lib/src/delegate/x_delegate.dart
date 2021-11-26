@@ -12,7 +12,7 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   String? get currentConfiguration {
     if (_shouldReportNewRoute) {
-      return _activatedRoute.requestedPath;
+      return _activatedRoute.effectivePath;
     }
     return null;
   }
@@ -23,7 +23,7 @@ class XRouterDelegate extends RouterDelegate<String>
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
 
-  bool _shouldReportNewRoute;
+  final bool _shouldReportNewRoute;
 
   XRouterDelegate({
     required this.onNewRoute,
@@ -32,7 +32,9 @@ class XRouterDelegate extends RouterDelegate<String>
 
   initRendering(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
-    notifyListeners();
+    if (_shouldReportNewRoute) {
+      notifyListeners();
+    }
   }
 
   @override

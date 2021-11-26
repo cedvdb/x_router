@@ -14,6 +14,9 @@ class XActivatedRoute with EquatableMixin {
   /// the part of the path that is matching pattern
   final String matchingPath;
 
+  /// the matching path for this route or any of its child router's routes
+  final String effectivePath;
+
   /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
   /// parameters = { 'id': '123' }
   final Map<String, String> pathParams;
@@ -25,10 +28,13 @@ class XActivatedRoute with EquatableMixin {
   /// the parents matching routes, the upstack
   final List<XActivatedRoute> upstack;
 
+  /// the requested path matched against children route or if none, this route
+
   const XActivatedRoute({
     required this.route,
     required this.requestedPath,
     required this.matchingPath,
+    required this.effectivePath,
     this.pathParams = const {},
     this.queryParams = const {},
     this.upstack = const [],
@@ -42,13 +48,13 @@ class XActivatedRoute with EquatableMixin {
 
   factory XActivatedRoute.forPath(String path) {
     return XActivatedRoute(
-      route: XRoute(
-        path: path,
-        builder: (ctx, params) => Container(),
-      ),
-      requestedPath: path,
-      matchingPath: path,
-    );
+        route: XRoute(
+          path: path,
+          builder: (ctx, params) => Container(),
+        ),
+        requestedPath: path,
+        matchingPath: path,
+        effectivePath: path);
   }
 
   @override

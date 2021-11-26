@@ -1,6 +1,7 @@
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/preferences_page.dart';
 import 'package:example/services/auth_service.dart';
+import 'package:example/services/products_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
@@ -14,6 +15,9 @@ import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:flutter/cupertino.dart';
 
+/// This is a complex app routing example
+
+/// all the locations in the app
 class RouteLocations {
   static const home = '/app';
   static const dashboard = '$home/dashboard';
@@ -21,10 +25,12 @@ class RouteLocations {
   static const favorites = '$home/favorites';
   static const preferences = '$home/preferences';
   static const productDetail = '$home/products/:id';
-  static const loading = '/loading';
+  static const productInfo = '$productDetail/info';
+  static const productComments = '$productDetail/comments';
   static const signIn = '/sign-in';
 }
 
+/// the routes for each location
 final _routes = [
   XRoute(
     path: RouteLocations.signIn,
@@ -57,16 +63,22 @@ final _routes = [
   XRoute(
     path: RouteLocations.productDetail,
     builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
-    children: XChildRoutes(
-      resolvers: [],
+    // here is a nested router
+    childRouterConfig: XChildRouterConfig(
+      resolvers: [
+        XRedirectResolver(
+          from: RouteLocations.productDetail,
+          to: RouteLocations.productInfo,
+        ),
+      ],
       routes: [
         XRoute(
-          path: ProductRouteLocations.info,
+          path: RouteLocations.productInfo,
           builder: (_, __) =>
               const Center(child: Text('info (Displayed via nested router)')),
         ),
         XRoute(
-          path: ProductRouteLocations.comments,
+          path: RouteLocations.productComments,
           builder: (_, __) => const Center(
               child: Text('comments (displayed via nested router)')),
         ),
@@ -75,6 +87,7 @@ final _routes = [
   ),
 ];
 
+// the router instance used throughout the app
 final router = XRouter(
   resolvers: [
     AuthResolver(),
@@ -93,6 +106,7 @@ final router = XRouter(
   routes: _routes,
 );
 
+/// goes to login page if we are not signed in.
 class AuthResolver with XResolver {
   AuthStatus _authStatus = AuthStatus.unknown;
 
@@ -124,6 +138,25 @@ class AuthResolver with XResolver {
           (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
         );
     }
+  }
+}
+
+/// checks if the product exists, else redirect to product details page
+class ProductFoundResolver with XResolver {
+  final _productDetailsPattern = XRoutePattern(RouteLocations.productDetail);
+  @override
+  XResolverAction resolve(String target) {
+    final parsed = _productDetailsPattern.parse(target, matchChildren: true);
+    final productId = parsed.pathParameters['id'];
+    if (parsed.matches) {
+      try {
+        ProductsService.products
+            .firstWhere((product) => product.id == productId);
+      } catch (e) {
+        return const Redirect(RouteLocations.productDetail);
+      }
+    }
+    return const Next();
   }
 }
 

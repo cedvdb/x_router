@@ -72,18 +72,18 @@ class TestApp extends StatelessWidget {
 }
 
 class MockAuthResolver with XResolver {
-  bool _isAuthenticated = false;
-  final XRouter router;
-  MockAuthResolver(this.router);
+  bool? _isAuthenticated;
+  XRouter? router;
+  MockAuthResolver();
 
   signIn() {
     _isAuthenticated = true;
-    router.refresh();
+    router?.refresh();
   }
 
   signOut() {
     _isAuthenticated = false;
-    router.refresh();
+    router?.refresh();
   }
 
   @override

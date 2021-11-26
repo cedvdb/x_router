@@ -1,3 +1,4 @@
+import 'package:x_router/src/child_router/x_child_router.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/x_router.dart';
@@ -5,23 +6,20 @@ import 'package:x_router/x_router.dart';
 /// holds child routers to access their delegate easily
 class XChildRouterStore {
   final Map<String, XChildRouter> _childRouters = {};
-  final XEventEmitter _emitter;
 
   XChildRouterStore({
-    required XEventEmitter emitter,
     required List<XRoute> routes,
-  }) : _emitter = emitter {
+  }) {
     _storeChildRouters(routes);
   }
 
   _storeChildRouters(List<XRoute> routes) {
     for (final route in routes) {
-      final children = route.children;
+      final children = route.childRouterConfig;
       if (children != null) {
         _childRouters[route.path] = XChildRouter(
           basePath: route.path,
-          eventEmitter: _emitter,
-          routes: routes,
+          routes: children.routes,
         );
         _storeChildRouters(children.routes);
       }

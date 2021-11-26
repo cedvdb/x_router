@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/route/x_page_builder.dart';
@@ -30,11 +29,14 @@ class XActivatedRouteBuilder {
     if (builderOverride != null) {
       route = route.copyWithBuilder(builder: builderOverride);
     }
+    // path that also match path from active routes of child router
+    final effectivePath = route.computeEffectivePath(target);
 
     final upstack = matchings
         .map(
           (parentRoute) => _toActivatedRoute(
             target,
+            effectivePath,
             parentRoute,
           ),
         )
@@ -42,6 +44,7 @@ class XActivatedRouteBuilder {
 
     final activatedRoute = _toActivatedRoute(
       target,
+      effectivePath,
       route,
       upstack,
     );
@@ -50,12 +53,14 @@ class XActivatedRouteBuilder {
 
   XActivatedRoute _toActivatedRoute(
     String path,
+    String effectivePath,
     XRoute route, [
     List<XActivatedRoute> upstack = const [],
   ]) {
     final parsed = route.parse(path);
     return XActivatedRoute(
       requestedPath: path,
+      effectivePath: path,
       route: route,
       matchingPath: parsed.matchingPath,
       pathParams: parsed.pathParameters,

@@ -53,20 +53,41 @@ class XRoute {
   final XTitleBuilder? titleBuilder;
 
   /// for nested routing
-  final XChildRoutes? children;
+  final XChildRouterConfig? childRouterConfig;
 
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
-    this.children,
+    this.childRouterConfig,
     this.pageKey,
     this.titleBuilder,
     this.matchChildren = true,
   }) : _parser = XRoutePattern(path);
 
-  List<XResolver> findAllResolvers() => children?.findAllResolvers() ?? [];
+  /// finds resolvers present in child routes
+  List<XResolver> findAllResolvers() =>
+      childRouterConfig?.findAllResolvers() ?? [];
+
+  /// given a path, computes the depest match that could be found
+  /// on this route or any of its children
+  String computeEffectivePath(String path) {
+    final parseResult = parse(path);
+    var effectivePath = parseResult.matchingPath;
+    final childRoutes = childRouterConfig?.routes;
+    if (childRoutes != null && path != this.path) {
+      for (final route in childRoutes) {
+        final childEffectivePath = route.computeEffectivePath(path);
+        // we compare length so the next route does not override it with an
+        // incomplete effective path
+        if (childEffectivePath.length > effectivePath.length) {
+          effectivePath = childEffectivePath;
+        }
+      }
+    }
+    return effectivePath;
+  }
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
