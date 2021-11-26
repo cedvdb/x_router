@@ -182,10 +182,10 @@ void main() {
 
       testWidgets('should redirect after refresh if redirector state changed',
           (tester) async {
-        final authResolver = MockAuthResolver();
         final router = getTestRouter(
           resolvers: [authResolver],
         );
+        final authResolver = MockAuthResolver();
         await tester.pumpWidget(TestApp(router));
 
         await tester.pumpAndSettle();

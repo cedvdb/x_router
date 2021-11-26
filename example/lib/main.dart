@@ -57,7 +57,21 @@ final _routes = [
   XRoute(
     path: RouteLocations.productDetail,
     builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
-    childRouter: ProductDetailsPage.productRouter,
+    children: XChildRoutes(
+      resolvers: [],
+      routes: [
+        XRoute(
+          path: ProductRouteLocations.info,
+          builder: (_, __) =>
+              const Center(child: Text('info (Displayed via nested router)')),
+        ),
+        XRoute(
+          path: ProductRouteLocations.comments,
+          builder: (_, __) => const Center(
+              child: Text('comments (displayed via nested router)')),
+        ),
+      ],
+    ),
   ),
 ];
 
@@ -79,16 +93,19 @@ final router = XRouter(
   routes: _routes,
 );
 
-class AuthResolver extends ValueNotifier with XResolver {
-  AuthResolver() : super(AuthStatus.unknown) {
+class AuthResolver with XResolver {
+  AuthStatus _authStatus = AuthStatus.unknown;
+
+  AuthResolver() {
     AuthService.instance.authStatusStream.listen((authStatus) {
-      value = authStatus;
+      _authStatus = authStatus;
+      router.refresh();
     });
   }
 
   @override
   XResolverAction resolve(String target) {
-    switch (value) {
+    switch (_authStatus) {
       case AuthStatus.authenticated:
         if (target.startsWith(RouteLocations.signIn)) {
           return const Redirect(RouteLocations.home);

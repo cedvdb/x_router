@@ -5,8 +5,8 @@ class XChildRoutes {
   final List<XResolver> resolvers;
 
   XChildRoutes({
+    this.resolvers = const [],
     required this.routes,
-    required this.resolvers,
   });
 
   /// finds resolvers with the resolvers

@@ -9,7 +9,7 @@ class XRedirectResolver with XResolver {
   XRedirectResolver({
     required String from,
     required String to,
-    this.matchChildren = true,
+    this.matchChildren = false,
   })  : to = XRoutePattern(to),
         from = XRoutePattern(from);
 

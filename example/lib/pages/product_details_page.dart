@@ -13,21 +13,7 @@ class ProductRouteLocations {
 
 class ProductDetailsPage extends StatefulWidget {
   final Product? product;
-  static final productRouter = XChildRouter(
-    basePath: RouteLocations.products,
-    routes: [
-      XRoute(
-        path: ProductRouteLocations.info,
-        builder: (_, __) =>
-            const Center(child: Text('info (Displayed via nested router)')),
-      ),
-      XRoute(
-        path: ProductRouteLocations.comments,
-        builder: (_, __) =>
-            const Center(child: Text('comments (displayed via nested router)')),
-      ),
-    ],
-  );
+
   ProductDetailsPage(String id) : product = ProductsService.getById(id);
 
   @override
@@ -37,7 +23,12 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  StreamSubscription _routerSubscription;
+  StreamSubscription? _routerSubscription;
+
+  final Map<String, int> _tabIndexes = const {
+    ProductRouteLocations.info: 0,
+    ProductRouteLocations.comments: 1,
+  };
 
   @override
   initState() {
@@ -46,9 +37,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
         .listen((event) {
-          if ()
-        });
+      final index = _findTabIndex(event.activatedRoute.requestedPath);
+      if (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ) {}
+    });
     super.initState();
+  }
+
+  int? _findTabIndex(String path) {
+    try {
+      _tabIndexes.entries
+          .firstWhere((entry) => path.startsWith(entry.key))
+          .value;
+    } catch (e) {
+      return null;
+    }
   }
 
   _navigate(int index) {
@@ -77,7 +79,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
           ],
         ),
       ),
-      body: Router(routerDelegate: ProductDetailsPage.productRouter.delegate),
+      body: Router(
+        routerDelegate: router.childRouterStore.findDelegate(
+          RouteLocations.productDetail,
+        ),
+      ),
     );
   }
 }

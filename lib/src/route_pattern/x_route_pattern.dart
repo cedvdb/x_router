@@ -110,7 +110,7 @@ class XRoutePattern {
     // relative to current route
     if (target.startsWith('./')) {
       var resolvedParts = relativeTo.split('/');
-      // resolvedParts.removeLast();
+      resolvedParts.removeLast();
       target = resolvedParts.join('/') + target.substring(1);
     }
     return target;

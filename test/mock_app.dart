@@ -71,15 +71,24 @@ class TestApp extends StatelessWidget {
   }
 }
 
-class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
-  MockAuthResolver() : super(null);
+class MockAuthResolver with XResolver {
+  bool _isAuthenticated = false;
+  final XRouter router;
+  MockAuthResolver(this.router);
 
-  signIn() => value = true;
-  signOut() => value = false;
+  signIn() {
+    _isAuthenticated = true;
+    router.refresh();
+  }
+
+  signOut() {
+    _isAuthenticated = false;
+    router.refresh();
+  }
 
   @override
   XResolverAction resolve(String target) {
-    switch (value) {
+    switch (_isAuthenticated) {
       case true:
         if (target.startsWith(RouteLocation.signIn)) {
           return const Redirect(RouteLocation.home);

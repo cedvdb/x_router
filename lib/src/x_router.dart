@@ -15,6 +15,15 @@ import 'events/x_router_events.dart';
 import 'route/x_page_builder.dart';
 import 'route_pattern/x_route_pattern.dart';
 
+// Note to the reader
+//
+// The process of navigation goes like this:
+// 1. parse target url
+// 2. resolve target url into maybe another (redirect)
+// 3. build the page stack (upstack)
+// 4. add to history
+// 5. render
+
 /// Handles navigation
 ///
 /// One instance of XRouter should be created by an application.
@@ -23,9 +32,10 @@ import 'route_pattern/x_route_pattern.dart';
 ///   - goTo
 ///   - replace
 ///   - back
+///   - refresh
 ///   - pop (This is usually handled by flutter)
 class XRouter {
-  /// emits the different steps of the navigation with event stream
+  /// emits the different steps of the navigation
   final XEventEmitter _eventEmitter = XEventEmitter();
 
   /// streams all router event
@@ -47,13 +57,14 @@ class XRouter {
     onNewRoute: (path) => goTo(path),
   );
 
-  /// the resolver responsible of resolving a route path
+  /// the resolver responsible of resolving a route path (redirects)
   late final XRouterResolver _resolver =
       XRouterResolver(onEvent: _eventEmitter.addEvent);
 
   /// page stack (activatedRoute) builder
   late final XActivatedRouteBuilder _activatedRouteBuilder;
 
+  /// all child routers
   late final XChildRouterStore _childRouterStore;
   XChildRouterStore get childRouterStore => _childRouterStore;
 
