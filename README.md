@@ -7,10 +7,12 @@ Flutter navigation made easy by providing a simple API.
 
 # Features
 
-  - redirects
   - reactive guards
-  - child routers !
-  - relative navigation
+  - child routers
+  - [easy navigation](#navigation)
+  - [relative navigation](#relative-navigation)
+  - redirects
+  - url matching
   - tabs support
   - router history
   - tab title
@@ -27,7 +29,7 @@ One area that seem to be a point of confusion for developers is the different ba
 
 The main idea of this package is that the __upstack is a function of the url__ 
 
-That is that for an url like `/products/123` we have a stack of two pages `[ProductsPage, ProductsDetailsPage]`
+That is that for an url like `/products/123` we have a stack of two pages `[ProductsPage, ProductsDetailsPage]` by default.
 
 Let's take this fairly common and complex scenario:
 
@@ -52,23 +54,32 @@ This is the approach this library takes to create the **upstack** by default.
 
 # Usage
 
-
-## Navigating
+<h4 id="Navigation">
+Navigation
+</h4>
 
 For navigation you can use the static method `XRoute.goTo(location)`
 
 ```dart
   final router = XRouter(routes: []);
 
-  router.goTo('/products/:id', params: { 'id': '123' });
+  router.goTo('/products/:id', params: { 'id': '123' }); // products/123
   // Generally you will store your routes somewhere:
-  router.goTo(AppRoutes.productDetails, params: { 'id': '123' });
+  router.goTo(AppRoutes.productDetails, params: { 'id': '123' }); 
+```
 
+## Relative navigation
+
+You can also navigate relative to the current route
+
+```dart
+  // this will go to `products/123/info` assuming we were on products/123/comments 
+  router.goTo('./info'); 
 ```
 
 ### All navigation methods
 
-  - `goTo`: goes to location adding the target to history
+  - `goTo`: goes to location adding the target to history 
   - `replace`: removes current location from history and `goTo` location
   - `pop`: if upstack is not empty `goTo` first location in upstack
   - `back`: go back chronologically
