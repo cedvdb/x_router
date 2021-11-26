@@ -12,7 +12,7 @@ class RouteLocation {
 }
 
 late XRouter router;
-XRouter getTestRouter({List<XResolver> resolvers = const []}) {
+XRouter createTestRouter({List<XResolver> resolvers = const []}) {
   router = XRouter(
     resolvers: resolvers,
     routes: [

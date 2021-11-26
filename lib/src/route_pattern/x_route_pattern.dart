@@ -12,6 +12,7 @@ class XRoutePattern {
   XRoutePattern(String path) : path = sanitize(path);
 
   /// creates a route pattern relative to another if the path starts with ./
+  /// Obeys the same rules as Uri.resolve
   XRoutePattern.maybeRelative(String path, String relativeTo)
       : path = sanitize(getRelativePath(path, relativeTo));
 
@@ -108,10 +109,9 @@ class XRoutePattern {
   /// gets the url relative to the current route if the url starts with ./
   static String getRelativePath(String target, String relativeTo) {
     // relative to current route
-    if (target.startsWith('./')) {
-      var resolvedParts = relativeTo.split('/');
-      resolvedParts.removeLast();
-      target = resolvedParts.join('/') + target.substring(1);
+    if (target.startsWith('.')) {
+      final originUri = Uri.parse(relativeTo);
+      return originUri.resolve(target).toString();
     }
     return target;
   }
