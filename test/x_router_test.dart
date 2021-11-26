@@ -19,7 +19,7 @@ void main() {
       testWidgets('should have history of one', (tester) async {
         await tester.pumpWidget(TestApp(router));
         expect(router.history.length, equals(1));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.home));
       });
     });
@@ -48,9 +48,9 @@ void main() {
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
         expect(router.history.length, equals(2));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.products));
-        expect(router.history.previousRoute?.effectivePath,
+        expect(router.history.previousRoute?.matchingPath,
             equals(RouteLocation.home));
       });
     });
@@ -69,7 +69,7 @@ void main() {
         router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
         expect(router.history.length, equals(1));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.products));
       });
     });
@@ -94,7 +94,7 @@ void main() {
         router.pop();
         await tester.pumpAndSettle();
         expect(router.history.length, equals(3));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.home));
       });
     });
@@ -117,7 +117,7 @@ void main() {
         router.back();
         await tester.pumpAndSettle();
         expect(router.history.length, equals(1));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.home));
       });
     });
@@ -131,7 +131,7 @@ void main() {
         await tester.pumpAndSettle();
         router.refresh();
         await tester.pumpAndSettle();
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.products));
       });
 
@@ -160,12 +160,12 @@ void main() {
         await tester.pumpWidget(TestApp(router));
         await tester.pumpAndSettle();
         expect(router.history.length, equals(1));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.products));
         // goes back to first redirect
         router.goTo(RouteLocation.preferences);
         expect(router.history.length, equals(1));
-        expect(router.history.currentRoute.effectivePath,
+        expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.products));
       });
 

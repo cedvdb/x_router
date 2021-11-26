@@ -19,6 +19,7 @@ class DashboardPage extends StatelessWidget {
               ),
               const Text(
                   '- Authentication resolver: When logging we are redirected'),
+              const Text('- Router')
               const Text('- Tabs change url, urls change tabs'),
               const Text('- Passing parameters in product details page'),
               const Text('- When route is not found we are redirected to home'),

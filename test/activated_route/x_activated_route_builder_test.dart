@@ -50,9 +50,9 @@ void main() {
       test(
         'should have the correct effective path',
         () {
-          expect(activatedNoMatchChild.effectivePath, equals('/'));
-          expect(activatedMatchChild.effectivePath, equals('/products'));
-          expect(activatedWithStack.effectivePath, equals('/products/123'));
+          expect(activatedNoMatchChild.matchingPath, equals('/'));
+          expect(activatedMatchChild.matchingPath, equals('/products'));
+          expect(activatedWithStack.matchingPath, equals('/products/123'));
         },
       );
 

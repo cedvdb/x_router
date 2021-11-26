@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/route/x_page_builder.dart';
@@ -56,7 +57,7 @@ class XActivatedRouteBuilder {
     return XActivatedRoute(
       requestedPath: path,
       route: route,
-      effectivePath: parsed.matchingPath,
+      matchingPath: parsed.matchingPath,
       pathParams: parsed.pathParameters,
       queryParams: parsed.queryParameters,
       upstack: upstack,

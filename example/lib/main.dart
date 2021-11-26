@@ -57,13 +57,23 @@ final _routes = [
   XRoute(
     path: RouteLocations.productDetail,
     builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+    childRouter: ProductDetailsPage.productRouter,
   ),
 ];
 
 final router = XRouter(
   resolvers: [
     AuthResolver(),
-    XRedirectResolver(from: RouteLocations.home, to: RouteLocations.dashboard),
+    XRedirectResolver(
+      from: RouteLocations.home,
+      to: RouteLocations.dashboard,
+      matchChildren: false,
+    ),
+    XRedirectResolver(
+      from: RouteLocations.productDetail,
+      to: '${RouteLocations.productDetail}/info',
+      matchChildren: false,
+    ),
     XNotFoundResolver(redirectTo: RouteLocations.home, routes: _routes),
   ],
   routes: _routes,
@@ -101,6 +111,7 @@ class AuthResolver extends ValueNotifier with XResolver {
 }
 
 void main() async {
+  router.eventStream.listen((event) => print(event));
   runApp(MyApp());
 }
 

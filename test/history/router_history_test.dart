@@ -33,7 +33,7 @@ void main() {
       history.add(XActivatedRoute.forPath('/settings'));
       expect(history.length, equals(4));
       history.removeThrough(history.currentRoute);
-      expect(history.currentRoute.effectivePath, equals('/preferences'));
+      expect(history.currentRoute.matchingPath, equals('/preferences'));
       // history.removeFrom(history.currentRoute);
       // expect(history.currentRoute.effectivePath, equals('/home'));
     });

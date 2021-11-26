@@ -5,14 +5,14 @@ import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its upstack
 class XActivatedRoute with EquatableMixin {
-  /// the requested path eg: `/team/123/route/44`
-  final String requestedPath;
-
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;
 
-  /// the part of the path that is matching the deepest route. eg: `/team/123`
-  final String effectivePath;
+  /// the requested path eg: `/team/123/route/44`
+  final String requestedPath;
+
+  /// the part of the path that is matching pattern
+  final String matchingPath;
 
   /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
   /// parameters = { 'id': '123' }
@@ -28,7 +28,7 @@ class XActivatedRoute with EquatableMixin {
   const XActivatedRoute({
     required this.route,
     required this.requestedPath,
-    required this.effectivePath,
+    required this.matchingPath,
     this.pathParams = const {},
     this.queryParams = const {},
     this.upstack = const [],
@@ -47,20 +47,20 @@ class XActivatedRoute with EquatableMixin {
         builder: (ctx, params) => Container(),
       ),
       requestedPath: path,
-      effectivePath: path,
+      matchingPath: path,
     );
   }
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $effectivePath, parameters: $pathParams, queryParameters: $queryParams, upstack.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, upstack.length: ${upstack.length})';
   }
 
   @override
   List<Object?> get props => [
         requestedPath,
         route,
-        effectivePath,
+        matchingPath,
         pathParams,
         queryParams,
         upstack,

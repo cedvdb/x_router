@@ -8,6 +8,7 @@ import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_route.dart';
+
 import 'events/x_router_events.dart';
 import 'route/x_page_builder.dart';
 import 'route_pattern/x_route_pattern.dart';
@@ -23,7 +24,7 @@ import 'route_pattern/x_route_pattern.dart';
 ///   - pop (This is usually handled by flutter)
 class XRouter {
   /// emits the different steps of the navigation with event stream
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  final XEventEmitter _eventEmitter = XEventEmitter();
 
   /// streams all router event
   Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
@@ -35,7 +36,8 @@ class XRouter {
 
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.
-  final XRouteInformationParser informationParser = XRouteInformationParser();
+  final XRouteInformationParser _informationParser = XRouteInformationParser();
+  XRouteInformationParser get informationParser => _informationParser;
 
   /// renderer
   late final XRouterDelegate delegate = XRouterDelegate(
@@ -44,7 +46,8 @@ class XRouter {
   );
 
   /// the resolver responsible of resolving a route path
-  late final XRouterResolver _resolver;
+  late final XRouterResolver _resolver =
+      XRouterResolver(onEvent: _eventEmitter.addEvent);
 
   /// page stack (activatedRoute) builder
   late final XActivatedRouteBuilder _activatedRouteBuilder;
@@ -53,11 +56,7 @@ class XRouter {
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
   }) {
-    _resolver = XRouterResolver(
-      // when the state of a reactive guard changes we resolve the current url
-      onStateChanged: () => refresh(),
-      resolvers: resolvers,
-    );
+    _resolver.addResolvers(resolvers);
     // the page stack (activatedRoute) builder
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,
@@ -90,7 +89,7 @@ class XRouter {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
       _navigate(
-        up.effectivePath,
+        up.matchingPath,
         up.pathParams,
       );
     }
@@ -101,7 +100,7 @@ class XRouter {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
       _navigate(
-        previousRoute.effectivePath,
+        previousRoute.matchingPath,
         previousRoute.pathParams,
         removeHistoryThrough: previousRoute,
       );
@@ -111,7 +110,7 @@ class XRouter {
   /// alias for goTo(currentUrl)
   void refresh() {
     _navigate(
-      _history.currentRoute.effectivePath,
+      _history.currentRoute.matchingPath,
       _history.currentRoute.pathParams,
     );
   }
@@ -147,7 +146,7 @@ class XRouter {
   /// parses an url by setting its parameter
   String _parseUrl(String target, Map<String, String>? params) {
     _eventEmitter.addEvent(UrlParsingStart(target: target, params: params));
-    final parser = XRoutePattern(target);
+    final parser = XRoutePattern.maybeRelative(target, _history.currentUrl);
     final parsed = parser.addParameters(params);
     _eventEmitter.addEvent(UrlParsingEnd(target: target, parsed: parsed));
     return parsed;

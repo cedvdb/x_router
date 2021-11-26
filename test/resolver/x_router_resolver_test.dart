@@ -74,7 +74,7 @@ void main() {
     });
 
     test('XRouter resolver should resolve in chain', () async {
-      final routerResolver = XRouterResolver(
+      final routerResolver = XRouterResolver.instance;
         resolvers: [
           XRedirectResolver(from: '/', to: '/other'),
           XRedirectResolver(from: '/other', to: '/not-found'),
@@ -86,24 +86,5 @@ void main() {
           equals(const XRouterResolveResult(target: '/dashboard')));
     });
 
-    test(
-      'Resolvers should notify when the state changes',
-      () async {
-        bool stateChanged = false;
-        callback() => stateChanged = true;
-
-        final reactiveResolver = ReactiveResolver();
-        final routerResolver = XRouterResolver(
-          resolvers: [
-            reactiveResolver,
-          ],
-          onStateChanged: callback,
-        );
-        reactiveResolver.value = true;
-        expect(reactiveResolver.value, isTrue);
-        expect(stateChanged, isTrue);
-        routerResolver.dispose();
-      },
-    );
   });
 }

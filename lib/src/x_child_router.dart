@@ -1,4 +1,8 @@
-import 'activated_route/x_activated_route.dart';
+import 'package:x_router/src/events/x_event_emitter.dart';
+import 'package:x_router/src/events/x_router_events.dart';
+import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/x_router.dart';
+
 import 'activated_route/x_activated_route_builder.dart';
 import 'delegate/x_delegate.dart';
 
@@ -9,21 +13,37 @@ class XChildRouter {
 
   /// renderer
   final XRouterDelegate delegate = XRouterDelegate(
+    shouldReportNewRoute: false,
     onNewRoute: (path) => {},
   );
 
-  /// builds the page stack
-  XActivatedRoute _buildActivatedRoute(
-    String target,
-  ) {
-    final activatedRoute = _activatedRouteBuilder.build(
-      target,
-    );
-    return activatedRoute;
+  final XEventEmitter _eventEmitter;
+
+  /// the base path is the path where the child router is active
+  final String basePath;
+  late final XRoutePattern _basePattern;
+
+  XChildRouter({
+    required this.basePath,
+    required List<XRoute> routes,
+    required List<XResolver> resolvers,
+    required XEventEmitter eventEmitter,
+  }) : _eventEmitter = eventEmitter {
+    _basePattern = XRoutePattern(basePath);
+    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
+    // the root resolver listens to navigation start and initialize the resolving
+    // process, the only thing required here is to init the rendering process
+    _eventEmitter.eventStream
+        .where((event) => event is ResolvingEnd)
+        .cast<ResolvingEnd>()
+        .listen((event) => _navigate(event.result.target));
   }
 
-  navigateNested(String target) {
-    final activatedRoute = _activatedRouteBuilder.build(target);
-    delegate.initRendering(activatedRoute);
+  _navigate(String target) {
+    final isNestedRoute = _basePattern.match(target, matchChildren: true);
+    if (isNestedRoute) {
+      final activatedRoute = _activatedRouteBuilder.build(target);
+      delegate.initRendering(activatedRoute);
+    }
   }
 }

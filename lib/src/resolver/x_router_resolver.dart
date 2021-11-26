@@ -1,20 +1,19 @@
-import 'package:flutter/widgets.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
+import 'package:x_router/src/events/x_router_events.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
 import 'x_resolver_event.dart';
 
 class XRouterResolver {
-  final List<XResolver> resolvers;
-  final void Function() onStateChanged;
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  // singleton
 
-  XRouterResolver({
-    required this.onStateChanged,
-    required this.resolvers,
-  }) {
-    _listenResolversStateChanges(resolvers);
+  final List<XResolver> _resolvers = [];
+  Function(XRouterEvent) onEvent;
+
+  XRouterResolver({required this.onEvent});
+
+  addResolvers(List<XResolver> resolvers) {
+    _resolvers.addAll(resolvers);
   }
 
   /// resolve target path against the list of resolvers
@@ -30,7 +29,7 @@ class XRouterResolver {
     _checkInfiniteLoop(calls);
     var next = path;
 
-    for (final resolver in resolvers) {
+    for (final resolver in _resolvers) {
       final resolved = _useResolver(resolver, next);
 
       if (resolved is Loading) {
@@ -61,11 +60,10 @@ class XRouterResolver {
     XResolver resolver,
     String path,
   ) {
-    _eventEmitter
-        .addEvent(ResolverResolveStart(resolver: resolver, target: path));
+    onEvent(ResolverResolveStart(resolver: resolver, target: path));
 
     final resolved = resolver.resolve(path);
-    _eventEmitter.addEvent(ResolverResolveEnd(
+    onEvent(ResolverResolveEnd(
         resolver: resolver, target: path, resolved: resolved));
     return resolved;
   }
@@ -79,22 +77,6 @@ class XRouterResolver {
           'This is likely because you have resolvers doing ping pong with each others, '
           'where resolver A is resolving to a route with resolver B and '
           'resolver B is resolving to a route with resolver A';
-    }
-  }
-
-  void _listenResolversStateChanges(List<XResolver> resolvers) {
-    for (final resolver in resolvers) {
-      if (resolver is Listenable) {
-        (resolver as Listenable).addListener(onStateChanged);
-      }
-    }
-  }
-
-  dispose() {
-    for (final resolver in resolvers) {
-      if (resolver is Listenable) {
-        (resolver as Listenable).removeListener(onStateChanged);
-      }
     }
   }
 }

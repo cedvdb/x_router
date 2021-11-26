@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
+import '../x_child_router.dart';
 import 'x_page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user
@@ -51,11 +52,15 @@ class XRoute {
   /// browser tab title
   final XTitleBuilder? titleBuilder;
 
+  /// for nested routing
+  final XR? childRouter;
+
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
+    this.childRouter,
     this.pageKey,
     this.titleBuilder,
     this.matchChildren = true,
