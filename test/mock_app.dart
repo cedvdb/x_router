@@ -71,7 +71,7 @@ class TestApp extends StatelessWidget {
   }
 }
 
-class MockAuthResolver with XResolver {
+class MockAuthResolver implements XResolver {
   bool? _isAuthenticated;
   XRouter? router;
   MockAuthResolver();

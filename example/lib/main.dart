@@ -107,7 +107,7 @@ final router = XRouter(
 );
 
 /// goes to login page if we are not signed in.
-class AuthResolver with XResolver {
+class AuthResolver implements XResolver {
   AuthStatus _authStatus = AuthStatus.unknown;
 
   AuthResolver() {
@@ -142,7 +142,7 @@ class AuthResolver with XResolver {
 }
 
 /// checks if the product exists, else redirect to product details page
-class ProductFoundResolver with XResolver {
+class ProductFoundResolver implements XResolver {
   final _productDetailsPattern = XRoutePattern(RouteLocations.productDetail);
   @override
   XResolverAction resolve(String target) {

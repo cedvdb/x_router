@@ -33,5 +33,5 @@ class ResolverResolveEnd extends ResolvingEvent {
       '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target)';
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [resolver, resolved];
 }

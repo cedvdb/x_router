@@ -1,4 +1,5 @@
 import 'package:x_router/src/events/x_router_events.dart';
+import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
@@ -73,10 +74,12 @@ class XRouterResolver {
     // 10 is arbitrary here, it's the max number of redirects before
     // we decide it's an infinite loop
     if (redirectAmount > 10) {
-      throw 'XRouter error: infinite resolver loop detected. '
-          'This is likely because you have resolvers doing ping pong with each others, '
-          'where resolver A is resolving to a route with resolver B and '
-          'resolver B is resolving to a route with resolver A';
+      throw XRouterException(
+        description: 'XRouter error: infinite resolver loop detected. '
+            'This is likely because you have resolvers doing ping pong with each others, '
+            'where resolver A is resolving to a route with resolver B and '
+            'resolver B is resolving to a route with resolver A',
+      );
     }
   }
 }

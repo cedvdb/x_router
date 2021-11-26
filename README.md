@@ -193,7 +193,7 @@ such a change and will trigger `XRouter.refresh()` which will start the resolvin
 
 
 ```dart
-class AuthResolver extends ValueNotifier with XResolver {
+class AuthResolver implements XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.instance.authStatusStream.listen((authStatus) => value = authStatus);
   }

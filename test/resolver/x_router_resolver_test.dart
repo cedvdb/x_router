@@ -4,24 +4,6 @@ import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
-class ReactiveResolver extends ValueNotifier<bool> with XResolver {
-  int calls = 0;
-
-  ReactiveResolver() : super(false);
-
-  @override
-  XResolverAction resolve(String target) {
-    calls++;
-    if (value && target != '/true') {
-      return const Redirect('/true');
-    } else if (target != '/false') {
-      return const Redirect('/false');
-    } else {
-      return const Next();
-    }
-  }
-}
-
 void main() {
   group('Resolvers', () {
     final routes = [

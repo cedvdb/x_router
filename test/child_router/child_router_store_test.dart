@@ -26,9 +26,11 @@ void main() {
         ],
       );
       expect(store.findDelegate('/parent'), isA<XRouterDelegate>());
-      expect(() => store.findDelegate('/not_parent'), throwsException);
-      expect(() => store.findDelegate('/child'), throwsException);
-      expect(() => store.findDelegate('/parent/child'), throwsException);
+      expect(
+          () => store.findDelegate('/not_parent'), throwsA(isA<Exception>()));
+      expect(() => store.findDelegate('/child'), throwsA(isA<Exception>()));
+      expect(
+          () => store.findDelegate('/parent/child'), throwsA(isA<Exception>()));
     });
   });
 }
