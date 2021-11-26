@@ -74,17 +74,14 @@ void main() {
     });
 
     test('XRouter resolver should resolve in chain', () async {
-      final routerResolver = XRouterResolver.instance;
-        resolvers: [
-          XRedirectResolver(from: '/', to: '/other'),
-          XRedirectResolver(from: '/other', to: '/not-found'),
-          XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-        ],
-        onStateChanged: () {},
-      );
+      final routerResolver = XRouterResolver(onEvent: (event) {});
+      routerResolver.addResolvers([
+        XRedirectResolver(from: '/', to: '/other'),
+        XRedirectResolver(from: '/other', to: '/not-found'),
+        XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
+      ]);
       expect(routerResolver.resolve('/'),
           equals(const XRouterResolveResult(target: '/dashboard')));
     });
-
   });
 }

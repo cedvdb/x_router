@@ -6,7 +6,7 @@ import 'package:x_router/src/events/x_router_events.dart';
 void main() {
   group('Event emitter', () {
     test('Should emit events', () async {
-      XEventEmitter emitter = XEventEmitter.instance;
+      XEventEmitter emitter = XEventEmitter();
       final activatedRoute = XActivatedRoute.nulled();
       expect(
         emitter.eventStream,

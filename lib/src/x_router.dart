@@ -1,5 +1,6 @@
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
+import 'package:x_router/src/child_router/x_child_router_store.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
@@ -8,6 +9,7 @@ import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/x_router.dart';
 
 import 'events/x_router_events.dart';
 import 'route/x_page_builder.dart';
@@ -52,11 +54,21 @@ class XRouter {
   /// page stack (activatedRoute) builder
   late final XActivatedRouteBuilder _activatedRouteBuilder;
 
+  late final XChildRouterStore _childRouterStore;
+  XChildRouterStore get childRouterStore => _childRouterStore;
+
   XRouter({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
   }) {
     _resolver.addResolvers(resolvers);
+    for (final route in routes) {
+      _resolver.addResolvers(route.findAllResolvers());
+    }
+    _childRouterStore = XChildRouterStore(
+      emitter: _eventEmitter,
+      routes: routes,
+    );
     // the page stack (activatedRoute) builder
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,
@@ -115,7 +127,7 @@ class XRouter {
     );
   }
 
-  XActivatedRoute _navigate(
+  void _navigate(
     String target,
     Map<String, String>? params, {
     XActivatedRoute? removeHistoryThrough,
@@ -140,7 +152,6 @@ class XRouter {
       target: target,
       previous: _history.previousRoute,
     ));
-    return activatedRoute;
   }
 
   /// parses an url by setting its parameter

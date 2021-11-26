@@ -3,7 +3,7 @@ library x_router;
 /// library for flutter navigation, documentation is available in the readme
 
 export 'src/x_router.dart';
-export 'src/x_child_router.dart';
+export 'src/child_router/x_child_router.dart';
 
 export 'src/route/x_route.dart';
 export 'src/route_pattern/x_parsing_result.dart';

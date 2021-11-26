@@ -3,8 +3,8 @@ import 'package:x_router/src/events/x_router_events.dart';
 import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/x_router.dart';
 
-import 'activated_route/x_activated_route_builder.dart';
-import 'delegate/x_delegate.dart';
+import '../activated_route/x_activated_route_builder.dart';
+import '../delegate/x_delegate.dart';
 
 /// Router that can be used as a child
 class XChildRouter {
@@ -25,9 +25,8 @@ class XChildRouter {
 
   XChildRouter({
     required this.basePath,
-    required List<XRoute> routes,
-    required List<XResolver> resolvers,
     required XEventEmitter eventEmitter,
+    required List<XRoute> routes,
   }) : _eventEmitter = eventEmitter {
     _basePattern = XRoutePattern(basePath);
     _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
