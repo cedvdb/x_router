@@ -22,11 +22,11 @@ import 'x_page_builder.dart';
 /// {@template resolvers}
 /// The list of [resolvers] that are active for this specific route.
 /// In those resolvers, the target will always be matching the route and
-/// children if [matchChildren] is true.
+/// children if [matchChildPaths] is true.
 /// {@endtemplate}
 ///
 /// {@template matchChildren}
-/// The [matchChildren] represents whether the path will match the child paths.
+/// The [matchChildPaths] represents whether the path will match longer paths.
 ///
 /// By default matchChildren is true, meaning that when we go to:
 /// `/products/:id`, the routes `/`, `/products` and `/products/:id` will be in the navigator
@@ -47,7 +47,7 @@ class XRoute {
   final XPageBuilder builder;
 
   /// {@macro matchChildren}
-  final bool matchChildren;
+  final bool matchChildPaths;
 
   /// browser tab title
   final XTitleBuilder? titleBuilder;
@@ -63,7 +63,7 @@ class XRoute {
     this.childRouterConfig,
     this.pageKey,
     this.titleBuilder,
-    this.matchChildren = true,
+    this.matchChildPaths = true,
   }) : _parser = XRoutePattern(path);
 
   /// finds resolvers present in child routes
@@ -91,25 +91,19 @@ class XRoute {
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
-  /// if [matchChildren] isn't specified the matchChildren of property this route is used, which is true by default
-  /// {@macro matchType}
-  bool match(String path, {bool? matchChildren}) {
-    matchChildren ??= this.matchChildren;
-    return _parser.match(path, matchChildren: matchChildren);
+  bool match(String path) {
+    return _parser.match(path, matchChildren: matchChildPaths);
   }
 
   /// parses a path against this route
   /// the [path] is the path to be matched against this route
-  /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
-  /// {@macro matchType}
-  XParsingResult parse(String path, {bool? matchChildren}) {
-    matchChildren ??= this.matchChildren;
-    return _parser.parse(path, matchChildren: matchChildren);
+  XParsingResult parse(String path) {
+    return _parser.parse(path, matchChildren: matchChildPaths);
   }
 
   @override
   String toString() {
-    return 'XRoute(path: $path, matchChildren: $matchChildren, $builder: ${builder.runtimeType})';
+    return 'XRoute(path: $path, matchChildren: $matchChildPaths, $builder: ${builder.runtimeType})';
   }
 
   XRoute copyWithBuilder({
@@ -119,7 +113,7 @@ class XRoute {
       pageKey: null,
       path: path,
       builder: builder ?? this.builder,
-      matchChildren: matchChildren,
+      matchChildPaths: matchChildPaths,
     );
   }
 }
