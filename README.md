@@ -68,9 +68,7 @@ For navigation you can use the static method `XRoute.goTo(location)`
   router.goTo(AppRoutes.productDetails, params: { 'id': '123' }); 
 ```
 
-<a id="relative-navigation">
-## Relative navigation
-</a>
+##<a id="relative-navigation">Relative navigation</a>
 
 You can also navigate relative to the current route
 
