@@ -7,7 +7,7 @@ import 'package:x_router/src/activated_route/x_activated_route.dart';
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
-  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+  late GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   String? get currentConfiguration {
@@ -47,6 +47,7 @@ class XRouterDelegate extends RouterDelegate<String>
     ];
     _setBrowserTitle(context);
     return Navigator(
+      key: navigatorKey,
       pages: pages,
       onPopPage: (route, res) {
         pop();
