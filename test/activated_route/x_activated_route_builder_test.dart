@@ -18,7 +18,7 @@ void main() {
           XRoute(
             path: '/',
             builder: (_, __) => Container(),
-            matchChildPaths: false,
+            isAddedToUpstack: false,
           ),
           XRoute(
             path: '/products',
