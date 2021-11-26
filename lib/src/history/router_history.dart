@@ -20,7 +20,7 @@ class XRouterHistory with IterableMixin<XActivatedRoute> {
   XRouterHistory();
 
   void add(XActivatedRoute activatedRoute) {
-    if (activatedRoute.matchingPath != currentRoute.matchingPath) {
+    if (activatedRoute.effectivePath != currentRoute.effectivePath) {
       _history.insert(0, activatedRoute);
     }
   }

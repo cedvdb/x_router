@@ -87,7 +87,9 @@ final _routes = [
   ),
 ];
 
-// the router instance used throughout the app
+// the router instance used throughout the app,
+// It is up to you if you want to let it as a global variable, use injection,
+// inherited widget to access it.. That's outside the scope.
 final router = XRouter(
   resolvers: [
     AuthResolver(),

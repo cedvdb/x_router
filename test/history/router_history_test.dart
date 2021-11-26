@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/history/router_history.dart';
+import 'package:x_router/x_router.dart';
 
 void main() {
   group('Router history', () {
@@ -24,6 +26,25 @@ void main() {
       expect(history.length, equals(1));
       history.add(XActivatedRoute.forPath('/home'));
       expect(history.length, equals(1));
+      // only the effective path matters
+      history.add(
+        XActivatedRoute(
+          route: XRoute(path: '', builder: (_, __) => Container()),
+          requestedPath: '/path/to/resource/with-gibberish-end',
+          matchingPath: '/path',
+          effectivePath: '/path/to/resource',
+        ),
+      );
+      expect(history.length, equals(2));
+      history.add(
+        XActivatedRoute(
+          route: XRoute(path: '', builder: (_, __) => Container()),
+          requestedPath: '/path/to/resource',
+          matchingPath: '/path/to',
+          effectivePath: '/path/to/resource',
+        ),
+      );
+      expect(history.length, equals(2));
     });
 
     test('should remove from', () {

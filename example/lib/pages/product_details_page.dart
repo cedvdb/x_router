@@ -28,10 +28,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
   @override
   initState() {
     _tabController = TabController(length: 2, vsync: this);
-    // _routerSubscription = router.eventStream
-    //     .where((event) => event is NavigationEnd)
-    //     .cast<NavigationEnd>()
-    //     .listen((event) => _changeTabIndex(event.activatedRoute.requestedPath));
+    _routerSubscription = router.eventStream
+        .where((event) => event is NavigationEnd)
+        .cast<NavigationEnd>()
+        .listen((event) => _changeTabIndex(router.history.currentUrl));
     super.initState();
   }
 
@@ -42,6 +42,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
   }
 
   _changeTabIndex(String path) {
+    print(path);
     final index = _findTabIndex(path);
     if (index != null && index != _tabController?.index) {
       _tabController?.animateTo(index);
@@ -50,7 +51,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
 
   int? _findTabIndex(String path) {
     try {
-      _tabIndexes.entries
+      return _tabIndexes.entries
           .firstWhere((entry) => path.startsWith(entry.key))
           .value;
     } catch (e) {
@@ -68,11 +69,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
 
   @override
   Widget build(BuildContext context) {
-    final delegate = router.childRouterStore.findDelegate(
-      RouteLocations.productDetail,
-    );
-
-    print(delegate);
     return Scaffold(
       appBar: AppBar(
         title: Text('product details: ${widget.product!.name}'),
@@ -84,7 +80,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
               icon: Icon(Icons.home),
             ),
             Tab(
-              icon: Icon(Icons.favorite),
+              icon: Icon(Icons.comment),
             ),
           ],
         ),

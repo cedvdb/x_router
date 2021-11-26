@@ -12,12 +12,12 @@ void main() {
     setUp(() => router = getTestRouter());
     group('initialization', () {
       testWidgets('should render initial page', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should have history of one', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.matchingPath,
             equals(RouteLocation.home));
@@ -26,7 +26,7 @@ void main() {
 
     group('goTo', () {
       testWidgets('should render next page', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -35,15 +35,16 @@ void main() {
       });
 
       testWidgets('should use parameters', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetail, params: {'id': '123'});
+        router.goTo(RouteLocation.productDetails, params: {'id': '123'});
         await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey('${RouteLocation.productDetail}-123')),
+        expect(
+            find.byKey(const ValueKey('${RouteLocation.productDetails}-123')),
             findsOneWidget);
       });
       testWidgets('should add to history', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -56,7 +57,7 @@ void main() {
     });
     group('replace', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -64,7 +65,7 @@ void main() {
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should replace in history', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -76,9 +77,9 @@ void main() {
 
     group('pop', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetail);
+        router.goTo(RouteLocation.productDetails);
         await tester.pumpAndSettle();
         router.pop();
         await tester.pumpAndSettle();
@@ -87,7 +88,7 @@ void main() {
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should add in history', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -101,7 +102,7 @@ void main() {
 
     group('back', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -110,7 +111,7 @@ void main() {
         expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should remove in history', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -125,7 +126,7 @@ void main() {
     group('refresh', () {
       testWidgets('should stay on current route if no redirection',
           (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -136,7 +137,7 @@ void main() {
       });
 
       testWidgets('history does not increase', (tester) async {
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -157,7 +158,7 @@ void main() {
                 from: RouteLocation.preferences, to: RouteLocation.home),
           ],
         );
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
         await tester.pumpAndSettle();
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.matchingPath,
@@ -176,7 +177,7 @@ void main() {
           resolvers: [authResolver],
         );
         authResolver.router = router;
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
 
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
@@ -189,7 +190,7 @@ void main() {
           resolvers: [authResolver],
         );
         authResolver.router = router;
-        await tester.pumpWidget(TestApp(router));
+        await tester.pumpWidget(const TestApp());
 
         await tester.pumpAndSettle();
         authResolver.signIn();
@@ -203,6 +204,36 @@ void main() {
         await tester.pumpAndSettle();
         expect(
             find.byKey(const ValueKey(RouteLocation.signIn)), findsOneWidget);
+      });
+
+      testWidgets('should access child router page', (tester) async {
+        await tester.pumpWidget(const TestApp());
+        await tester.pumpAndSettle();
+        router.goTo(RouteLocation.productDetailsInfo, params: {'id': 'id'});
+        await tester.pumpAndSettle();
+        expect(router.history.length, equals(2));
+        expect(find.byKey(const ValueKey('${RouteLocation.productDetails}-id')),
+            findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsInfo)),
+            findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
+            findsNothing);
+        router.goTo(RouteLocation.productDetailsComments, params: {'id': 'id'});
+        // router.ewd(RouteLocation.productDetailsComments, params: {'id': 'id'});
+
+        await tester.pumpAndSettle();
+        // await tester.pump(const Duration(days: 1));
+        // await tester.pumpAndSettle();
+
+        expect(router.history.length, equals(3));
+        expect(router.history.currentRoute.effectivePath,
+            equals('/products/id/comments'));
+        expect(find.byKey(const ValueKey('${RouteLocation.productDetails}-id')),
+            findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
+            findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsInfo)),
+            findsNothing);
       });
     });
   });

@@ -9,10 +9,11 @@ Flutter navigation made easy by providing a simple API.
 
   - redirects
   - reactive guards
+  - child routers !
+  - relative navigation
   - tabs support
   - router history
   - tab title
-  - simple
   - event driven
   - test coverage
 
@@ -62,6 +63,7 @@ For navigation you can use the static method `XRoute.goTo(location)`
   router.goTo('/products/:id', params: { 'id': '123' });
   // Generally you will store your routes somewhere:
   router.goTo(AppRoutes.productDetails, params: { 'id': '123' });
+
 ```
 
 ### All navigation methods
