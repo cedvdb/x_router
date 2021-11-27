@@ -246,6 +246,46 @@ class AuthResolver extends ValueNotifier implements XResolver {
 This is powerful because you then don't need to worry about redirection on user authentication anywhere in your app, you just login and logout.
 
 
+```diff
+! Note: All resolvers are active for all paths
+```
+
+A good practice for resolver is to have them light and decoupled from your app. Your app should not call them.
+
+```diff
++  // good
+
++  class AuthResolver extends ValueNotifier implements XResolver {
++
++    AuthResolver() : super(AuthStatus.unknown) {
++      AuthService.authStatusStream
++          .listen((authStatus) => value = authStatus);
++    }
++
++    @override
++    XResolverAction resolve(String target) {
++      // ...
++    }
++  }
+
+- // bad
+
+-  class AuthResolver extends ValueNotifier implements XResolver {
+-    AuthResolver() : super(null);
+-
+-    signIn() => value = true;
+-
+-    signOut() => value = false;
+-
+-    @override
+-    XResolverAction resolve(String target) {
+-      // ...
+-    }
+-  }
+
+```
+
+
 ### Built-resolvers
 
 A series of resolvers are provided by the library:
