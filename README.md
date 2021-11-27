@@ -1,23 +1,23 @@
 # x_router
 
-Flutter navigation made easy by providing a simple API.
-
-![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recording.gif)
-
+A simple and powerful routing framework for flutter
 
 # Features
 
-  - reactive guards
-  - child routers
+  - [reactive guards / resolvers](#resolvers)
+  - [child routers](#nested-routing)
   - [easy navigation](#navigation)
   - [relative navigation](#relative-navigation)
-  - redirects
-  - url matching
-  - tabs support
+  - [redirects](#add-redirects)
+  - [tabs support](#tabs-support)
+  - [translated browser tab title](#tab-title)
+  - [url matching](#url-matching)
   - router history
-  - tab title
   - event driven
   - test coverage
+
+![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recording.gif)
+
 
 
 # Core idea
@@ -54,11 +54,10 @@ This is the approach this library takes to create the **upstack** by default.
 
 # Usage
 
-<a id="navigation">
 ## Navigation
-</a>
 
-For navigation you can use the static method `XRoute.goTo(location)`
+
+For navigation you can use the `goTo(location)` method:
 
 ```dart
   final router = XRouter(routes: []);
@@ -66,15 +65,6 @@ For navigation you can use the static method `XRoute.goTo(location)`
   router.goTo('/products/:id', params: { 'id': '123' }); // products/123
   // Generally you will store your routes somewhere:
   router.goTo(AppRoutes.productDetails, params: { 'id': '123' }); 
-```
-
-## Relative navigation
-
-You can also navigate relative to the current route
-
-```dart
-  // this will go to `products/123/info` assuming we were on products/123/comments 
-  router.goTo('./info'); 
 ```
 
 ### All navigation methods
@@ -85,23 +75,38 @@ You can also navigate relative to the current route
   - `back`: go back chronologically
   - `refresh`: go to current location (useful for your resolvers have state)
 
+### Relative navigation
+
+You can also navigate relative to the current route
+
+```dart
+  // goes to `products/123/info`, we were on /products/123/comments 
+  router.goTo('./info'); 
+  // goes to /preferences, when we were on /products/123/info
+  router.goTo('../../preferences);
+```
+
 
 # Setup
 
 ## 1. Simple setup
 
-The router in its simplest form defines a series of routes and builders associated with them
+The router in its simplest form defines a series of routes with builders and paths associated with them. The first step is to define those routes:
 
 ```dart
 XRouter(
   routes: [
     XRoute( path: '/sign-in', builder: (ctx, activatedRoute) => SignInPage(),),
-    XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
+    XRoute( 
+      path: '/dashboard', 
+      builder: (ctx, activatedRoute) => DashboardPage(),
+      // tab title
+      titleBuilder: (ctx, activatedRoute) => AppLocalization.of(ctx).dashboard
+
+    ),
     XRoute( 
       path: '/products', 
       builder: (ctx, activatedRoute) => ProductsPage(), 
-      // browser tab title
-      titleBuilder: (ctx, __) => translate(ctx, 'products')
     ),
     XRoute(
       path: '/products/:id',
@@ -110,6 +115,7 @@ XRouter(
   ],
 );
 ```
+
 
 ## 2. Add redirects
 
@@ -122,12 +128,7 @@ XRouter(
     XRedirectResolver(from: '/', to: 'dashboard'),
   ],
   routes: [
-    XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
-    XRoute( path: '/products', builder: (ctx, activatedRoute) => ProductsPage()),
-    XRoute(
-      path: '/products/:id',
-      builder: (ctx, activatedRoute) => ProductDetailsPage(activatedRoute.params['id']),
-    ),
+    // ...
   ],
 );
 ```
@@ -156,11 +157,10 @@ XRouter(
 ```
 
 
-# Reactive guards / resolvers
+# Resolvers
 
 
-When a page is accessed via a path ('/route'). That route goes through each resolvers provided to the router, sequentially and either `Redirect` or goest to the `Next` resolver.
-
+When a page is accessed via a path ('/route'). That route goes through each resolvers provided to the router, sequentially and either `Redirect`,  `Next` or `Loading` happen.
 
 Here is an example of redirect resolver:
 
@@ -177,6 +177,8 @@ class XRedirectResolver extends XResolver {
 
   @override
   XResolverAction resolve(String target) async {
+    // you can use the XRoutePattern class instead of startsWith
+    // which will also match when there are parameters
     if (target.startsWith(from)) {
       return Redirect(to);
     }
@@ -187,18 +189,20 @@ class XRedirectResolver extends XResolver {
 
 resolvers can return 3 type of value:
 
-  - `Redirect`: redirects to a target (and go through each resolver again)
-  - `Next`: proceeds to the next resolver until we reach the end (no redirect)
+  - `Redirect`: redirects to a target and goes through each resolver again with a new path
+  - `Next`: proceeds to the next resolver until we reach the end 
   - `Loading`: stops the resolving process and display a widget on screen until it is ready (see next section)
 
-## Reactive resolvers
+
+
+# Reactive resolvers
 
 If you need your resolver to trigger on state change, you can simply implement any `Listenable` (ChangeNotifier, ValueNotifier,...).
 
 The canonical example of a reactive resolver use case is authentication. 
 
 In the following example, when the authentication status changes, the XRouter will be notified of
-such a change and will trigger `XRouter.refresh()` which will start the resolving process again.
+such a change and will trigger the resolving process will start again.
 
 - If the user is authenticated he will be redirected to /home (if not already there)
 - If the user is unauthenticated he will be redirected to /sign-in (if not already there)
@@ -236,16 +240,18 @@ class AuthResolver implements XResolver {
 }
 ```
 
-This is powerful because you then don't need to worry about redirection on user authentication.
+This is powerful because you then don't need to worry about redirection on user authentication anywhere in your app, you just login and logout.
 
 
-### Provided resolvers
+### Built-resolvers
 
 A series of resolvers are provided by the library:
 
  - XNotFoundResolver: to redirect when no route is found
  - XRedirect: to redirect a specific path
 
+
+# Nested routing
 
 # Tabs
 
@@ -334,6 +340,34 @@ finally you have to use the same widget for the different routes:
     ),
 ```
 
-You can check the full code in the example
 
+# Tab titles
 
+To customize your routes a bit you can add tab titles:
+
+```dart
+
+  XRoute( 
+    path: '/dashboard', 
+    builder: (ctx, activatedRoute) => DashboardPage(),
+    // tab title
+    titleBuilder: (ctx, activatedRoute) => AppLocalization.of(ctx).dashboard
+  )
+
+```
+
+# Url matching
+
+When an user access a path in your application, the url will automatically shrink to find the matching route.
+
+That means that if you defined a router with only a `/dashboard` route:
+
+```dart
+    XRoute( 
+      path: '/dashboard', 
+      builder: (ctx, activatedRoute) => DashboardPage(),
+    ),
+```
+
+When the user access the path `/dashboard/something-undefined`, the url in the browser will change to `/dashboard` and the user 
+will access `/dashboard`.
