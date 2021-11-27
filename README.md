@@ -1,12 +1,12 @@
 # x_router
 
-A simple and powerful routing framework for flutter
+A simple and powerful routing framework for flutter.
 
-# Features
+## Features
 
+  - [easy navigation](#navigation)
   - [reactive guards / resolvers](#resolvers)
   - [child routers](#nested-routing)
-  - [easy navigation](#navigation)
   - [relative navigation](#relative-navigation)
   - [redirects](#add-redirects)
   - [tabs support](#tabs-support)
@@ -16,13 +16,14 @@ A simple and powerful routing framework for flutter
   - event driven
   - test coverage
 
+
+<br><br>
+
 ![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recording.gif)
 
 
 
-# Core idea
-
-Flutter brings web navigation and app navigation together with Navigator 2.0. 
+## Core idea
 
 One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the browser arrow ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an up button, usually the icon ⬅ at the top of the app bar, to navigate up in the stack of pages that are superimposed on each others. In this doc, the word **upstack** is used to refer to the stack of pages accessible when pressing ⬅ and popping the current page.
 (for more information see https://developer.android.com/guide/navigation/navigation-principles)
@@ -52,9 +53,9 @@ For example when on the '/products/:id' route the **upstack** will look like thi
 This is the approach this library takes to create the **upstack** by default.
 
 
-# Usage
+## Usage
 
-## Navigation
+### Navigation
 
 
 For navigation you can use the `goTo(location)` method:
@@ -67,7 +68,7 @@ For navigation you can use the `goTo(location)` method:
   router.goTo(AppRoutes.productDetails, params: { 'id': '123' }); 
 ```
 
-### All navigation methods
+#### All navigation methods
 
   - `goTo`: goes to location adding the target to history 
   - `replace`: removes current location from history and `goTo` location
@@ -75,7 +76,7 @@ For navigation you can use the `goTo(location)` method:
   - `back`: go back chronologically
   - `refresh`: go to current location (useful for your resolvers have state)
 
-### Relative navigation
+#### Relative navigation
 
 You can also navigate relative to the current route
 
