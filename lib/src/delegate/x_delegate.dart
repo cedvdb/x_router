@@ -32,9 +32,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   initRendering(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
-    if (_shouldReportNewRoute) {
-      notifyListeners();
-    }
+    notifyListeners();
   }
 
   @override
