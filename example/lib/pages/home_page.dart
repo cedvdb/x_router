@@ -1,27 +1,21 @@
 import 'dart:async';
 
 import 'package:example/main.dart';
-import 'package:example/pages/dashboard_page.dart';
-import 'package:example/pages/favorites_page.dart';
-import 'package:example/pages/products_page.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-class HomeLayout extends StatefulWidget {
-  final String appBarTitle;
-
-  const HomeLayout({
+class HomePage extends StatefulWidget {
+  const HomePage({
     Key? key,
-    required this.appBarTitle,
   }) : super(key: key);
 
   @override
-  State<HomeLayout> createState() => _HomeLayoutState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeLayoutState extends State<HomeLayout>
+class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+  int _selectedTab = 0;
   StreamSubscription? navSubscription;
 
   final _tabsIndex = <String, int>{
@@ -32,35 +26,31 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   void initState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
-    );
+    _selectedTab = _findTabIndex(router.history.currentUrl) ?? 0;
     navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
-        .listen((nav) => _refreshTabIndex);
+        .listen((nav) => _refreshBottomBar);
     super.initState();
   }
 
   @override
   void dispose() {
     navSubscription?.cancel();
-    _tabController.dispose();
     super.dispose();
   }
 
   /// changes the selected tab when the url changes
-  _refreshTabIndex() {
+  _refreshBottomBar() {
     final foundIndex = _findTabIndex(router.history.currentUrl);
     if (foundIndex != null) {
-      _tabController.animateTo(foundIndex);
+      setState(() => _selectedTab = foundIndex);
     }
   }
 
   /// when a tab is clicked, navigate to the target location
   _navigate(int index) {
+    setState(() => _selectedTab = index);
     router.goTo(_findRoutePath(index));
   }
 
@@ -84,31 +74,28 @@ class _HomeLayoutState extends State<HomeLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appBarTitle),
+        title: Text(router.history.currentUrl),
         actions: [
           IconButton(
             onPressed: () => router.goTo(RouteLocations.preferences),
             icon: const Icon(Icons.settings),
           )
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _navigate(index),
-          tabs: const [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.favorite)),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          DashboardPage(),
-          ProductsPage(),
-          const FavoritesPage(),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: _navigate,
+        selectedIndex: _selectedTab,
+        destinations: const [
+          // material you
+          NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
+          NavigationDestination(
+              label: 'products', icon: Icon(Icons.shopping_bag)),
+          NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
         ],
       ),
+      body: Router(
+          routerDelegate:
+              router.childRouterStore.findDelegate(RouteLocations.home)),
     );
   }
 }

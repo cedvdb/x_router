@@ -2,6 +2,7 @@ import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
+  const DashboardPage();
   @override
   Widget build(BuildContext context) {
     return Padding(

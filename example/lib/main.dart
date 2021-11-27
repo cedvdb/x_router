@@ -1,6 +1,9 @@
-import 'package:example/pages/home_layout.dart';
+import 'package:example/pages/dashboard_page.dart';
+import 'package:example/pages/favorites_page.dart';
+import 'package:example/pages/home_page.dart';
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/preferences_page.dart';
+import 'package:example/pages/products_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/foundation.dart';
@@ -41,26 +44,30 @@ final _routes = [
     builder: (ctx, route) => const PreferencesPage(),
     titleBuilder: (ctx, route) => translate(ctx, 'preferences'),
   ),
-  // here the 3 routes have the same base widget
-  // that is for tab navigation
   XRoute(
-    pageKey: const ValueKey('home-layout'),
-    path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'dashboard'),
-    titleBuilder: (_, __) => 'dashboard',
+    path: RouteLocations.home,
+    builder: (ctx, route) => const HomePage(),
+    childRouterConfig: XChildRouterConfig(
+      routes: [
+        XRoute(
+          path: RouteLocations.dashboard,
+          builder: (ctx, route) => const DashboardPage(),
+          titleBuilder: (_, __) => 'dashboard',
+        ),
+        XRoute(
+          path: RouteLocations.products,
+          titleBuilder: (_, __) => 'products',
+          builder: (ctx, route) => const ProductsPage(),
+        ),
+        XRoute(
+          path: RouteLocations.favorites,
+          builder: (ctx, route) => const FavoritesPage(),
+          titleBuilder: (_, __) => 'My favorites',
+        ),
+      ],
+    ),
   ),
-  XRoute(
-    path: RouteLocations.favorites,
-    pageKey: const ValueKey('home-layout'),
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'favorites'),
-    titleBuilder: (_, __) => 'My favorites',
-  ),
-  XRoute(
-    path: RouteLocations.products,
-    pageKey: const ValueKey('home-layout'),
-    titleBuilder: (_, __) => 'products',
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'products'),
-  ),
+
   // Here this route has a child router
   XRoute(
     path: RouteLocations.productDetail,

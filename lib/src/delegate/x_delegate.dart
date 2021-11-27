@@ -54,19 +54,15 @@ class XRouterDelegate extends RouterDelegate<String>
     );
   }
 
-  MaterialPage _buildPage(
+  Page _buildPage(
     BuildContext context,
     XActivatedRoute activatedRoute,
   ) {
     final route = activatedRoute.route;
-    final builder = route.builder;
+    final child = route.builder(context, activatedRoute);
     return MaterialPage(
       key: route.pageKey,
-      child: builder(
-        context,
-        activatedRoute,
-      ),
-      restorationId: route.pageKey.toString(),
+      child: child,
     );
   }
 
