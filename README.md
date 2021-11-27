@@ -136,8 +136,7 @@ XRouter(
 
 ## 3. Guard your routes 
 
-Usually your app will have authentication where the authentication is in 3 possible state (unauthenticated, authenticated, unkow). You want to protect pages that are not supposed to
-be accessible.
+Usually your app will have authentication where the authentication is in 3 possible state (unauthenticated, authenticated, unknown). You want to protect pages that are not supposed to be accessible.
 
 ```dart
 XRouter(
@@ -161,7 +160,7 @@ XRouter(
 # Resolvers
 
 
-When a page is accessed via a path ('/route'). That route goes through each resolvers provided to the router, sequentially and either `Redirect`,  `Next` or `Loading` happen.
+When a page is accessed via a path ('/path'). That path goes through each resolvers provided to the router, sequentially and either `Redirect`,  `Next` or `Loading` happen.
 
 Here is an example of redirect resolver:
 
@@ -179,7 +178,7 @@ class XRedirectResolver extends XResolver {
   @override
   XResolverAction resolve(String target) async {
     // you can use the XRoutePattern class instead of startsWith
-    // which will also match when there are parameters
+    // which will also match for patterns like /products/:id
     if (target.startsWith(from)) {
       return Redirect(to);
     }
@@ -195,7 +194,6 @@ resolvers can return 3 type of value:
   - `Loading`: stops the resolving process and display a widget on screen until it is ready (see next section)
 
 
-
 # Reactive resolvers
 
 If you need your resolver to trigger on state change, you can simply implement any `Listenable` (ChangeNotifier, ValueNotifier,...).
@@ -203,7 +201,7 @@ If you need your resolver to trigger on state change, you can simply implement a
 The canonical example of a reactive resolver use case is authentication. 
 
 In the following example, when the authentication status changes, the XRouter will be notified of
-such a change and will trigger the resolving process will start again.
+such a change and the resolving process will start again.
 
 - If the user is authenticated he will be redirected to /home (if not already there)
 - If the user is unauthenticated he will be redirected to /sign-in (if not already there)
