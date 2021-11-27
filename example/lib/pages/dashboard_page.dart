@@ -19,19 +19,20 @@ class DashboardPage extends StatelessWidget {
               ),
               const Text(
                   '- Authentication resolver: When logging we are redirected'),
-              const Text('- Nested Router'),
+              const Text('- Nested Router in product details page'),
               const Text('- Passing parameters in product details page'),
               const Text('- When route is not found we are redirected to home'),
-              const Text('- Redirection of home route towards /dashboard'),
+              const Text('- Accessing /home redirects towards /dashboard'),
               const Text('- Tabs change url, urls change tabs'),
               const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () => AuthService.instance.signOut(),
-                  child: const Text(
-                    'Sing out',
-                  ))
+                onPressed: () => AuthService.instance.signOut(),
+                child: const Text(
+                  'Sing out',
+                ),
+              )
             ],
           ),
         ),

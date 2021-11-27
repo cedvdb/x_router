@@ -30,25 +30,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
     _tabController = TabController(length: 2, vsync: this);
     _routerSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((event) => _changeTabIndex(router.history.currentUrl));
+        .listen((_) => _changeTabIndex(router.history.currentUrl));
     super.initState();
   }
 
   @override
   dispose() {
     _routerSubscription?.cancel();
+    _tabController?.dispose();
     super.dispose();
   }
 
+  /// changes tab index given a path
   _changeTabIndex(String path) {
-    print(path);
     final index = _findTabIndex(path);
     if (index != null && index != _tabController?.index) {
       _tabController?.animateTo(index);
     }
   }
 
+  /// finds the tab index given a path
   int? _findTabIndex(String path) {
     try {
       return _tabIndexes.entries

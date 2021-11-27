@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
 class HomeLayout extends StatefulWidget {
-  final String text;
+  final String appBarTitle;
+
   const HomeLayout({
     Key? key,
-    required this.text,
+    required this.appBarTitle,
   }) : super(key: key);
 
   @override
@@ -29,20 +30,6 @@ class _HomeLayoutState extends State<HomeLayout>
     RouteLocations.favorites: 2,
   };
 
-  int? _findTabIndex(String url) {
-    try {
-      return _tabsIndex.entries
-          .firstWhere((entry) => url.startsWith(entry.key))
-          .value;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  String _findUrlForTabIndex(int index) {
-    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
-  }
-
   @override
   void initState() {
     _tabController = TabController(
@@ -53,18 +40,8 @@ class _HomeLayoutState extends State<HomeLayout>
     navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .cast<NavigationEnd>()
-        .listen((nav) {
-      final foundIndex = _findTabIndex(router.history.currentUrl);
-      if (foundIndex != null) {
-        _tabController.animateTo(foundIndex);
-      }
-    });
+        .listen((nav) => _refreshTabIndex);
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
   }
 
   @override
@@ -74,15 +51,40 @@ class _HomeLayoutState extends State<HomeLayout>
     super.dispose();
   }
 
+  /// changes the selected tab when the url changes
+  _refreshTabIndex() {
+    final foundIndex = _findTabIndex(router.history.currentUrl);
+    if (foundIndex != null) {
+      _tabController.animateTo(foundIndex);
+    }
+  }
+
+  /// when a tab is clicked, navigate to the target location
   _navigate(int index) {
-    router.goTo(_findUrlForTabIndex(index));
+    router.goTo(_findRoutePath(index));
+  }
+
+  /// finds the tab index associated with a path
+  int? _findTabIndex(String path) {
+    try {
+      return _tabsIndex.entries
+          .firstWhere((entry) => path.startsWith(entry.key))
+          .value;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// finds the url path given a tab index
+  String _findRoutePath(int index) {
+    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.text),
+        title: Text(widget.appBarTitle),
         actions: [
           IconButton(
             onPressed: () => router.goTo(RouteLocations.preferences),

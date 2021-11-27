@@ -10,7 +10,7 @@ A simple and powerful routing framework for flutter.
   - [relative navigation](#relative-navigation)
   - [redirects](#add-redirects)
   - [tabs support](#tabs-support)
-  - [translated browser tab title](#tab-title)
+  - [translated browser tab title](#browser-tab-title)
   - [url matching](#url-matching)
   - router history
   - event driven
@@ -252,9 +252,190 @@ A series of resolvers are provided by the library:
 
 # Nested routing
 
+First setup your view with flutter's `Router` as a child. That is where your child routes will be rendered:
+
+```dart
+
+class _ProductDetailsPageState extends State<ProductDetailsPage>
+    with SingleTickerProviderStateMixin {
+  TabController? _tabController;
+
+  @override
+  initState() {
+    _tabController = TabController(length: 2, vsync: this, );
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _routerSubscription?.cancel();
+    _tabController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('product details: ${widget.product!.name}'),
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: _navigate,
+          tabs: const [
+            Tab(
+              icon: Icon(Icons.home),
+            ),
+            Tab(
+              icon: Icon(Icons.comment),
+            ),
+          ],
+        ),
+      ),
+      body: Router(
+        routerDelegate: router.childRouterStore.findDelegate(
+          RouteLocations.productDetail,
+        ),
+      ),
+    );
+  }
+}
+
+```
+
+Next you probably want to react to navigation changes, in the example above we want to animate the tabs
+
+```dart
+  final Map<String, int> _tabIndexes = const {
+    RouteLocations.productInfo: 0,
+    RouteLocations.productComments: 1,
+  };
+
+  @override
+  initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    _routerSubscription = router.eventStream
+        .where((event) => event is NavigationEnd)
+        .listen((_) => _changeTabIndex(router.history.currentUrl));
+    super.initState();
+  }
+
+  /// changes tab index given a path
+  _changeTabIndex(String path) {
+    final index = _findTabIndex(path);
+    if (index != null && index != _tabController?.index) {
+      _tabController?.animateTo(index);
+    }
+  }
+
+  /// finds the tab index given a path
+  int? _findTabIndex(String path) {
+    try {
+      return _tabIndexes.entries
+          .firstWhere((entry) => path.startsWith(entry.key))
+          .value;
+    } catch (e) {
+      return null;
+    }
+  }
+```
+
+Finally you have to define your routes:
+
+
+```dart
+XRoute(
+  path: RouteLocations.productDetail,
+  builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+  // here is a nested router
+  childRouterConfig: XChildRouterConfig(
+    resolvers: [
+      XRedirectResolver(
+        from: RouteLocations.productDetail,
+        to: RouteLocations.productInfo,
+      ),
+    ],
+    routes: [
+      XRoute(
+        path: RouteLocations.productInfo,
+        builder: (_, __) =>
+            const Center(child: Text('info (Displayed via nested router)')),
+      ),
+      XRoute(
+        path: RouteLocations.productComments,
+        builder: (_, __) => const Center(
+            child: Text('comments (displayed via nested router)')),
+      ),
+    ],
+  ),
+),
+```
+
 # Tabs
 
-First setup tab indexes
+For tabs support you have to make the url react to tab changes and the tabs have to react to url changes themselves.
+
+### 1. First setup your view as usual with tabs:
+
+```dart
+class _HomeLayoutState extends State<HomeLayout>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  /// when a tab is clicked, navigate to the target location
+  _navigate(int index) {
+    if (index == 0) {
+      router.goTo('./info');
+    } else if (index == 1) {
+      router.goTo('./comments');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.appBarTitle),
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: (index) => _navigate(index),
+          tabs: const [
+            Tab(icon: Icon(Icons.home)),
+            Tab(icon: Icon(Icons.star)),
+            Tab(icon: Icon(Icons.favorite)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(),
+          ProductsPage(),
+          const FavoritesPage(),
+        ],
+      ),
+    );
+  }
+}
+
+```
+
+
+### 2. Next you need to tell the router to navigate to the correct route when a tab is clicked
 
 ```dart
   final _tabsIndex = <String, int>{
@@ -263,84 +444,183 @@ First setup tab indexes
     AppRoutes.favorites: 2,
   };
 
-  int? _findTabIndex(String url) {
+  _navigate(int index) {
+    router.goTo(_findRoutePath(index));
+  }
+
+  String _findRoutePath(int index) {
+    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+  }
+```
+
+### 3. You also need to update the tab bar when the url changes
+
+```dart
+  StreamSubscription? navSubscription;
+
+  @override
+  void initState() {
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0, // add this line
+    );
+    navSubscription = router.eventStream
+        .where((event) => event is NavigationEnd)
+        .cast<NavigationEnd>()
+        .listen((nav) => _refreshTabIndex);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    navSubscription?.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  /// changes the selected tab when the url changes
+  _refreshTabIndex() {
+    final foundIndex = _findTabIndex(router.history.currentUrl);
+    if (foundIndex != null) {
+      _tabController.animateTo(foundIndex);
+    }
+  }
+
+  /// finds the url path given a tab index
+  String _findRoutePath(int index) {
+    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+  }
+
+
+```
+
+Your home layout widget, full code is now:
+
+```dart
+class _HomeLayoutState extends State<HomeLayout>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  StreamSubscription? navSubscription;
+
+  final _tabsIndex = <String, int>{
+    RouteLocations.dashboard: 0,
+    RouteLocations.products: 1,
+    RouteLocations.favorites: 2,
+  };
+
+  @override
+  void initState() {
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
+    );
+    navSubscription = router.eventStream
+        .where((event) => event is NavigationEnd)
+        .cast<NavigationEnd>()
+        .listen((nav) => _refreshTabIndex);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    navSubscription?.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  /// changes the selected tab when the url changes
+  _refreshTabIndex() {
+    final foundIndex = _findTabIndex(router.history.currentUrl);
+    if (foundIndex != null) {
+      _tabController.animateTo(foundIndex);
+    }
+  }
+
+  /// when a tab is clicked, navigate to the target location
+  _navigate(int index) {
+    router.goTo(_findRoutePath(index));
+  }
+
+  /// finds the tab index associated with a path
+  int? _findTabIndex(String path) {
     try {
       return _tabsIndex.entries
-          .firstWhere((entry) => url.startsWith(entry.key))
+          .firstWhere((entry) => path.startsWith(entry.key))
           .value;
     } catch (e) {
       return null;
     }
   }
 
-  String _findUrlForTabIndex(int index) {
+  /// finds the url path given a tab index
+  String _findRoutePath(int index) {
     return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
   }
-```
 
-For tabs the process is a bit involved, you need to redirect when a new tab is clicked
-
-```dart
-  _navigate(int index) {
-    router.goTo(_findUrlForTabIndex(index));
-  }
-```
-
-You also need to change the tab when the url changes:
-
-```dart
-
-    navSubscription = router.eventStream
-        .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((nav) {
-      final foundIndex = _findTabIndex(router.history.currentUrl);
-      if (foundIndex != null) {
-        _tabController.animateTo(foundIndex);
-      }
-    });
-```
-
-and you also need to set the initial index when the page is first loaded
-
-```dart
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.appBarTitle),
+        actions: [
+          IconButton(
+            onPressed: () => router.goTo(RouteLocations.preferences),
+            icon: const Icon(Icons.settings),
+          )
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          onTap: (index) => _navigate(index),
+          tabs: const [
+            Tab(icon: Icon(Icons.home)),
+            Tab(icon: Icon(Icons.star)),
+            Tab(icon: Icon(Icons.favorite)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          DashboardPage(),
+          ProductsPage(),
+          FavoritesPage(),
+        ],
+      ),
     );
+  }
+}
 
 ```
 
-finally you have to use the same widget for the different routes:
+4. finally you have to use the same widget for the different routes:
 
 ```dart
-    XRoute(
-      pageKey: const ValueKey('home-layout'),
-      path: dashboard,
-      builder: (ctx, route) => const HomeLayout(
-        title: 'dashboard',
-      ),
-      titleBuilder: (ctx, _) translate(ctx, 'dashboard'), // browser tab title
-    ),
-    XRoute(
-      path: favorites,
-      pageKey: const ValueKey('home-layout'),
-      builder: (ctx, route) => const HomeLayout(
-        title: 'favorites',
-      ),
-    ),
-    XRoute(
-      path: products,
-      pageKey: const ValueKey('home-layout'),
-      builder: (ctx, route) => const HomeLayout(
-        title: 'products',
-      ),
-    ),
+  // here the 3 routes have the same base widget
+  // that is for tab navigation
+  XRoute(
+    pageKey: const ValueKey('home-layout'),
+    path: RouteLocations.dashboard,
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'dashboard'),
+    titleBuilder: (_, __) => 'dashboard',
+  ),
+  XRoute(
+    path: RouteLocations.favorites,
+    pageKey: const ValueKey('home-layout'),
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'favorites'),
+    titleBuilder: (_, __) => 'My favorites',
+  ),
+  XRoute(
+    path: RouteLocations.products,
+    pageKey: const ValueKey('home-layout'),
+    titleBuilder: (_, __) => 'products',
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'products'),
+  ),
 ```
 
 
-# Tab titles
+# Browser tab titles
 
 To customize your routes a bit you can add tab titles:
 

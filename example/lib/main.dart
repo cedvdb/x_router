@@ -1,3 +1,4 @@
+import 'package:example/pages/home_layout.dart';
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/preferences_page.dart';
 import 'package:example/services/auth_service.dart';
@@ -6,11 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-import 'pages/home_layout.dart';
 import 'pages/product_details_page.dart';
 import 'pages/sign_in_page.dart';
 
-import 'package:example/pages/home_layout.dart';
 import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,24 +41,27 @@ final _routes = [
     builder: (ctx, route) => const PreferencesPage(),
     titleBuilder: (ctx, route) => translate(ctx, 'preferences'),
   ),
+  // here the 3 routes have the same base widget
+  // that is for tab navigation
   XRoute(
     pageKey: const ValueKey('home-layout'),
     path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(text: 'dashboard'),
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'dashboard'),
     titleBuilder: (_, __) => 'dashboard',
   ),
   XRoute(
     path: RouteLocations.favorites,
     pageKey: const ValueKey('home-layout'),
-    builder: (ctx, route) => const HomeLayout(text: 'favorites'),
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'favorites'),
     titleBuilder: (_, __) => 'My favorites',
   ),
   XRoute(
     path: RouteLocations.products,
     pageKey: const ValueKey('home-layout'),
     titleBuilder: (_, __) => 'products',
-    builder: (ctx, route) => const HomeLayout(text: 'products'),
+    builder: (ctx, route) => const HomeLayout(appBarTitle: 'products'),
   ),
+  // Here this route has a child router
   XRoute(
     path: RouteLocations.productDetail,
     builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
@@ -163,7 +165,7 @@ class ProductFoundResolver implements XResolver {
 }
 
 void main() async {
-  router.eventStream.listen((event) => print(event));
+  // router.eventStream.listen((event) => print(event));
   runApp(MyApp());
 }
 
