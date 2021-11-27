@@ -74,7 +74,7 @@ For navigation you can use the `goTo(location)` method:
   - `replace`: removes current location from history and `goTo` location
   - `pop`: if upstack is not empty `goTo` first location in upstack
   - `back`: go back chronologically
-  - `refresh`: go to current location (useful for your resolvers have state)
+
 
 #### Relative navigation
 
@@ -196,6 +196,8 @@ resolvers can return 3 type of value:
 
 # Reactive resolvers
 
+Reactive resolvers are resolvers that react to changes in your application app state.
+
 If you need your resolver to trigger on state change, you can simply implement any `Listenable` (ChangeNotifier, ValueNotifier,...).
 
 The canonical example of a reactive resolver use case is authentication. 
@@ -205,34 +207,36 @@ such a change and the resolving process will start again.
 
 - If the user is authenticated he will be redirected to /home (if not already there)
 - If the user is unauthenticated he will be redirected to /sign-in (if not already there)
-- If the auth status is unknow a loadingScreen will be shown until `notifyListeners` or `XRouter.refresh()` is called.
+- If the auth status is unknow a loadingScreen will be shown until `notifyListeners()` is called.
 
 
 ```dart
-class AuthResolver implements XResolver {
+class AuthResolver extends ValueNotifier implements XResolver {
+
   AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatusStream.listen((authStatus) => value = authStatus);
+    AuthService.authStatusStream
+        .listen((authStatus) => value = authStatus);
   }
 
   @override
   XResolverAction resolve(String target) {
     switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith(AppRoutes.signIn)) {
-          return const Redirect(AppRoutes.home);
+        if (target.startsWith(RouteLocations.signIn)) {
+          return const Redirect(RouteLocations.home);
         } else {
           return const Next();
         }
       case AuthStatus.unautenticated:
-        if (target.startsWith(AppRoutes.signIn)) {
+        if (target.startsWith(RouteLocations.signIn)) {
           return const Next();
         } else {
-          return const Redirect(AppRoutes.signIn);
+          return const Redirect(RouteLocations.signIn);
         }
       case AuthStatus.unknown:
       default:
-        return const Loading(
-          (_, __) => LoadingPage(text: 'Checking Auth Status'),
+        return Loading(
+          (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
         );
     }
   }

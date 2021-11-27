@@ -111,19 +111,15 @@ final router = XRouter(
 );
 
 /// goes to login page if we are not signed in.
-class AuthResolver implements XResolver {
-  AuthStatus _authStatus = AuthStatus.unknown;
-
-  AuthResolver() {
-    AuthService.instance.authStatusStream.listen((authStatus) {
-      _authStatus = authStatus;
-      router.refresh();
-    });
+class AuthResolver extends ValueNotifier implements XResolver {
+  AuthResolver() : super(AuthStatus.unknown) {
+    AuthService.instance.authStatusStream
+        .listen((authStatus) => value = authStatus);
   }
 
   @override
   XResolverAction resolve(String target) {
-    switch (_authStatus) {
+    switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith(RouteLocations.signIn)) {
           return const Redirect(RouteLocations.home);

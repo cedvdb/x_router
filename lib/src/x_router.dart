@@ -32,7 +32,6 @@ import 'route_pattern/x_route_pattern.dart';
 ///   - goTo
 ///   - replace
 ///   - back
-///   - refresh
 ///   - pop (This is usually handled by flutter)
 class XRouter {
   /// emits the different steps of the navigation
@@ -80,6 +79,7 @@ class XRouter {
     _resolver = XRouterResolver(
       onEvent: _eventEmitter.addEvent,
       resolvers: allResolvers,
+      onStateChanged: _refresh,
     );
 
     _childRouterStore = XChildRouterStore(
@@ -136,7 +136,7 @@ class XRouter {
   }
 
   /// alias for goTo(currentUrl)
-  void refresh() {
+  void _refresh() {
     _navigate(
       _history.currentRoute.matchingPath,
       _history.currentRoute.pathParams,
@@ -213,5 +213,12 @@ class XRouter {
   /// renders page stack on screen
   void _render(XActivatedRoute activatedRoute) {
     delegate.initRendering(activatedRoute);
+  }
+
+  /// dispose of this router, usually that method is never
+  /// called because the router should always be active in the
+  /// lifecycle of an application
+  dispose() {
+    _resolver.dispose();
   }
 }

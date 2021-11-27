@@ -11,11 +11,15 @@ class XRouterResolver {
 
   final List<XResolver> resolvers;
   Function(XRouterEvent) onEvent;
+  final void Function() onStateChanged;
 
   XRouterResolver({
     required this.onEvent,
     required this.resolvers,
-  });
+    required this.onStateChanged,
+  }) {
+    _listenResolversStateChanges(resolvers);
+  }
 
   /// resolve target path against the list of resolvers
   ///
@@ -80,6 +84,22 @@ class XRouterResolver {
             'where resolver A is resolving to a route with resolver B and '
             'resolver B is resolving to a route with resolver A',
       );
+    }
+  }
+
+  void _listenResolversStateChanges(List<XResolver> resolvers) {
+    for (final resolver in resolvers) {
+      if (resolver is Listenable) {
+        (resolver as Listenable).addListener(onStateChanged);
+      }
+    }
+  }
+
+  dispose() {
+    for (final resolver in resolvers) {
+      if (resolver is Listenable) {
+        (resolver as Listenable).removeListener(onStateChanged);
+      }
     }
   }
 }

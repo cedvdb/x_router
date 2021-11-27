@@ -134,31 +134,6 @@ void main() {
       });
     });
 
-    group('refresh', () {
-      testWidgets('should stay on current route if no redirection',
-          (tester) async {
-        await tester.pumpWidget(const TestApp());
-        await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
-        await tester.pumpAndSettle();
-        router.refresh();
-        await tester.pumpAndSettle();
-        expect(router.history.currentRoute.effectivePath,
-            equals(RouteLocation.products));
-      });
-
-      testWidgets('history does not increase', (tester) async {
-        await tester.pumpWidget(const TestApp());
-        await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
-        await tester.pumpAndSettle();
-        expect(router.history.length, equals(2));
-        router.refresh();
-        await tester.pumpAndSettle();
-        expect(router.history.length, equals(2));
-      });
-    });
-
     group('resolvers', () {
       testWidgets('Should render with redirect', (tester) async {
         final router = createTestRouter(
@@ -184,27 +159,26 @@ void main() {
       testWidgets('Should display loading if resolver is not ready',
           (tester) async {
         final authResolver = MockAuthResolver();
-        final router = createTestRouter(
+        createTestRouter(
           resolvers: [authResolver],
         );
-        authResolver.router = router;
         await tester.pumpWidget(const TestApp());
 
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
       });
 
-      testWidgets('should redirect after refresh if redirector state changed',
+      testWidgets('should redirect if redirector state changed',
           (tester) async {
         final authResolver = MockAuthResolver();
-        final router = createTestRouter(
+        createTestRouter(
           resolvers: [authResolver],
         );
-        authResolver.router = router;
         await tester.pumpWidget(const TestApp());
-
         await tester.pumpAndSettle();
+
         authResolver.signIn();
+
         await tester.pumpAndSettle();
 
         expect(find.byKey(const ValueKey('loading-screen')), findsNothing);
@@ -230,21 +204,20 @@ void main() {
         expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
             findsNothing);
         router.goTo(RouteLocation.productDetailsComments, params: {'id': 'id'});
-        // router.ewd(RouteLocation.productDetailsComments, params: {'id': 'id'});
 
         await tester.pumpAndSettle();
-        // await tester.pump(const Duration(days: 1));
-        // await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
         expect(router.history.length, equals(3));
         expect(router.history.currentRoute.effectivePath,
             equals('/products/id/comments'));
         expect(find.byKey(const ValueKey('${RouteLocation.productDetails}-id')),
             findsOneWidget);
-        // expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
-        //     findsOneWidget);
-        // expect(find.byKey(const ValueKey(RouteLocation.productDetailsInfo)),
-        //     findsNothing);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
+            findsOneWidget);
+        expect(find.byKey(const ValueKey(RouteLocation.productDetailsInfo)),
+            findsNothing);
       });
     });
   });
