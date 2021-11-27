@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:x_router/src/events/x_router_events.dart';
 import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
@@ -8,14 +9,13 @@ import 'x_resolver_event.dart';
 class XRouterResolver {
   // singleton
 
-  final List<XResolver> _resolvers = [];
+  final List<XResolver> resolvers;
   Function(XRouterEvent) onEvent;
 
-  XRouterResolver({required this.onEvent});
-
-  addResolvers(List<XResolver> resolvers) {
-    _resolvers.addAll(resolvers);
-  }
+  XRouterResolver({
+    required this.onEvent,
+    required this.resolvers,
+  });
 
   /// resolve target path against the list of resolvers
   ///
@@ -30,7 +30,7 @@ class XRouterResolver {
     _checkInfiniteLoop(calls);
     var next = path;
 
-    for (final resolver in _resolvers) {
+    for (final resolver in resolvers) {
       final resolved = _useResolver(resolver, next);
 
       if (resolved is Loading) {

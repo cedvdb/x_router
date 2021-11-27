@@ -67,10 +67,6 @@ class XRoute {
     this.isAddedToUpstack = true,
   }) : _parser = XRoutePattern(path);
 
-  /// finds resolvers present in child routes
-  List<XResolver> findAllResolvers() =>
-      childRouterConfig?.findAllResolvers() ?? [];
-
   /// given a path, computes the depest match that could be found
   /// on this route or any of its children
   String computeEffectivePath(String path) {
@@ -117,4 +113,8 @@ class XRoute {
       isAddedToUpstack: isAddedToUpstack,
     );
   }
+
+  /// finds resolvers present in child routes
+  List<XResolver> findChildResolvers() =>
+      childRouterConfig?.findAllResolvers() ?? [];
 }

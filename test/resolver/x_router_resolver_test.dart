@@ -56,12 +56,14 @@ void main() {
     });
 
     test('XRouter resolver should resolve in chain', () async {
-      final routerResolver = XRouterResolver(onEvent: (event) {});
-      routerResolver.addResolvers([
-        XRedirectResolver(from: '/', to: '/other'),
-        XRedirectResolver(from: '/other', to: '/not-found'),
-        XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-      ]);
+      final routerResolver = XRouterResolver(
+        onEvent: (event) {},
+        resolvers: [
+          XRedirectResolver(from: '/', to: '/other'),
+          XRedirectResolver(from: '/other', to: '/not-found'),
+          XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
+        ],
+      );
       expect(routerResolver.resolve('/'),
           equals(const XRouterResolveResult(target: '/dashboard')));
     });

@@ -5,7 +5,7 @@ A simple and powerful routing framework for flutter.
 ## Features
 
   - [easy navigation](#navigation)
-  - [reactive guards / resolvers](#resolvers)
+  - [Async guards / resolvers](#resolvers)
   - [child routers](#nested-routing)
   - [relative navigation](#relative-navigation)
   - [redirects](#add-redirects)

@@ -58,8 +58,7 @@ class XRouter {
   );
 
   /// the resolver responsible of resolving a route path (redirects)
-  late final XRouterResolver _resolver =
-      XRouterResolver(onEvent: _eventEmitter.addEvent);
+  late final XRouterResolver _resolver;
 
   /// page stack (activatedRoute) builder
   late final XActivatedRouteBuilder _activatedRouteBuilder;
@@ -72,10 +71,17 @@ class XRouter {
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
   }) {
-    _resolver.addResolvers(resolvers);
+    final allResolvers = [...resolvers];
+
     for (final route in routes) {
-      _resolver.addResolvers(route.findAllResolvers());
+      allResolvers.addAll(route.findChildResolvers());
     }
+
+    _resolver = XRouterResolver(
+      onEvent: _eventEmitter.addEvent,
+      resolvers: allResolvers,
+    );
+
     _childRouterStore = XChildRouterStore(
       routes: routes,
     );
