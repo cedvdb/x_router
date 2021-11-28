@@ -29,8 +29,7 @@ class _HomePageState extends State<HomePage>
     _selectedTab = _findTabIndex(router.history.currentUrl) ?? 0;
     navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((nav) => _refreshBottomBar);
+        .listen((nav) => _refreshBottomBar());
     super.initState();
   }
 
@@ -94,8 +93,9 @@ class _HomePageState extends State<HomePage>
         ],
       ),
       body: Router(
-          routerDelegate:
-              router.childRouterStore.findDelegate(RouteLocations.home)),
+        routerDelegate:
+            router.childRouterStore.findDelegate(RouteLocations.home),
+      ),
     );
   }
 }

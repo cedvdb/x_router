@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:example/main.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:x_router/x_router.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -27,7 +26,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
 
   @override
   initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
+    );
     _routerSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .listen((_) => _changeTabIndex(router.history.currentUrl));
@@ -72,7 +75,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('product details: ${widget.product!.name}'),
         bottom: TabBar(
           controller: _tabController,
           onTap: _navigate,
@@ -86,11 +88,38 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
           ],
         ),
       ),
-      body: Router(
-        routerDelegate: router.childRouterStore.findDelegate(
-          RouteLocations.productDetail,
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          ProductViewItem(title: 'info'),
+          ProductViewItem(title: 'comments'),
+        ],
       ),
+    );
+  }
+}
+
+class ProductViewItem extends StatelessWidget {
+  final String title;
+  const ProductViewItem({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Tabs change url',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Text(title)
+      ],
     );
   }
 }

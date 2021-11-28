@@ -84,7 +84,7 @@ You can also navigate relative to the current route
   // goes to `products/123/info`, we were on /products/123/comments 
   router.goTo('./info'); 
   // goes to /preferences, when we were on /products/123/info
-  router.goTo('../../preferences);
+  router.goTo('../../preferences');
 ```
 
 

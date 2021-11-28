@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
+import 'page_transition.dart';
 import 'pages/product_details_page.dart';
 import 'pages/sign_in_page.dart';
 
@@ -17,7 +18,13 @@ import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:flutter/cupertino.dart';
 
-/// This is a complex app routing example
+/// This example features a complex
+/// app navigation system with child routing
+/// tab navigation
+///
+/// Most apps don't need all these features
+/// but despite the complexity the example
+/// is quite understandable
 
 /// all the locations in the app
 class RouteLocations {
@@ -56,40 +63,38 @@ final _routes = [
         ),
         XRoute(
           path: RouteLocations.products,
-          titleBuilder: (_, __) => 'products',
           builder: (ctx, route) => const ProductsPage(),
+          titleBuilder: (_, __) => 'products',
         ),
         XRoute(
           path: RouteLocations.favorites,
           builder: (ctx, route) => const FavoritesPage(),
           titleBuilder: (_, __) => 'My favorites',
         ),
-      ],
-    ),
-  ),
-
-  // Here this route has a child router
-  XRoute(
-    path: RouteLocations.productDetail,
-    builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
-    // here is a nested router
-    childRouterConfig: XChildRouterConfig(
-      resolvers: [
-        XRedirectResolver(
-          from: RouteLocations.productDetail,
-          to: RouteLocations.productInfo,
-        ),
-      ],
-      routes: [
         XRoute(
           path: RouteLocations.productInfo,
-          builder: (_, __) =>
-              const Center(child: Text('info (Displayed via nested router)')),
-        ),
-        XRoute(
-          path: RouteLocations.productComments,
-          builder: (_, __) => const Center(
-              child: Text('comments (displayed via nested router)')),
+          builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+          // here is a nested router
+          // childRouterConfig: XChildRouterConfig(
+          //   resolvers: [
+          //     XRedirectResolver(
+          //       from: RouteLocations.productDetail,
+          //       to: RouteLocations.productInfo,
+          //     ),
+          //   ],
+          //   routes: [
+          //     XRoute(
+          //       path: RouteLocations.productInfo,
+          //       builder: (_, __) => const Center(
+          //           child: Text('info (Displayed via nested router)')),
+          //     ),
+          //     XRoute(
+          //       path: RouteLocations.productComments,
+          //       builder: (_, __) => const Center(
+          //           child: Text('comments (displayed via nested router)')),
+          //     ),
+          //   ],
+          // ),
         ),
       ],
     ),
@@ -168,7 +173,7 @@ class ProductFoundResolver implements XResolver {
 }
 
 void main() async {
-  // router.eventStream.listen((event) => print(event));
+  router.eventStream.listen((event) => print(event));
   runApp(MyApp());
 }
 
@@ -181,8 +186,12 @@ class MyApp extends StatelessWidget {
       routerDelegate: router.delegate,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.from(
+              colorScheme: const ColorScheme.light(
+                  primary: Colors.blue, secondary: Colors.blue))
+          .copyWith(
+        textSelectionTheme:
+            const TextSelectionThemeData(selectionColor: Colors.orange),
       ),
     );
   }
