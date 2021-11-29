@@ -50,7 +50,6 @@ final _routes = [
   ),
   XRoute(
     path: RouteLocations.dashboard,
-    // pageKey: ,
     builder: (ctx, route) => const HomeLayout(
       child: DashboardPage(),
     ),
@@ -75,6 +74,7 @@ final _routes = [
     builder: (ctx, route) => HomeLayout(
       child: ProductDetailsPage(route.pathParams['id']!),
     ),
+    // nested Router !
     childRouterConfig: XChildRouterConfig(
       resolvers: [
         XRedirectResolver(

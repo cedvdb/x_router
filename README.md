@@ -4,17 +4,17 @@ A simple and powerful routing framework for flutter.
 
 ## Features
 
-  - [easy navigation](#navigation)
+  - [Easy navigation](#navigation)
   - [Async guards / resolvers](#resolvers)
-  - [child routers](#nested-routing)
-  - [relative navigation](#relative-navigation)
-  - [redirects](#add-redirects)
-  - [tabs support](#tabs-support)
-  - [translated browser tab title](#browser-tab-title)
-  - [url matching](#url-matching)
-  - router history
-  - event driven
-  - test coverage
+  - [Child routers](#child-router)
+  - [Relative navigation](#relative-navigation)
+  - [Redirects](#add-redirects)
+  - [Tabs / bottom navigation support](#tabs-and-bottom-navigation-support)
+  - [Translated browser tab title](#browser-tab-title)
+  - [Url matching](#url-matching)
+  - Router history
+  - Event driven
+  - Test coverage
 
 
 <br><br>
@@ -296,6 +296,11 @@ A series of resolvers are provided by the library:
 
 # Nested routing
 
+For nested routing you have the choice between using a child router or build on top of a tab system. 
+
+
+## Child Router
+
 First setup your view with flutter's `Router` as a child. That is where your child routes will be rendered:
 
 ```dart
@@ -414,177 +419,46 @@ XRoute(
 ),
 ```
 
-# Tabs
+# Tabs and Bottom navigation support
 
-For tabs support you have to make the url react to tab changes and the tabs have to react to url changes themselves.
+For tabs support you have to make the url react to tab changes and the tabs have to react to url changes themselves. This is the same idea as for the child router. Let's see an example with bottom nav
 
-### 1. First setup your view as usual with tabs:
+1. First let's create a reactive bottom nav.  This bottom bar will react to navigation events to animate itself
 
 ```dart
-class _HomeLayoutState extends State<HomeLayout>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+
+class BottomNav extends StatefulWidget {
+  const BottomNav({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  void initState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  /// when a tab is clicked, navigate to the target location
-  _navigate(int index) {
-    if (index == 0) {
-      router.goTo('./info');
-    } else if (index == 1) {
-      router.goTo('./comments');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.appBarTitle),
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _navigate(index),
-          tabs: const [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.favorite)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          DashboardPage(),
-          ProductsPage(),
-          const FavoritesPage(),
-        ],
-      ),
-    );
-  }
+  State<BottomNav> createState() => _BottomNavState();
 }
 
-```
-
-
-### 2. Next you need to tell the router to navigate to the correct route when a tab is clicked
-
-```dart
-  final _tabsIndex = <String, int>{
-    AppRoutes.dashboard: 0,
-    AppRoutes.products: 1,
-    AppRoutes.favorites: 2,
-  };
-
-  _navigate(int index) {
-    router.goTo(_findRoutePath(index));
-  }
-
-  String _findRoutePath(int index) {
-    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
-  }
-```
-
-### 3. You also need to update the tab bar when the url changes
-
-```dart
-  StreamSubscription? navSubscription;
-
-  @override
-  void initState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0, // add this line
-    );
-    navSubscription = router.eventStream
-        .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((nav) => _refreshTabIndex);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    navSubscription?.cancel();
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  /// changes the selected tab when the url changes
-  _refreshTabIndex() {
-    final foundIndex = _findTabIndex(router.history.currentUrl);
-    if (foundIndex != null) {
-      _tabController.animateTo(foundIndex);
-    }
-  }
-
-  /// finds the url path given a tab index
-  String _findRoutePath(int index) {
-    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
-  }
-
-
-```
-
-Your home layout widget, full code is now:
-
-```dart
-class _HomeLayoutState extends State<HomeLayout>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  StreamSubscription? navSubscription;
-
+class _BottomNavState extends State<BottomNav> {
   final _tabsIndex = <String, int>{
     RouteLocations.dashboard: 0,
     RouteLocations.products: 1,
     RouteLocations.favorites: 2,
   };
+  StreamSubscription? navSubscription;
+
+  int _selectedTab = 0;
 
   @override
   void initState() {
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-      initialIndex: _findTabIndex(router.history.currentUrl) ?? 0,
-    );
+    _selectedTab = _findTabIndex(router.history.currentUrl) ?? 0;
     navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
-        .cast<NavigationEnd>()
-        .listen((nav) => _refreshTabIndex);
+        .listen((nav) => _refreshBottomBar());
     super.initState();
   }
 
   @override
-  void dispose() {
+  dispose() {
     navSubscription?.cancel();
-    _tabController.dispose();
     super.dispose();
-  }
-
-  /// changes the selected tab when the url changes
-  _refreshTabIndex() {
-    final foundIndex = _findTabIndex(router.history.currentUrl);
-    if (foundIndex != null) {
-      _tabController.animateTo(foundIndex);
-    }
-  }
-
-  /// when a tab is clicked, navigate to the target location
-  _navigate(int index) {
-    router.goTo(_findRoutePath(index));
   }
 
   /// finds the tab index associated with a path
@@ -598,6 +472,19 @@ class _HomeLayoutState extends State<HomeLayout>
     }
   }
 
+  /// changes the selected tab when the url changes
+  _refreshBottomBar() {
+    final foundIndex = _findTabIndex(router.history.currentUrl);
+    if (foundIndex != null) {
+      setState(() => _selectedTab = foundIndex);
+    }
+  }
+
+  /// when a tab is clicked, navigate to the target location
+  _navigate(int index) {
+    router.goTo(_findRoutePath(index));
+  }
+
   /// finds the url path given a tab index
   String _findRoutePath(int index) {
     return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
@@ -605,32 +492,64 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   Widget build(BuildContext context) {
+    return NavigationBar(
+      onDestinationSelected: _navigate,
+      selectedIndex: _selectedTab,
+      key: const ValueKey('bottom-navigation-bar'),
+      destinations: const [
+        // material you
+        NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
+        NavigationDestination(
+            label: 'products', icon: Icon(Icons.shopping_bag)),
+        NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
+      ],
+    );
+  }
+}
+
+```
+
+
+ 2. Next let's create an App layout that uses this bottom bar. It has a child input, and animates itself when its input changes
+
+```dart
+
+class HomeLayout extends StatefulWidget {
+  final Widget child;
+  const HomeLayout({
+    Key? key,
+    required this.child,
+  }) : super(key: const ValueKey('homelayout'));
+
+  @override
+  State<HomeLayout> createState() => _HomeLayoutState();
+}
+
+class _HomeLayoutState extends State<HomeLayout>
+    with SingleTickerProviderStateMixin {
+  late Widget child;
+
+  @override
+  void initState() {
+    super.initState();
+    child = widget.child;
+  }
+
+  @override
+  void didUpdateWidget(HomeLayout old) {
+    child = widget.child;
+    super.didUpdateWidget(old);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.appBarTitle),
-        actions: [
-          IconButton(
-            onPressed: () => router.goTo(RouteLocations.preferences),
-            icon: const Icon(Icons.settings),
-          )
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) => _navigate(index),
-          tabs: const [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.favorite)),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          DashboardPage(),
-          ProductsPage(),
-          FavoritesPage(),
-        ],
+      bottomNavigationBar: const BottomNav(),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        switchInCurve: Curves.easeIn,
+        switchOutCurve: Curves.easeOut,
+        child: child,
       ),
     );
   }
@@ -638,29 +557,31 @@ class _HomeLayoutState extends State<HomeLayout>
 
 ```
 
-4. finally you have to use the same widget for the different routes:
+3. You can now use your layout when defining you routes
 
 ```dart
-  // here the 3 routes have the same base widget
-  // that is for tab navigation
-  XRoute(
-    pageKey: const ValueKey('home-layout'),
+    XRoute(
     path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'dashboard'),
+    builder: (ctx, route) => const HomeLayout(
+      child: DashboardPage(),
+    ),
     titleBuilder: (_, __) => 'dashboard',
   ),
   XRoute(
-    path: RouteLocations.favorites,
-    pageKey: const ValueKey('home-layout'),
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'favorites'),
-    titleBuilder: (_, __) => 'My favorites',
+    path: RouteLocations.products,
+    builder: (ctx, route) => const HomeLayout(
+      child: ProductsPage(),
+    ),
+    titleBuilder: (_, __) => 'products',
   ),
   XRoute(
-    path: RouteLocations.products,
-    pageKey: const ValueKey('home-layout'),
-    titleBuilder: (_, __) => 'products',
-    builder: (ctx, route) => const HomeLayout(appBarTitle: 'products'),
+    path: RouteLocations.favorites,
+    builder: (ctx, route) => const HomeLayout(
+      child: FavoritesPage(),
+    ),
+    titleBuilder: (_, __) => 'My favorites',
   ),
+
 ```
 
 

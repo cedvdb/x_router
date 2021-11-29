@@ -1,6 +1,6 @@
 ## [0.1.0] - 27/11/2021
 
-- Added child router support
+- Added child router support !
 - Added more test coverage
 - Fixed relative navigation
 - Reworked some of the internals
