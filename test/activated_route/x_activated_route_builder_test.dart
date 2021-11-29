@@ -77,8 +77,8 @@ void main() {
           expect(activatedNoMatchDown.effectivePath, equals('/'));
           expect(activatedMatchDown.effectivePath, equals('/products'));
           expect(activatedWithStack.effectivePath, equals('/products/123'));
-          // expect(activatedWithChildRouter.effectivePath,
-          //     equals('/products/123/info/'));
+          expect(activatedWithChildRouter.effectivePath,
+              equals('/products/123/info'));
         },
       );
 
