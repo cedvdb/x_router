@@ -19,7 +19,7 @@ A simple and powerful routing framework for flutter.
 
 <br><br>
 
-![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recording.gif)
+![Alt text](https://raw.githubusercontent.com/cedvdb/x_router/main/recordings/recording_example.gif)
 
 
 
