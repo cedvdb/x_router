@@ -1,3 +1,6 @@
+## [0.1.0+1] - 27/11/2021
+- docs
+
 ## [0.1.0] - 27/11/2021
 
 - Added child router support !
