@@ -5,15 +5,11 @@ import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/history/router_history.dart';
-import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/x_router.dart';
 
-import 'events/x_router_events.dart';
 import 'route/x_page_builder.dart';
-import 'route_pattern/x_route_pattern.dart';
 
 // Note to the reader
 //

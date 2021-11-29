@@ -1,5 +1,3 @@
-import 'package:x_router/src/events/x_router_events.dart';
-
 import '../../x_router.dart';
 
 class ResolverResolveStart extends ResolvingEvent {

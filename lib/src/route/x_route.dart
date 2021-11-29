@@ -73,14 +73,27 @@ class XRoute {
     final parseResult = parse(path);
     var effectivePath = parseResult.matchingPath;
     final childRoutes = childRouterConfig?.routes;
-    if (childRoutes != null && path != this.path) {
-      for (final route in childRoutes) {
-        final childEffectivePath = route.computeEffectivePath(path);
-        // we compare length so the next route does not override it with an
-        // incomplete effective path
-        if (childEffectivePath.length > effectivePath.length) {
-          effectivePath = childEffectivePath;
-        }
+    // we need to find the longest path that matches
+    // so if there is no child route or the path is the same as this one there
+    // is no need to keep going
+    if (childRoutes == null || path == this.path) {
+      return effectivePath;
+    }
+    // if a child route match then the effective path will be longer
+    XRoute? childMatch;
+    // check if there is a match in childs
+    try {
+      childMatch = childRoutes.firstWhere((route) => route.match(path));
+    } catch (e) {
+      childMatch = null;
+    }
+    // if there is we get its effective path
+    if (childMatch != null) {
+      final childEffectivePath = childMatch.computeEffectivePath(path);
+      // we compare length so the next route does not override it with an
+      // incomplete effective path
+      if (childEffectivePath.length > effectivePath.length) {
+        effectivePath = childEffectivePath;
       }
     }
     return effectivePath;

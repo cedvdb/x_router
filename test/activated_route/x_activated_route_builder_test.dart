@@ -51,7 +51,7 @@ void main() {
       activatedWithStack =
           activatedRouteBuilder.build('/products/123/an-unknown-route');
       activatedWithChildRouter =
-          activatedRouteBuilder.build('/products/123/an-unknown-route');
+          activatedRouteBuilder.build('/products/123/info/an-unknown-route');
     });
 
     group('build', () {
@@ -68,6 +68,17 @@ void main() {
           expect(activatedNoMatchDown.matchingPath, equals('/'));
           expect(activatedMatchDown.matchingPath, equals('/products'));
           expect(activatedWithStack.matchingPath, equals('/products/123'));
+        },
+      );
+
+      test(
+        'should have the correct effective path',
+        () {
+          expect(activatedNoMatchDown.effectivePath, equals('/'));
+          expect(activatedMatchDown.effectivePath, equals('/products'));
+          expect(activatedWithStack.effectivePath, equals('/products/123'));
+          // expect(activatedWithChildRouter.effectivePath,
+          //     equals('/products/123/info/'));
         },
       );
 

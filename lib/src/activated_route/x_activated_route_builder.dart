@@ -26,6 +26,10 @@ class XActivatedRouteBuilder {
 
     var route = matchings.removeAt(0);
 
+    // todo note (uncap) : The next line does not fit inside this method, as its
+    // not really the point of this function, because of this line it is
+    // doing two things at once. This could be refactored
+    // in yet another (tiny) layer. Something to think about, left as pending.
     if (builderOverride != null) {
       route = route.copyWithBuilder(builder: builderOverride);
     }
@@ -60,7 +64,7 @@ class XActivatedRouteBuilder {
     final parsed = route.parse(path);
     return XActivatedRoute(
       requestedPath: path,
-      effectivePath: path,
+      effectivePath: effectivePath,
       route: route,
       matchingPath: parsed.matchingPath,
       pathParams: parsed.pathParameters,

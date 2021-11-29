@@ -1,6 +1,5 @@
 import 'package:x_router/src/child_router/x_child_router.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/x_router.dart';
 

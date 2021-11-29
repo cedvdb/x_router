@@ -1,6 +1,4 @@
 import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/src/events/x_router_events.dart';
-import 'package:x_router/src/route/x_route.dart';
 import 'package:x_router/x_router.dart';
 
 import '../activated_route/x_activated_route_builder.dart';

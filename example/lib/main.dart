@@ -8,8 +8,6 @@ import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:example/services/products_service.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
@@ -204,7 +202,7 @@ class ProductFoundResolver implements XResolver {
 }
 
 void main() async {
-  router.eventStream.listen((event) => print(event));
+  // router.eventStream.listen((event) => print(event));
   runApp(MyApp());
 }
 
