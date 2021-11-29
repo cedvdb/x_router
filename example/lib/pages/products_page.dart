@@ -6,8 +6,11 @@ class ProductsPage extends StatelessWidget {
   const ProductsPage();
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('products'),
+      ),
+      body: ListView(
         children: [
           for (var product in ProductsService.products)
             ListTile(

@@ -18,6 +18,7 @@ class PreferencesPage extends StatelessWidget {
         ),
         title: const Text('preferences'),
       ),
+      body: const Center(child: Text('preferences')),
     );
   }
 }

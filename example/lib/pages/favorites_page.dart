@@ -5,15 +5,20 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [1, 2, 3, 4]
-          .map(
-            (v) => ListTile(
-              leading: const Icon(Icons.favorite),
-              title: Text('Favorite $v'),
-            ),
-          )
-          .toList(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Favorites'),
+      ),
+      body: Column(
+        children: [1, 2, 3, 4]
+            .map(
+              (v) => ListTile(
+                leading: const Icon(Icons.favorite),
+                title: Text('Favorite book $v'),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

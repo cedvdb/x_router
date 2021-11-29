@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SlidingPage extends Page {
   final Widget child;
 
-  const SlidingPage(this.child, LocalKey key) : super(key: key);
+  const SlidingPage({required this.child, LocalKey? key}) : super(key: key);
 
   @override
   Route createRoute(BuildContext context) {

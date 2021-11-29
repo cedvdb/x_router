@@ -75,51 +75,49 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: _navigate,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.home),
+        title: Text(widget.product?.name ?? ''),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Text(
+              'Nested Router',
+              style: Theme.of(context).textTheme.headline4,
             ),
-            Tab(
-              icon: Icon(Icons.comment),
+            SizedBox(
+              height: 400,
+              width: 400,
+              child: Card(
+                child: Column(
+                  children: [
+                    Container(
+                      color: Colors.blue,
+                      child: TabBar(
+                        controller: _tabController,
+                        onTap: _navigate,
+                        tabs: const [
+                          Tab(
+                            icon: Icon(Icons.home),
+                          ),
+                          Tab(
+                            icon: Icon(Icons.comment),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Router(
+                        routerDelegate: router.childRouterStore
+                            .findDelegate(RouteLocations.productDetail),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          ProductViewItem(title: 'info'),
-          ProductViewItem(title: 'comments'),
-        ],
-      ),
-    );
-  }
-}
-
-class ProductViewItem extends StatelessWidget {
-  final String title;
-  const ProductViewItem({
-    Key? key,
-    required this.title,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Tabs change url',
-          style: Theme.of(context).textTheme.headline4,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Text(title)
-      ],
     );
   }
 }

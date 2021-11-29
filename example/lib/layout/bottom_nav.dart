@@ -1,28 +1,28 @@
 import 'dart:async';
 
-import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+import '../main.dart';
+
+class BottomNav extends StatefulWidget {
+  const BottomNav({
     Key? key,
-  }) : super(key: key);
+  }) : super(key: const ValueKey('my-bottom-nav'));
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<BottomNav> createState() => _BottomNavState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  int _selectedTab = 0;
-  StreamSubscription? navSubscription;
-
+class _BottomNavState extends State<BottomNav> {
   final _tabsIndex = <String, int>{
     RouteLocations.dashboard: 0,
     RouteLocations.products: 1,
     RouteLocations.favorites: 2,
   };
+  StreamSubscription? navSubscription;
+
+  int _selectedTab = 0;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  void dispose() {
+  dispose() {
     navSubscription?.cancel();
     super.dispose();
   }
@@ -49,7 +49,6 @@ class _HomePageState extends State<HomePage>
 
   /// when a tab is clicked, navigate to the target location
   _navigate(int index) {
-    setState(() => _selectedTab = index);
     router.goTo(_findRoutePath(index));
   }
 
@@ -71,31 +70,17 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(router.history.currentUrl),
-        actions: [
-          IconButton(
-            onPressed: () => router.goTo(RouteLocations.preferences),
-            icon: const Icon(Icons.settings),
-          )
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: _navigate,
-        selectedIndex: _selectedTab,
-        destinations: const [
-          // material you
-          NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
-          NavigationDestination(
-              label: 'products', icon: Icon(Icons.shopping_bag)),
-          NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
-        ],
-      ),
-      body: Router(
-        routerDelegate:
-            router.childRouterStore.findDelegate(RouteLocations.home),
-      ),
+    return NavigationBar(
+      onDestinationSelected: _navigate,
+      selectedIndex: _selectedTab,
+      key: const ValueKey('bottom-navigation-bar'),
+      destinations: const [
+        // material you
+        NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
+        NavigationDestination(
+            label: 'products', icon: Icon(Icons.shopping_bag)),
+        NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
+      ],
     );
   }
 }
