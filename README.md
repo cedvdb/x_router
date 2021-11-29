@@ -162,11 +162,11 @@ XRouter(
 
 When a page is accessed via a path ('/path'). That path goes through each resolvers provided to the router, sequentially and either `Redirect`,  `Next` or `Loading` happen.
 
-Here is an example of redirect resolver:
+To create a resolver, just implement `XResolver`. Here is an example of a redirect resolver:
 
 ```dart
 // A redirect resolver is provided by the library 
-class XRedirectResolver extends XResolver {
+class XRedirectResolver implements XResolver {
   final String from;
   final String to;
 
