@@ -4,9 +4,11 @@ import 'package:x_router/src/events/x_router_events.dart';
 
 /// Keeps track of the router state
 class XEventEmitter {
-  // singleton
-  static final XEventEmitter instance = XEventEmitter._();
   XEventEmitter._();
+
+  // not a fan of singleton pattern but since this is kind of a logger it works well
+  /// singleton
+  static final XEventEmitter instance = XEventEmitter._();
 
   /// Streams all router events
   late final Stream<XRouterEvent> eventStream =

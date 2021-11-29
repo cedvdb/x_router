@@ -10,19 +10,24 @@ void main() {
       final activatedRoute = XActivatedRoute.nulled();
       expect(
         emitter.eventStream,
-        emitsInOrder([
-          const NavigationStart(target: '', params: {}),
-          NavigationEnd(
-              activatedRoute: activatedRoute,
-              target: '',
-              previous: activatedRoute),
-        ]),
+        emitsInOrder(
+          [
+            const NavigationStart(target: '', params: {}),
+            NavigationEnd(
+                activatedRoute: activatedRoute,
+                target: '',
+                previous: activatedRoute),
+          ],
+        ),
       );
       emitter.addEvent(const NavigationStart(target: '', params: {}));
-      emitter.addEvent(NavigationEnd(
+      emitter.addEvent(
+        NavigationEnd(
           activatedRoute: activatedRoute,
           target: '',
-          previous: activatedRoute));
+          previous: activatedRoute,
+        ),
+      );
     });
   });
 }

@@ -1,19 +1,27 @@
+import 'package:example/layout/home_layout.dart';
+import 'package:example/pages/dashboard_page.dart';
+import 'package:example/pages/favorites_page.dart';
 import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/preferences_page.dart';
+import 'package:example/pages/product_details_page.dart';
+import 'package:example/pages/products_page.dart';
+import 'package:example/pages/sign_in_page.dart';
 import 'package:example/services/auth_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-import 'pages/home_layout.dart';
-import 'pages/product_details_page.dart';
 import 'pages/sign_in_page.dart';
 
-import 'package:example/pages/home_layout.dart';
-import 'package:example/pages/product_details_page.dart';
-import 'package:example/pages/sign_in_page.dart';
-import 'package:flutter/cupertino.dart';
+/// This example features a complex
+/// app navigation system with child routing
+/// tab navigation
+///
+/// Most apps don't need all these features
+/// but despite the complexity the example
+/// is quite understandable
 
+/// all the locations in the app
 class RouteLocations {
   static const home = '/app';
   static const dashboard = '$home/dashboard';
@@ -21,10 +29,12 @@ class RouteLocations {
   static const favorites = '$home/favorites';
   static const preferences = '$home/preferences';
   static const productDetail = '$home/products/:id';
-  static const loading = '/loading';
+  static const productInfo = '$productDetail/info';
+  static const productComments = '$productDetail/comments';
   static const signIn = '/sign-in';
 }
 
+/// the routes for each location
 final _routes = [
   XRoute(
     path: RouteLocations.signIn,
@@ -37,43 +47,115 @@ final _routes = [
     titleBuilder: (ctx, route) => translate(ctx, 'preferences'),
   ),
   XRoute(
-    pageKey: const ValueKey('home-layout'),
     path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(text: 'dashboard'),
+    builder: (ctx, route) => const HomeLayout(
+      child: DashboardPage(),
+    ),
     titleBuilder: (_, __) => 'dashboard',
   ),
   XRoute(
+    path: RouteLocations.products,
+    builder: (ctx, route) => const HomeLayout(
+      child: ProductsPage(),
+    ),
+    titleBuilder: (_, __) => 'products',
+  ),
+  XRoute(
     path: RouteLocations.favorites,
-    pageKey: const ValueKey('home-layout'),
-    builder: (ctx, route) => const HomeLayout(text: 'favorites'),
+    builder: (ctx, route) => const HomeLayout(
+      child: FavoritesPage(),
+    ),
     titleBuilder: (_, __) => 'My favorites',
   ),
   XRoute(
-    path: RouteLocations.products,
-    pageKey: const ValueKey('home-layout'),
-    titleBuilder: (_, __) => 'products',
-    builder: (ctx, route) => const HomeLayout(text: 'products'),
-  ),
-  XRoute(
     path: RouteLocations.productDetail,
-    builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+    builder: (ctx, route) => HomeLayout(
+      child: ProductDetailsPage(route.pathParams['id']!),
+    ),
+    // nested Router !
+    childRouterConfig: XChildRouterConfig(
+      resolvers: [
+        XRedirectResolver(
+          from: RouteLocations.productDetail,
+          to: RouteLocations.productInfo,
+        ),
+      ],
+      routes: [
+        XRoute(
+          path: RouteLocations.productInfo,
+          builder: (_, __) =>
+              const Center(child: Text('info (Displayed via nested router)')),
+        ),
+        XRoute(
+          path: RouteLocations.productComments,
+          builder: (_, __) => const Center(
+              child: Text('comments (Displayed via nested router)')),
+        ),
+      ],
+    ),
   ),
+  // XRoute(
+  //   path: RouteLocations.home,
+  //   builder: (ctx, route) => const HomePage(),
+  //   childRouterConfig: XChildRouterConfig(
+  //     routes: [
+
+  //       // XRoute(
+  //       //   path: RouteLocations.productInfo,
+  //       //   builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+  //       //   // here is a nested router
+  //       //   // childRouterConfig: XChildRouterConfig(
+  //       //   //   resolvers: [
+  //       //   //     XRedirectResolver(
+  //       //   //       from: RouteLocations.productDetail,
+  //       //   //       to: RouteLocations.productInfo,
+  //       //   //     ),
+  //       //   //   ],
+  //       //   //   routes: [
+  //       //   //     XRoute(
+  //       //   //       path: RouteLocations.productInfo,
+  //       //   //       builder: (_, __) => const Center(
+  //       //   //           child: Text('info (Displayed via nested router)')),
+  //       //   //     ),
+  //       //   //     XRoute(
+  //       //   //       path: RouteLocations.productComments,
+  //       //   //       builder: (_, __) => const Center(
+  //       //   //           child: Text('comments (displayed via nested router)')),
+  //       //   //     ),
+  //       //   //   ],
+  //       //   // ),
+  //       // ),
+  //     ],
+  //   ),
+  // ),
 ];
 
+// the router instance used throughout the app,
+// It is up to you if you want to let it as a global variable, use injection,
+// inherited widget to access it.. That's outside the scope.
 final router = XRouter(
   resolvers: [
     AuthResolver(),
-    XRedirectResolver(from: RouteLocations.home, to: RouteLocations.dashboard),
+    XRedirectResolver(
+      from: RouteLocations.home,
+      to: RouteLocations.dashboard,
+      matchChildren: false,
+    ),
+    XRedirectResolver(
+      from: RouteLocations.productDetail,
+      to: '${RouteLocations.productDetail}/info',
+      matchChildren: false,
+    ),
     XNotFoundResolver(redirectTo: RouteLocations.home, routes: _routes),
   ],
   routes: _routes,
 );
 
-class AuthResolver extends ValueNotifier with XResolver {
+/// goes to login page if we are not signed in.
+class AuthResolver extends ValueNotifier implements XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatusStream.listen((authStatus) {
-      value = authStatus;
-    });
+    AuthService.instance.authStatusStream
+        .listen((authStatus) => value = authStatus);
   }
 
   @override
@@ -100,7 +182,27 @@ class AuthResolver extends ValueNotifier with XResolver {
   }
 }
 
+/// checks if the product exists, else redirect to product details page
+class ProductFoundResolver implements XResolver {
+  final _productDetailsPattern = XRoutePattern(RouteLocations.productDetail);
+  @override
+  XResolverAction resolve(String target) {
+    final parsed = _productDetailsPattern.parse(target, matchChildren: true);
+    final productId = parsed.pathParameters['id'];
+    if (parsed.matches) {
+      try {
+        ProductsService.products
+            .firstWhere((product) => product.id == productId);
+      } catch (e) {
+        return const Redirect(RouteLocations.productDetail);
+      }
+    }
+    return const Next();
+  }
+}
+
 void main() async {
+  // router.eventStream.listen((event) => print(event));
   runApp(MyApp());
 }
 
@@ -113,8 +215,12 @@ class MyApp extends StatelessWidget {
       routerDelegate: router.delegate,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.from(
+              colorScheme: const ColorScheme.light(
+                  primary: Colors.blue, secondary: Colors.blue))
+          .copyWith(
+        textSelectionTheme:
+            const TextSelectionThemeData(selectionColor: Colors.orange),
       ),
     );
   }

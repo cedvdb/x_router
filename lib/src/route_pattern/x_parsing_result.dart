@@ -18,7 +18,7 @@ class XParsingResult with EquatableMixin {
 
   /// The part of the path that is matching the patternPath
   ///
-  /// ie `/route/123` when the path is `/route/123` and the route pattern is `/route/:id`
+  /// ie `/route/123` when the path is `/route/123/foo` and the route pattern is `/route/:id`
   final String matchingPath;
 
   /// The route path being matched onto

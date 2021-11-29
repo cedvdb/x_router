@@ -1,6 +1,5 @@
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
-import 'package:x_router/x_router.dart';
 
 class PreferencesPage extends StatelessWidget {
   const PreferencesPage({Key? key}) : super(key: key);
@@ -18,6 +17,7 @@ class PreferencesPage extends StatelessWidget {
         ),
         title: const Text('preferences'),
       ),
+      body: const Center(child: Text('preferences')),
     );
   }
 }

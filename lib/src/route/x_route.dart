@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
+import 'x_children_routes.dart';
 import 'x_page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user
@@ -21,13 +22,14 @@ import 'x_page_builder.dart';
 /// {@template resolvers}
 /// The list of [resolvers] that are active for this specific route.
 /// In those resolvers, the target will always be matching the route and
-/// children if [matchChildren] is true.
+/// children if [isAddedToUpstack] is true.
 /// {@endtemplate}
 ///
-/// {@template matchChildren}
-/// The [matchChildren] represents whether the path will match the child paths.
+/// {@template isAddedToUpstack}
+/// The [isAddedToUpstack] represents whether the route will be added to
+/// the upstack when accessing longer paths.
 ///
-/// By default matchChildren is true, meaning that when we go to:
+/// By default isAddedToUpstack is true, meaning that when we go to:
 /// `/products/:id`, the routes `/`, `/products` and `/products/:id` will be in the navigator
 /// up stack when displaying `/products/123`. A little arrow ⬅ will be displayed in the app bar
 /// to go up the stack to `/products` then `/`.
@@ -45,43 +47,73 @@ class XRoute {
   /// {@macro builder}
   final XPageBuilder builder;
 
-  /// {@macro matchChildren}
-  final bool matchChildren;
+  /// {@macro isAddedToUpstack}
+  final bool isAddedToUpstack;
 
   /// browser tab title
   final XTitleBuilder? titleBuilder;
+
+  /// for nested routing
+  final XChildRouterConfig? childRouterConfig;
 
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
+    this.childRouterConfig,
     this.pageKey,
     this.titleBuilder,
-    this.matchChildren = true,
+    this.isAddedToUpstack = true,
   }) : _parser = XRoutePattern(path);
+
+  /// given a path, computes the depest match that could be found
+  /// on this route or any of its children
+  String computeEffectivePath(String path) {
+    final parseResult = parse(path);
+    var effectivePath = parseResult.matchingPath;
+    final childRoutes = childRouterConfig?.routes;
+    // we need to find the longest path that matches
+    // so if there is no child route or the path is the same as this one there
+    // is no need to keep going
+    if (childRoutes == null || path == this.path) {
+      return effectivePath;
+    }
+    // if a child route match then the effective path will be longer
+    XRoute? childMatch;
+    // check if there is a match in childs
+    try {
+      childMatch = childRoutes.firstWhere((route) => route.match(path));
+    } catch (e) {
+      childMatch = null;
+    }
+    // if there is we get its effective path
+    if (childMatch != null) {
+      final childEffectivePath = childMatch.computeEffectivePath(path);
+      // we compare length so the next route does not override it with an
+      // incomplete effective path
+      if (childEffectivePath.length > effectivePath.length) {
+        effectivePath = childEffectivePath;
+      }
+    }
+    return effectivePath;
+  }
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
-  /// if [matchChildren] isn't specified the matchChildren of property this route is used, which is true by default
-  /// {@macro matchType}
-  bool match(String path, {bool? matchChildren}) {
-    matchChildren ??= this.matchChildren;
-    return _parser.match(path, matchChildren: matchChildren);
+  bool match(String path) {
+    return _parser.match(path, matchChildren: isAddedToUpstack);
   }
 
   /// parses a path against this route
   /// the [path] is the path to be matched against this route
-  /// if [matchChildren] isn't specified the matchChildren of this route is used, which is true by default
-  /// {@macro matchType}
-  XParsingResult parse(String path, {bool? matchChildren}) {
-    matchChildren ??= this.matchChildren;
-    return _parser.parse(path, matchChildren: matchChildren);
+  XParsingResult parse(String path) {
+    return _parser.parse(path, matchChildren: isAddedToUpstack);
   }
 
   @override
   String toString() {
-    return 'XRoute(path: $path, matchChildren: $matchChildren, $builder: ${builder.runtimeType})';
+    return 'XRoute(path: $path, matchChildren: $isAddedToUpstack, $builder: ${builder.runtimeType})';
   }
 
   XRoute copyWithBuilder({
@@ -91,7 +123,11 @@ class XRoute {
       pageKey: null,
       path: path,
       builder: builder ?? this.builder,
-      matchChildren: matchChildren,
+      isAddedToUpstack: isAddedToUpstack,
     );
   }
+
+  /// finds resolvers present in child routes
+  List<XResolver> findChildResolvers() =>
+      childRouterConfig?.findAllResolvers() ?? [];
 }

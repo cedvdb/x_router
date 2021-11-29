@@ -7,9 +7,10 @@ import 'package:x_router/x_router.dart';
 void main() {
   group('Activated Route Builder', () {
     late XActivatedRouteBuilder activatedRouteBuilder;
-    late XActivatedRoute activatedNoMatchChild;
-    late XActivatedRoute activatedMatchChild;
+    late XActivatedRoute activatedNoMatchDown;
+    late XActivatedRoute activatedMatchDown;
     late XActivatedRoute activatedWithStack;
+    late XActivatedRoute activatedWithChildRouter;
 
     setUp(() {
       activatedRouteBuilder = XActivatedRouteBuilder(
@@ -17,7 +18,7 @@ void main() {
           XRoute(
             path: '/',
             builder: (_, __) => Container(),
-            matchChildren: false,
+            isAddedToUpstack: false,
           ),
           XRoute(
             path: '/products',
@@ -26,6 +27,18 @@ void main() {
           XRoute(
             path: '/products/:id',
             builder: (_, __) => Container(),
+            childRouterConfig: XChildRouterConfig(
+              routes: [
+                XRoute(
+                  path: '/products/:id/info',
+                  builder: (_, __) => Container(),
+                ),
+                XRoute(
+                  path: '/products/:id/comments',
+                  builder: (_, __) => Container(),
+                ),
+              ],
+            ),
           ),
           XRoute(
             path: '/preferences',
@@ -33,26 +46,39 @@ void main() {
           ),
         ],
       );
-      activatedNoMatchChild = activatedRouteBuilder.build('/');
-      activatedMatchChild = activatedRouteBuilder.build('/products');
+      activatedNoMatchDown = activatedRouteBuilder.build('/');
+      activatedMatchDown = activatedRouteBuilder.build('/products');
       activatedWithStack =
           activatedRouteBuilder.build('/products/123/an-unknown-route');
+      activatedWithChildRouter =
+          activatedRouteBuilder.build('/products/123/info/an-unknown-route');
     });
 
     group('build', () {
       test('should have the correct requested path', () {
-        expect(activatedNoMatchChild.requestedPath, equals('/'));
-        expect(activatedMatchChild.requestedPath, equals('/products'));
+        expect(activatedNoMatchDown.requestedPath, equals('/'));
+        expect(activatedMatchDown.requestedPath, equals('/products'));
         expect(activatedWithStack.requestedPath,
             equals('/products/123/an-unknown-route'));
       });
 
       test(
+        'should have the correct matching path',
+        () {
+          expect(activatedNoMatchDown.matchingPath, equals('/'));
+          expect(activatedMatchDown.matchingPath, equals('/products'));
+          expect(activatedWithStack.matchingPath, equals('/products/123'));
+        },
+      );
+
+      test(
         'should have the correct effective path',
         () {
-          expect(activatedNoMatchChild.effectivePath, equals('/'));
-          expect(activatedMatchChild.effectivePath, equals('/products'));
+          expect(activatedNoMatchDown.effectivePath, equals('/'));
+          expect(activatedMatchDown.effectivePath, equals('/products'));
           expect(activatedWithStack.effectivePath, equals('/products/123'));
+          expect(activatedWithChildRouter.effectivePath,
+              equals('/products/123/info'));
         },
       );
 
@@ -67,8 +93,8 @@ void main() {
       });
 
       test('should have the correct upstack', () {
-        expect(activatedNoMatchChild.upstack.length, equals(0));
-        expect(activatedMatchChild.upstack.length, equals(0));
+        expect(activatedNoMatchDown.upstack.length, equals(0));
+        expect(activatedMatchDown.upstack.length, equals(0));
         expect(activatedWithStack.upstack.length, equals(1));
       });
     });

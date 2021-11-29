@@ -1,5 +1,3 @@
-import 'package:x_router/src/events/x_router_events.dart';
-
 import '../../x_router.dart';
 
 class ResolverResolveStart extends ResolvingEvent {
@@ -33,5 +31,5 @@ class ResolverResolveEnd extends ResolvingEvent {
       '    ${resolver.runtimeType} ResolveEnd(resolved: $resolved, target: $target)';
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [resolver, resolved];
 }

@@ -102,6 +102,9 @@ class ResolvingEnd extends ResolvingEvent {
       : super(target);
   @override
   List<Object?> get props => [target, result];
+
+  @override
+  String toString() => 'ResolvingEnd(target: $target, result: $result)';
 }
 
 // build events

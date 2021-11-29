@@ -1,13 +1,16 @@
 import 'package:example/main.dart';
 import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
-import 'package:x_router/x_router.dart';
 
 class ProductsPage extends StatelessWidget {
+  const ProductsPage();
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('products'),
+      ),
+      body: ListView(
         children: [
           for (var product in ProductsService.products)
             ListTile(

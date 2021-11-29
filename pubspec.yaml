@@ -1,6 +1,6 @@
 name: x_router
-description: Navigator 2.0 made simple
-version: 0.0.4
+description: A simple and powerful routing frameworks for flutter. Uses Navigator 2.0 under the hood.
+version: 0.1.0
 homepage: https://github.com/cedvdb/x_router
 
 environment:

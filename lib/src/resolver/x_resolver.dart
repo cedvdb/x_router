@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:x_router/src/route/x_page_builder.dart';
 
-mixin XResolver<T> {
+/// mixin to
+abstract class XResolver<T> {
   /// resolve a route with the current state
   XResolverAction resolve(String target);
 }

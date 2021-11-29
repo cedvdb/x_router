@@ -1,18 +1,20 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/route/x_page_builder.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
-  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+  late GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  /// maintains the url
   @override
-  String? currentConfiguration;
+  String? get currentConfiguration {
+    if (_shouldReportNewRoute) {
+      return _activatedRoute.effectivePath;
+    }
+    return null;
+  }
 
   /// callback called when the os receive a new route
   final Function(String) onNewRoute;
@@ -20,12 +22,14 @@ class XRouterDelegate extends RouterDelegate<String>
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
 
+  final bool _shouldReportNewRoute;
+
   XRouterDelegate({
     required this.onNewRoute,
-  });
+    bool shouldReportNewRoute = true,
+  }) : _shouldReportNewRoute = shouldReportNewRoute;
 
   initRendering(XActivatedRoute activatedRoute) {
-    currentConfiguration = activatedRoute.effectivePath;
     _activatedRoute = activatedRoute;
     notifyListeners();
   }
@@ -40,6 +44,7 @@ class XRouterDelegate extends RouterDelegate<String>
     ];
     _setBrowserTitle(context);
     return Navigator(
+      key: navigatorKey,
       pages: pages,
       onPopPage: (route, res) {
         pop();
@@ -48,19 +53,18 @@ class XRouterDelegate extends RouterDelegate<String>
     );
   }
 
-  MaterialPage _buildPage(
+  Page _buildPage(
     BuildContext context,
     XActivatedRoute activatedRoute,
   ) {
     final route = activatedRoute.route;
-    final builder = route.builder;
+    final child = route.builder(context, activatedRoute);
+    if (child is Page) {
+      return child;
+    }
     return MaterialPage(
       key: route.pageKey,
-      child: builder(
-        context,
-        activatedRoute,
-      ),
-      restorationId: route.pageKey.toString(),
+      child: child,
     );
   }
 
@@ -78,7 +82,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   pop() {
     if (_activatedRoute.upstack.isNotEmpty) {
-      setNewRoutePath(_activatedRoute.upstack.last.effectivePath);
+      setNewRoutePath(_activatedRoute.upstack.last.matchingPath);
     }
   }
 

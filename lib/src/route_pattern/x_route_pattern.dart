@@ -7,11 +7,12 @@ class XRoutePattern {
   final String path;
   late final Uri _uri = Uri.parse(sanitize(path));
 
-  List<String> get segments => _uri.pathSegments;
+  List<String> get _segments => _uri.pathSegments;
 
   XRoutePattern(String path) : path = sanitize(path);
 
   /// creates a route pattern relative to another if the path starts with ./
+  /// Obeys the same rules as Uri.resolve
   XRoutePattern.maybeRelative(String path, String relativeTo)
       : path = sanitize(getRelativePath(path, relativeTo));
 
@@ -46,9 +47,9 @@ class XRoutePattern {
     final matches = <bool>[];
     final params = <String, String>{};
     final matchingSegments = [];
-    final toMatchIsShorter = toMatch.segments.length < segments.length;
-    final toMatchIsLonger = toMatch.segments.length > segments.length;
-    final minLength = min(segments.length, toMatch.segments.length);
+    final toMatchIsShorter = toMatch._segments.length < _segments.length;
+    final toMatchIsLonger = toMatch._segments.length > _segments.length;
+    final minLength = min(_segments.length, toMatch._segments.length);
 
     // if toMatch is shorter it's defacto not a match
     if (toMatchIsShorter) {
@@ -61,8 +62,8 @@ class XRoutePattern {
     }
 
     for (var i = 0; i < minLength; i++) {
-      final patternSegment = segments[i];
-      final toMatchSegment = toMatch.segments[i];
+      final patternSegment = _segments[i];
+      final toMatchSegment = toMatch._segments[i];
 
       // we extract the param
       if (patternSegment.startsWith(':')) {
@@ -108,10 +109,9 @@ class XRoutePattern {
   /// gets the url relative to the current route if the url starts with ./
   static String getRelativePath(String target, String relativeTo) {
     // relative to current route
-    if (target.startsWith('./')) {
-      var resolvedParts = relativeTo.split('/');
-      resolvedParts.removeLast();
-      target = resolvedParts.join('/') + target.substring(1);
+    if (target.startsWith('.')) {
+      final originUri = Uri.parse(relativeTo);
+      return originUri.resolve(target).toString();
     }
     return target;
   }

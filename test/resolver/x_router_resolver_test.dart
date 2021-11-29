@@ -5,20 +5,11 @@ import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends ValueNotifier<bool> with XResolver {
-  int calls = 0;
-
   ReactiveResolver() : super(false);
 
   @override
   XResolverAction resolve(String target) {
-    calls++;
-    if (value && target != '/true') {
-      return const Redirect('/true');
-    } else if (target != '/false') {
-      return const Redirect('/false');
-    } else {
-      return const Next();
-    }
+    return const Next();
   }
 }
 
@@ -75,13 +66,13 @@ void main() {
 
     test('XRouter resolver should resolve in chain', () async {
       final routerResolver = XRouterResolver(
-        resolvers: [
-          XRedirectResolver(from: '/', to: '/other'),
-          XRedirectResolver(from: '/other', to: '/not-found'),
-          XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-        ],
-        onStateChanged: () {},
-      );
+          onEvent: (event) {},
+          resolvers: [
+            XRedirectResolver(from: '/', to: '/other'),
+            XRedirectResolver(from: '/other', to: '/not-found'),
+            XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
+          ],
+          onStateChanged: () {});
       expect(routerResolver.resolve('/'),
           equals(const XRouterResolveResult(target: '/dashboard')));
     });
@@ -94,13 +85,13 @@ void main() {
 
         final reactiveResolver = ReactiveResolver();
         final routerResolver = XRouterResolver(
+          onEvent: (_) {},
           resolvers: [
             reactiveResolver,
           ],
           onStateChanged: callback,
         );
         reactiveResolver.value = true;
-        expect(reactiveResolver.value, isTrue);
         expect(stateChanged, isTrue);
         routerResolver.dispose();
       },

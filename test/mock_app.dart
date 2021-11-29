@@ -5,54 +5,73 @@ class RouteLocation {
   static const home = '/';
   static const products = '/products';
   static const preferences = '/preferences';
-  static const productDetail = '/products/:id';
+  static const productDetails = '/products/:id';
+  static const productDetailsInfo = '$productDetails/info';
+  static const productDetailsComments = '$productDetails/comments';
   static const signIn = '/sign-in';
 }
 
-XRouter getTestRouter({List<XResolver> resolvers = const []}) {
-  return XRouter(
+late XRouter router;
+XRouter createTestRouter({List<XResolver> resolvers = const []}) {
+  router = XRouter(
     resolvers: resolvers,
     routes: [
       XRoute(
         titleBuilder: (_, __) => 'sign in !',
         path: RouteLocation.signIn,
-        builder: (ctx, route) => Container(
+        builder: (ctx, activeRoute) => Container(
           key: const ValueKey(RouteLocation.signIn),
         ),
       ),
       XRoute(
         path: RouteLocation.preferences,
-        builder: (ctx, route) => Container(
+        builder: (ctx, activeRoute) => Container(
           key: const ValueKey(RouteLocation.preferences),
         ),
       ),
       XRoute(
         path: RouteLocation.home,
-        builder: (ctx, route) =>
+        builder: (ctx, activeRoute) =>
             Container(key: const ValueKey(RouteLocation.home)),
       ),
       XRoute(
         path: RouteLocation.products,
         titleBuilder: (_, __) => 'products',
-        builder: (ctx, route) => Container(
+        builder: (ctx, activeRoute) => Container(
           key: const ValueKey(RouteLocation.products),
         ),
       ),
       XRoute(
-        path: RouteLocation.productDetail,
-        builder: (ctx, route) => Container(
-            key: ValueKey(
-                '${RouteLocation.productDetail}-${route.pathParams["id"]}')),
+        path: RouteLocation.productDetails,
+        builder: (ctx, activeRoute) => Container(
+          key: ValueKey(
+              '${RouteLocation.productDetails}-${activeRoute.pathParams["id"]}'),
+          child: const ProductDetailsPage(),
+        ),
+        childRouterConfig: XChildRouterConfig(
+          routes: [
+            XRoute(
+              path: RouteLocation.productDetailsInfo,
+              builder: (_, __) => Container(
+                key: const ValueKey(RouteLocation.productDetailsInfo),
+              ),
+            ),
+            XRoute(
+              path: RouteLocation.productDetailsComments,
+              builder: (_, __) => Container(
+                key: const ValueKey(RouteLocation.productDetailsComments),
+              ),
+            ),
+          ],
+        ),
       ),
     ],
   );
+  return router;
 }
 
 class TestApp extends StatelessWidget {
-  final XRouter router;
-
-  const TestApp(
-    this.router, {
+  const TestApp({
     Key? key,
   }) : super(key: key);
 
@@ -71,10 +90,24 @@ class TestApp extends StatelessWidget {
   }
 }
 
-class MockAuthResolver extends ValueNotifier<bool?> with XResolver {
+// nested router
+class ProductDetailsPage extends StatelessWidget {
+  const ProductDetailsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Router(
+      routerDelegate:
+          router.childRouterStore.findDelegate(RouteLocation.productDetails),
+    );
+  }
+}
+
+class MockAuthResolver extends ValueNotifier implements XResolver {
   MockAuthResolver() : super(null);
 
   signIn() => value = true;
+
   signOut() => value = false;
 
   @override
