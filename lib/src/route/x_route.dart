@@ -73,30 +73,32 @@ class XRoute {
     final parseResult = parse(path);
     var effectivePath = parseResult.matchingPath;
     final childRoutes = childRouterConfig?.routes;
+    final hasChildRoutes = childRoutes != null;
+    final isSamePath = path == this.path;
     // we need to find the longest path that matches
     // so if there is no child route or the path is the same as this one there
     // is no need to keep going
-    if (childRoutes == null || path == this.path) {
+    if (!hasChildRoutes || isSamePath) {
       return effectivePath;
     }
     // if a child route match then the effective path will be longer
-    XRoute? childMatch;
-    // check if there is a match in childs
-    try {
-      childMatch = childRoutes.firstWhere((route) => route.match(path));
-    } catch (e) {
-      childMatch = null;
-    }
-    // if there is we get its effective path
+    XRoute? childMatch = _getChildMatch(path);
+
+    // if there are child match we get their effective path path
     if (childMatch != null) {
-      final childEffectivePath = childMatch.computeEffectivePath(path);
-      // we compare length so the next route does not override it with an
-      // incomplete effective path
-      if (childEffectivePath.length > effectivePath.length) {
-        effectivePath = childEffectivePath;
-      }
+      effectivePath = childMatch.computeEffectivePath(path);
     }
     return effectivePath;
+  }
+
+  XRoute? _getChildMatch(String path) {
+    final childRoutes = childRouterConfig?.routes;
+    // check if there is a match in childs
+    try {
+      return (childRoutes ?? []).firstWhere((route) => route.match(path));
+    } catch (e) {
+      return null;
+    }
   }
 
   /// matches a path against this route
