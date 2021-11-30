@@ -69,7 +69,7 @@ class XRoute {
 
   /// given a path, computes the depest match that could be found
   /// on this route or any of its children
-  String computeEffectivePath(String path) {
+  String computeDeepestMatchingPath(String path) {
     final parseResult = parse(path);
     var effectivePath = parseResult.matchingPath;
     final childRoutes = childRouterConfig?.routes;
@@ -86,7 +86,7 @@ class XRoute {
 
     // if there are child match we get their effective path path
     if (childMatch != null) {
-      effectivePath = childMatch.computeEffectivePath(path);
+      effectivePath = childMatch.computeDeepestMatchingPath(path);
     }
     return effectivePath;
   }

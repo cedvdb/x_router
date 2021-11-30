@@ -34,7 +34,7 @@ class XActivatedRouteBuilder {
       route = route.copyWithBuilder(builder: builderOverride);
     }
     // path that also match path from active routes of child router
-    final effectivePath = route.computeEffectivePath(target);
+    final effectivePath = route.computeDeepestMatchingPath(target);
 
     final upstack = matchings
         .map(

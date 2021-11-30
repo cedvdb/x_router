@@ -18,19 +18,19 @@ void main() {
         ),
       );
       expect(
-        route.computeEffectivePath('/parent'),
+        route.computeDeepestMatchingPath('/parent'),
         equals('/parent'),
       );
       expect(
-        route.computeEffectivePath('/parent/not_route'),
+        route.computeDeepestMatchingPath('/parent/not_route'),
         equals('/parent'),
       );
       expect(
-        route.computeEffectivePath('/parent/child'),
+        route.computeDeepestMatchingPath('/parent/child'),
         equals('/parent/child'),
       );
       expect(
-        route.computeEffectivePath('/parent/child/not_route'),
+        route.computeDeepestMatchingPath('/parent/child/not_route'),
         equals('/parent/child'),
       );
     });
