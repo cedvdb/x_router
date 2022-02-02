@@ -21,7 +21,7 @@ class XActivatedRouteBuilder {
     final isFound = matchings.isNotEmpty;
 
     if (!isFound) {
-      matchings = [XDefaultRoutes.notFoundRoute];
+      matchings = [XNotFoundRoute(target)];
     }
 
     var route = matchings.removeAt(0);
