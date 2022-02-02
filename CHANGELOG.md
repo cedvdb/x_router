@@ -1,3 +1,6 @@
+## [0.1.1] - 02/02/2022
+- not found route now has target as url
+
 ## [0.1.0+2] - 27/11/2021
 - docs
 
