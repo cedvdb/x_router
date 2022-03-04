@@ -27,23 +27,15 @@ class XRouterDelegate extends RouterDelegate<String>
   /// child router do not need to report when a new route has been
   /// reached only the top router
   final bool _isRoot;
-  Completer? _renderCompleter;
 
   XRouterDelegate({
     required this.onNewRoute,
     bool isRoot = true,
   }) : _isRoot = isRoot;
 
-  Future<void> render(XActivatedRoute activatedRoute) {
-    _renderCompleter = Completer();
+  void render(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
     notifyListeners();
-    return _renderCompleter!.future;
-  }
-
-  void _completeRendering() {
-    _renderCompleter?.complete();
-    _renderCompleter = null;
   }
 
   @override
@@ -55,7 +47,6 @@ class XRouterDelegate extends RouterDelegate<String>
       _buildPage(context, _activatedRoute)
     ];
     _setBrowserTitle(context);
-    _completeRendering();
     return Navigator(
       key: navigatorKey,
       pages: pages,
