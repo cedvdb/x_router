@@ -163,7 +163,7 @@ void main() {
       testWidgets('Should display loading if resolver is not ready',
           (tester) async {
         final authResolver = MockAuthResolver();
-        createTestRouter(
+        router = createTestRouter(
           resolvers: [authResolver],
         );
         await tester.pumpWidget(TestApp(router: router));
@@ -175,7 +175,7 @@ void main() {
       testWidgets('should redirect if redirector state changed',
           (tester) async {
         final authResolver = MockAuthResolver();
-        createTestRouter(
+        router = createTestRouter(
           resolvers: [authResolver],
         );
         await tester.pumpWidget(TestApp(router: router));

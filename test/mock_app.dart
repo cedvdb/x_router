@@ -117,7 +117,6 @@ class MockAuthResolver extends ValueNotifier implements XResolver {
 
   @override
   XResolverAction resolve(String target) {
-    print('resolving: $value');
     switch (value) {
       case true:
         if (target.startsWith(RouteLocation.signIn)) {

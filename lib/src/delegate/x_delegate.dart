@@ -48,8 +48,6 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Widget build(BuildContext context) {
-    _completeRendering();
-    print('building ${_activatedRoute.effectivePath}');
     final pages = [
       // upstack
       ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
@@ -57,6 +55,7 @@ class XRouterDelegate extends RouterDelegate<String>
       _buildPage(context, _activatedRoute)
     ];
     _setBrowserTitle(context);
+    _completeRendering();
     return Navigator(
       key: navigatorKey,
       pages: pages,
@@ -102,7 +101,6 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) {
-    print('new route path');
     onNewRoute(configuration);
     return SynchronousFuture(null);
   }

@@ -33,9 +33,7 @@ class XRouterResolver {
   }) {
     _checkInfiniteLoop(calls);
     var next = path;
-
     for (final resolver in resolvers) {
-      print(resolver);
       final resolved = _useResolver(resolver, next);
 
       if (resolved is Loading) {

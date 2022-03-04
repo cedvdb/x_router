@@ -92,7 +92,6 @@ class XRouter {
   /// The upstack is generated with the url, if the url is /route1/route2
   /// the upstack will be [Route1Page, Route2Page]
   Future<void> goTo(String target, {Map<String, String>? params}) async {
-    print('go to $target');
     await _navigate(target, params);
   }
 
@@ -145,14 +144,12 @@ class XRouter {
     Map<String, String>? params, {
     XActivatedRoute? removeHistoryThrough,
   }) async {
-    print('navigating to $target');
     _eventEmitter.addEvent(NavigationStart(
       target: target,
       params: params,
       removeHistoryThrough: removeHistoryThrough,
     ));
     final parsed = _parseUrl(target, params);
-    print('parsed');
     final resolved = _resolve(parsed);
     final activatedRoute = _buildActivatedRoute(
       resolved.target,
