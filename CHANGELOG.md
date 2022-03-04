@@ -1,4 +1,4 @@
-[0.1.1]
+## [0.1.1]
  - make navigation methods return a future
  - title builder no longer receives the activatedRoute as param
 
