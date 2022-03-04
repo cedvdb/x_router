@@ -39,33 +39,33 @@ final _routes = [
   XRoute(
     path: RouteLocations.signIn,
     builder: (ctx, route) => SignInPage(),
-    titleBuilder: (ctx, route) => 'sign in ! (Browser tab title)',
+    titleBuilder: (ctx) => 'sign in ! (Browser tab title)',
   ),
   XRoute(
     path: RouteLocations.preferences,
     builder: (ctx, route) => const PreferencesPage(),
-    titleBuilder: (ctx, route) => translate(ctx, 'preferences'),
+    titleBuilder: (ctx) => translate(ctx, 'preferences'),
   ),
   XRoute(
     path: RouteLocations.dashboard,
     builder: (ctx, route) => const HomeLayout(
       child: DashboardPage(),
     ),
-    titleBuilder: (_, __) => 'dashboard',
+    titleBuilder: (_) => 'dashboard',
   ),
   XRoute(
     path: RouteLocations.products,
     builder: (ctx, route) => const HomeLayout(
       child: ProductsPage(),
     ),
-    titleBuilder: (_, __) => 'products',
+    titleBuilder: (_) => 'products',
   ),
   XRoute(
     path: RouteLocations.favorites,
     builder: (ctx, route) => const HomeLayout(
       child: FavoritesPage(),
     ),
-    titleBuilder: (_, __) => 'My favorites',
+    titleBuilder: (_) => 'My favorites',
   ),
   XRoute(
     path: RouteLocations.productDetail,

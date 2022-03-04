@@ -11,13 +11,13 @@ class RouteLocation {
   static const signIn = '/sign-in';
 }
 
-late XRouter router;
 XRouter createTestRouter({List<XResolver> resolvers = const []}) {
+  late XRouter router;
   router = XRouter(
     resolvers: resolvers,
     routes: [
       XRoute(
-        titleBuilder: (_, __) => 'sign in !',
+        titleBuilder: (_) => 'sign in !',
         path: RouteLocation.signIn,
         builder: (ctx, activeRoute) => Container(
           key: const ValueKey(RouteLocation.signIn),
@@ -36,7 +36,7 @@ XRouter createTestRouter({List<XResolver> resolvers = const []}) {
       ),
       XRoute(
         path: RouteLocation.products,
-        titleBuilder: (_, __) => 'products',
+        titleBuilder: (_) => 'products',
         builder: (ctx, activeRoute) => Container(
           key: const ValueKey(RouteLocation.products),
         ),
@@ -46,7 +46,9 @@ XRouter createTestRouter({List<XResolver> resolvers = const []}) {
         builder: (ctx, activeRoute) => Container(
           key: ValueKey(
               '${RouteLocation.productDetails}-${activeRoute.pathParams["id"]}'),
-          child: const ProductDetailsPage(),
+          child: ProductDetailsPage(
+            router: router,
+          ),
         ),
         childRouterConfig: XChildRouterConfig(
           routes: [
@@ -71,8 +73,10 @@ XRouter createTestRouter({List<XResolver> resolvers = const []}) {
 }
 
 class TestApp extends StatelessWidget {
+  final XRouter router;
   const TestApp({
     Key? key,
+    required this.router,
   }) : super(key: key);
 
   // This widget is the root of your application.
@@ -92,7 +96,8 @@ class TestApp extends StatelessWidget {
 
 // nested router
 class ProductDetailsPage extends StatelessWidget {
-  const ProductDetailsPage({Key? key}) : super(key: key);
+  final XRouter router;
+  const ProductDetailsPage({Key? key, required this.router}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +117,7 @@ class MockAuthResolver extends ValueNotifier implements XResolver {
 
   @override
   XResolverAction resolve(String target) {
+    print('resolving: $value');
     switch (value) {
       case true:
         if (target.startsWith(RouteLocation.signIn)) {

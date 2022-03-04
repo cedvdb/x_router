@@ -4,6 +4,7 @@ import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/x_router.dart';
 
 /// holds child routers to access their delegate easily
+/// if a route has children routes then it is a child router
 class XChildRouterStore {
   final Map<String, XChildRouter> _childRouters = {};
 

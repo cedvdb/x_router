@@ -7,15 +7,16 @@ import 'mock_app.dart';
 
 void main() {
   group('router', () {
-    setUp(() => createTestRouter());
+    late XRouter router;
+    setUp(() => router = createTestRouter());
     group('initialization', () {
       testWidgets('should render initial page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should have history of one', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.effectivePath,
             equals(RouteLocation.home));
@@ -24,7 +25,7 @@ void main() {
 
     group('goTo', () {
       testWidgets('should render next page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -33,7 +34,7 @@ void main() {
       });
 
       testWidgets('should use parameters', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.productDetails, params: {'id': '123'});
         await tester.pumpAndSettle();
@@ -42,7 +43,7 @@ void main() {
             findsOneWidget);
       });
       testWidgets('should add to history', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -54,21 +55,24 @@ void main() {
       });
 
       testWidgets('should navigate relatively', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        // 1
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetailsComments, params: {'id': '3'});
+        // 2
+        router.goTo(RouteLocation.productDetailsComments, params: {'id': '5'});
         await tester.pumpAndSettle();
+        // 3
         router.goTo('./info');
 
         expect(router.history.length, equals(3));
         expect(router.history.currentRoute.effectivePath,
-            equals('/products/3/info'));
-        expect(router.history.currentRoute.pathParams['id'], equals('3'));
+            equals('/products/5/info'));
+        expect(router.history.currentRoute.pathParams['id'], equals('5'));
       });
     });
     group('replace', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -76,7 +80,7 @@ void main() {
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should replace in history', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.replace(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -88,7 +92,7 @@ void main() {
 
     group('pop', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.productDetails);
         await tester.pumpAndSettle();
@@ -99,7 +103,7 @@ void main() {
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });
       testWidgets('should add in history', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -113,7 +117,7 @@ void main() {
 
     group('back', () {
       testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -122,7 +126,7 @@ void main() {
         expect(find.byKey(const ValueKey(RouteLocation.home)), findsOneWidget);
       });
       testWidgets('should remove in history', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.products);
         await tester.pumpAndSettle();
@@ -144,7 +148,7 @@ void main() {
                 from: RouteLocation.preferences, to: RouteLocation.home),
           ],
         );
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.effectivePath,
@@ -162,8 +166,8 @@ void main() {
         createTestRouter(
           resolvers: [authResolver],
         );
-        await tester.pumpWidget(const TestApp());
-
+        await tester.pumpWidget(TestApp(router: router));
+        await tester.pump(const Duration(milliseconds: 400));
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
       });
@@ -174,7 +178,7 @@ void main() {
         createTestRouter(
           resolvers: [authResolver],
         );
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
 
         authResolver.signIn();
@@ -192,7 +196,7 @@ void main() {
       });
 
       testWidgets('should access child router page', (tester) async {
-        await tester.pumpWidget(const TestApp());
+        await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         router.goTo(RouteLocation.productDetailsInfo, params: {'id': 'id'});
         await tester.pumpAndSettle();

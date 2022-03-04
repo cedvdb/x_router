@@ -11,5 +11,4 @@ typedef XPageBuilder = dynamic Function(
 /// for localization support
 typedef XTitleBuilder = String Function(
   BuildContext context,
-  XActivatedRoute activatedRoute,
 );

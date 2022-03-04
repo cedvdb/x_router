@@ -10,8 +10,8 @@ class XChildRouter {
   late final XActivatedRouteBuilder _activatedRouteBuilder;
 
   /// renderer
-  final XRouterDelegate delegate = XRouterDelegate(
-    shouldReportNewRoute: false,
+  late final XRouterDelegate delegate = XRouterDelegate(
+    isRoot: false,
     onNewRoute: (path) => {},
   );
 
@@ -39,7 +39,7 @@ class XChildRouter {
     final isNestedRoute = _basePattern.match(target, matchChildren: true);
     if (isNestedRoute) {
       final activatedRoute = _activatedRouteBuilder.build(target);
-      delegate.initRendering(activatedRoute);
+      delegate.render(activatedRoute);
     }
   }
 }

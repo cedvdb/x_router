@@ -91,15 +91,16 @@ class XRouter {
   ///
   /// The upstack is generated with the url, if the url is /route1/route2
   /// the upstack will be [Route1Page, Route2Page]
-  void goTo(String target, {Map<String, String>? params}) {
-    _navigate(target, params);
+  Future<void> goTo(String target, {Map<String, String>? params}) async {
+    print('go to $target');
+    await _navigate(target, params);
   }
 
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
-  void replace(String target, {Map<String, String>? params}) {
-    _navigate(
+  Future<void> replace(String target, {Map<String, String>? params}) async {
+    await _navigate(
       target,
       params,
       removeHistoryThrough: _history.currentRoute,
@@ -109,10 +110,10 @@ class XRouter {
   /// [goTo] route above the current one in the page stack if any
   /// Usually this method is called by flutter. Consider using [back]
   /// to go back chronologically
-  void pop() {
+  Future<void> pop() async {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
-      _navigate(
+      await _navigate(
         up.matchingPath,
         up.pathParams,
       );
@@ -120,10 +121,10 @@ class XRouter {
   }
 
   /// goes back chronologically
-  void back() {
+  Future<void> back() async {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
-      _navigate(
+      await _navigate(
         previousRoute.matchingPath,
         previousRoute.pathParams,
         removeHistoryThrough: previousRoute,
@@ -132,38 +133,42 @@ class XRouter {
   }
 
   /// alias for goTo(currentUrl)
-  void _refresh() {
-    _navigate(
+  Future<void> _refresh() async {
+    await _navigate(
       _history.currentRoute.matchingPath,
       _history.currentRoute.pathParams,
     );
   }
 
-  void _navigate(
+  Future<void> _navigate(
     String target,
     Map<String, String>? params, {
     XActivatedRoute? removeHistoryThrough,
-  }) {
+  }) async {
+    print('navigating to $target');
     _eventEmitter.addEvent(NavigationStart(
       target: target,
       params: params,
       removeHistoryThrough: removeHistoryThrough,
     ));
     final parsed = _parseUrl(target, params);
+    print('parsed');
     final resolved = _resolve(parsed);
     final activatedRoute = _buildActivatedRoute(
       resolved.target,
       builderOverride: resolved.builderOverride,
     );
-    _render(activatedRoute);
-
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
-    _eventEmitter.addEvent(NavigationEnd(
-      activatedRoute: activatedRoute,
-      target: target,
-      previous: _history.previousRoute,
-    ));
+    await _render(activatedRoute);
+
+    _eventEmitter.addEvent(
+      NavigationEnd(
+        activatedRoute: activatedRoute,
+        target: target,
+        previous: _history.previousRoute,
+      ),
+    );
   }
 
   /// parses an url by setting its parameter
@@ -207,8 +212,8 @@ class XRouter {
   }
 
   /// renders page stack on screen
-  void _render(XActivatedRoute activatedRoute) {
-    delegate.initRendering(activatedRoute);
+  Future<void> _render(XActivatedRoute activatedRoute) {
+    return delegate.render(activatedRoute);
   }
 
   /// dispose of this router, usually that method is never

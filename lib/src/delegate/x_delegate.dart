@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +12,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    if (_shouldReportNewRoute) {
+    if (_isRoot) {
       return _activatedRoute.effectivePath;
     }
     return null;
@@ -22,20 +24,32 @@ class XRouterDelegate extends RouterDelegate<String>
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
 
-  final bool _shouldReportNewRoute;
+  /// child router do not need to report when a new route has been
+  /// reached only the top router
+  final bool _isRoot;
+  Completer? _renderCompleter;
 
   XRouterDelegate({
     required this.onNewRoute,
-    bool shouldReportNewRoute = true,
-  }) : _shouldReportNewRoute = shouldReportNewRoute;
+    bool isRoot = true,
+  }) : _isRoot = isRoot;
 
-  initRendering(XActivatedRoute activatedRoute) {
+  Future<void> render(XActivatedRoute activatedRoute) {
+    _renderCompleter = Completer();
     _activatedRoute = activatedRoute;
     notifyListeners();
+    return _renderCompleter!.future;
+  }
+
+  void _completeRendering() {
+    _renderCompleter?.complete();
+    _renderCompleter = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    _completeRendering();
+    print('building ${_activatedRoute.effectivePath}');
     final pages = [
       // upstack
       ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
@@ -73,7 +87,7 @@ class XRouterDelegate extends RouterDelegate<String>
     if (kIsWeb && titleBuilder != null) {
       SystemChrome.setApplicationSwitcherDescription(
         ApplicationSwitcherDescription(
-          label: titleBuilder(context, _activatedRoute),
+          label: titleBuilder(context),
           primaryColor: Theme.of(context).primaryColor.value,
         ),
       );
@@ -88,6 +102,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) {
+    print('new route path');
     onNewRoute(configuration);
     return SynchronousFuture(null);
   }
