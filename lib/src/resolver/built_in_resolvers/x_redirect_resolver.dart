@@ -6,9 +6,13 @@ class XRedirectResolver implements XResolver {
   final XRoutePattern to;
   final bool matchChildren;
 
+  /// when this is true the redirect happens
+  final bool Function()? when;
+
   XRedirectResolver({
     required String from,
     required String to,
+    this.when,
     this.matchChildren = false,
   })  : to = XRoutePattern(to),
         from = XRoutePattern(from);
@@ -16,7 +20,7 @@ class XRedirectResolver implements XResolver {
   @override
   XResolverAction resolve(String target) {
     final parsed = from.parse(target, matchChildren: matchChildren);
-    if (parsed.matches) {
+    if (parsed.matches && (when == null || when!() == true)) {
       // we add the params to the redirect
       // so if we are on /products/1234 and want to redirect to /products/1234/info
       // the parameters are added

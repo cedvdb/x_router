@@ -1,5 +1,5 @@
 ## [0.1.1]
- - make navigation methods return a future
+ - add `when` param on redirect resolver
  - title builder no longer receives the activatedRoute as param
 
 ## [0.1.0+2] - 27/11/2021
