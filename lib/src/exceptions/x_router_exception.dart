@@ -3,4 +3,7 @@ class XRouterException implements Exception {
   XRouterException({
     required this.description,
   });
+
+  @override
+  String toString() => 'XRouterException(description: $description)';
 }

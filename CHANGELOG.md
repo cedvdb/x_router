@@ -1,6 +1,8 @@
 ## [0.1.1]
  - add `when` param on redirect resolver
  - title builder no longer receives the activatedRoute as param
+ - page builder return type is no longer dynamic
+ - added toString to XRouterException
 
 ## [0.1.0+2] - 27/11/2021
 - docs

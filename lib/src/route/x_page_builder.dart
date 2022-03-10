@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
 /// used to render a page on screen
-typedef XPageBuilder = dynamic Function(
+typedef XPageBuilder = Widget Function(
   BuildContext context,
   XActivatedRoute activatedRoute,
 );

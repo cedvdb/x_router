@@ -63,9 +63,6 @@ class XRouterDelegate extends RouterDelegate<String>
   ) {
     final route = activatedRoute.route;
     final child = route.builder(context, activatedRoute);
-    if (child is Page) {
-      return child;
-    }
     return MaterialPage(
       key: route.pageKey,
       child: child,
