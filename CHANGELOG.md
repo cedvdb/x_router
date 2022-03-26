@@ -1,3 +1,6 @@
+## [0.1.2]
+ - display initial route if the router is navigated before the app started (for example in unit tests setup)
+
 ## [0.1.1]
  - add `when` param on redirect resolver
  - title builder no longer receives the activatedRoute as param

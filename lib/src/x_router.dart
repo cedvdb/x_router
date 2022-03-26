@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
 import 'package:x_router/src/child_router/x_child_router_store.dart';
@@ -50,6 +51,13 @@ class XRouter {
   late final XRouterDelegate delegate = XRouterDelegate(
     // new route detected by the OS
     onNewRoute: (path) => goTo(path),
+  );
+
+  late final RouteInformationProvider informationProvider =
+      PlatformRouteInformationProvider(
+    initialRouteInformation: RouteInformation(
+      location: history.isEmpty ? null : history.currentUrl,
+    ),
   );
 
   /// the resolver responsible of resolving a route path (redirects)
