@@ -4,6 +4,7 @@ import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
+import 'x_resolver_actions.dart';
 import 'x_resolver_event.dart';
 
 class XRouterResolver {
@@ -31,10 +32,10 @@ class XRouterResolver {
     bool isRedirect = false,
     int calls = 0,
   }) {
-    _checkInfiniteLoop(calls);
-    var next = path;
+    _guardInfiniteLoop(calls);
+    var target = path;
     for (final resolver in resolvers) {
-      final resolved = _useResolver(resolver, next);
+      final resolved = _computeResolvedTarget(resolver, target);
 
       if (resolved is Loading) {
         // if it is loading we need to wait for an effective result
@@ -42,7 +43,7 @@ class XRouterResolver {
         // so the client can display a loading screen
         return XRouterResolveResult(
           builderOverride: resolved.loadingScreenBuilder,
-          target: next,
+          target: target,
         );
       }
 
@@ -54,13 +55,17 @@ class XRouterResolver {
           calls: calls + 1,
         );
       }
+
+      if (resolved is ByPass) {
+        return XRouterResolveResult(target: target);
+      }
     }
     // if we reach here we have resolved the final route
-    return XRouterResolveResult(target: next);
+    return XRouterResolveResult(target: target);
   }
 
   /// resolve path against a specific resolver
-  XResolverAction _useResolver(
+  XResolverAction _computeResolvedTarget(
     XResolver resolver,
     String path,
   ) {
@@ -73,7 +78,7 @@ class XRouterResolver {
   }
 
   /// checks if the number of redirects passes over a threshold
-  void _checkInfiniteLoop(int redirectAmount) {
+  void _guardInfiniteLoop(int redirectAmount) {
     // 10 is arbitrary here, it's the max number of redirects before
     // we decide it's an infinite loop
     if (redirectAmount > 10) {

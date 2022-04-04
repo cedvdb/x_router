@@ -160,13 +160,15 @@ XRouter(
 # Resolvers
 
 
-When a page is accessed via a path ('/path'). That path goes through each resolvers provided to the router, sequentially and either `Redirect`,  `Next` or `Loading` happen.
+When a page is accessed via a path ('/path'). That path goes through each resolvers provided to the router sequentially to return a resolved path.
 
-To create a resolver, just implement `XResolver`. Here is an example of a redirect resolver:
+Each resolver can return either `Redirect`,  `Next`, `ByPass` or `Loading`. The difference between those is explained later.
+
+To create a resolver, just use the mixin `XResolver`. Here is an example of a redirect resolver:
 
 ```dart
 // A redirect resolver is provided by the library 
-class XRedirectResolver implements XResolver {
+class XRedirectResolver with XResolver {
   final String from;
   final String to;
 
@@ -189,9 +191,10 @@ class XRedirectResolver implements XResolver {
 
 resolvers can return 3 type of value:
 
-  - `Redirect`: redirects to a target and goes through each resolver again with a new path
   - `Next`: proceeds to the next resolver until we reach the end 
-  - `Loading`: stops the resolving process and display a widget on screen until it is ready (see next section)
+  - `Redirect`: redirects to a target and goes through each resolver again with a new path
+  - `ByPass`: stops the resolving process at the current target
+  - `Loading`: stops the resolving process at the target but display a custom widget on screen until it is ready (see next section)
 
 
 # Reactive resolvers
@@ -211,7 +214,7 @@ such a change and the resolving process will start again.
 
 
 ```dart
-class AuthResolver extends ValueNotifier implements XResolver {
+class AuthResolver extends ValueNotifier with XResolver {
 
   AuthResolver() : super(AuthStatus.unknown) {
     AuthService.authStatusStream
@@ -243,7 +246,9 @@ class AuthResolver extends ValueNotifier implements XResolver {
 }
 ```
 
-This is powerful because you then don't need to worry about redirection on user authentication anywhere in your app, you just login and logout.
+This is powerful because you then don't need to worry about redirection on user authentication anywhere in your app, you just login and logout. 
+
+When the app does not know the authentication status, at the start of the application, it will be in a pending state and display the widget of your choice.
 
 
 ```diff

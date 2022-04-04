@@ -1,3 +1,8 @@
+## [0.1.3] - 04/04/2022
+
+ - added ByPass Resolver action
+
+
 ## [0.1.2]
  - display initial route if the router is navigated before the app started (for example in unit tests setup)
 

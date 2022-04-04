@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
-import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
 class ReactiveResolver extends ValueNotifier<bool> with XResolver {
@@ -13,79 +12,137 @@ class ReactiveResolver extends ValueNotifier<bool> with XResolver {
   }
 }
 
+class ResolverBuilder with XResolver {
+  XResolverAction Function(String target) resolveFn;
+
+  ResolverBuilder(this.resolveFn);
+
+  @override
+  XResolverAction resolve(String target) {
+    return resolveFn(target);
+  }
+}
+
 void main() {
-  group('Resolvers', () {
-    final routes = [
-      XRoute(
-        path: '/dashboard',
-        builder: (context, params) => Container(),
-      ),
-      XRoute(
-        path: '/redirected',
-        builder: (context, params) => Container(),
-      ),
-    ];
-
-    group('built ins =>', () {
-      test('RedirectResolver', () async {
-        bool shouldRedirect = true;
-        final redirectResolver = XRedirectResolver(
-          from: '/',
-          to: '/dashboard',
-          when: () => shouldRedirect,
-        );
-        final redirectWithParamsResolver =
-            XRedirectResolver(from: '/products/:id', to: '/products/:id/info');
-        expect(redirectResolver.resolve('/'),
-            equals(const Redirect('/dashboard')));
-        shouldRedirect = false;
-        expect(redirectResolver.resolve('/'), equals(const Next()));
-        expect(redirectResolver.resolve('/other'), equals(const Next()));
-        expect(redirectWithParamsResolver.resolve('/products/123'),
-            equals(const Redirect('/products/123/info')));
+  group('XRouterResolver', () {
+    test('should go to next resolver when resolver returns Next', () {
+      int calls = 0;
+      final nextResolver = ResolverBuilder((target) {
+        ++calls;
+        return const Next();
       });
 
-      test(
-          'NotFoundResolver should resolve to the route specified when not found',
-          () async {
-        final notFoundResolver =
-            XNotFoundResolver(redirectTo: '/redirected', routes: routes);
-        // found
-        expect(
-          notFoundResolver.resolve('/dashboard'),
-          equals(const Next()),
-        );
-        // not found
-        expect(
-          notFoundResolver.resolve('/'),
-          equals(const Redirect('/redirected')),
-        );
-        expect(
-          notFoundResolver.resolve('/redirected'),
-          equals(const Next()),
-        );
-        expect(
-          notFoundResolver.resolve('/not-found'),
-          equals(const Redirect('/redirected')),
-        );
-      });
-    });
-
-    test('XRouter resolver should resolve in chain', () async {
       final routerResolver = XRouterResolver(
-          onEvent: (event) {},
-          resolvers: [
-            XRedirectResolver(from: '/', to: '/other'),
-            XRedirectResolver(from: '/other', to: '/not-found'),
-            XNotFoundResolver(redirectTo: '/dashboard', routes: routes),
-          ],
-          onStateChanged: () {});
-      expect(routerResolver.resolve('/'),
-          equals(const XRouterResolveResult(target: '/dashboard')));
+        onEvent: (_) {},
+        resolvers: [nextResolver, nextResolver, nextResolver],
+        onStateChanged: () {},
+      );
+
+      final result = routerResolver.resolve('/');
+      expect(result.target, equals('/'));
+      expect(calls, equals(3));
+
+      routerResolver.dispose();
     });
 
     test(
-      'Resolvers should notify when the state changes',
+        'Should redirect and restart resolving process when resolver returns Redirect',
+        () {
+      int calls = 0;
+
+      final nextResolver = ResolverBuilder((target) {
+        ++calls;
+        return const Next();
+      });
+
+      final redirect = ResolverBuilder((target) {
+        ++calls;
+        if (target == '/') return const Redirect('/redirected');
+        return const Next();
+      });
+
+      final routerResolver = XRouterResolver(
+        onEvent: (_) {},
+        resolvers: [nextResolver, nextResolver, redirect],
+        onStateChanged: () {},
+      );
+
+      final result = routerResolver.resolve('/');
+      expect(result.target, equals('/redirected'));
+      expect(calls, equals(6));
+
+      routerResolver.dispose();
+    });
+
+    test('should stop resolving process when resolver returns ByPass', () {
+      int calls = 0;
+
+      final nextResolver = ResolverBuilder((target) {
+        ++calls;
+        return const Next();
+      });
+
+      final bypass = ResolverBuilder((target) {
+        ++calls;
+        return const ByPass();
+      });
+
+      final redirect = ResolverBuilder((target) {
+        ++calls;
+        if (target == '/') return const Redirect('/redirected');
+        return const Next();
+      });
+
+      final routerResolver = XRouterResolver(
+        onEvent: (_) {},
+        resolvers: [nextResolver, nextResolver, bypass, redirect],
+        onStateChanged: () {},
+      );
+
+      final result = routerResolver.resolve('/');
+      expect(result.target, equals('/'));
+      expect(calls, equals(3));
+
+      routerResolver.dispose();
+    });
+
+    test(
+        'should stop resolving process when resolver returns Loading, and have a page builder',
+        () {
+      int calls = 0;
+
+      final nextResolver = ResolverBuilder((target) {
+        ++calls;
+        return const Next();
+      });
+
+      final loading = ResolverBuilder((target) {
+        ++calls;
+        return Loading((_, __) => const CircularProgressIndicator());
+      });
+
+      final redirect = ResolverBuilder((target) {
+        ++calls;
+        if (target == '/') return const Redirect('/redirected');
+        return const Next();
+      });
+
+      final routerResolver = XRouterResolver(
+        onEvent: (_) {},
+        resolvers: [nextResolver, nextResolver, loading, redirect],
+        onStateChanged: () {},
+      );
+
+      final result = routerResolver.resolve('/');
+      expect(result.target, equals('/'));
+      expect(calls, equals(3));
+      expect(result.builderOverride != null, isTrue);
+
+      routerResolver.dispose();
+    });
+
+    test(
+      'should notify when the state changes',
       () async {
         bool stateChanged = false;
         callback() => stateChanged = true;
@@ -93,9 +150,7 @@ void main() {
         final reactiveResolver = ReactiveResolver();
         final routerResolver = XRouterResolver(
           onEvent: (_) {},
-          resolvers: [
-            reactiveResolver,
-          ],
+          resolvers: [reactiveResolver],
           onStateChanged: callback,
         );
         reactiveResolver.value = true;
