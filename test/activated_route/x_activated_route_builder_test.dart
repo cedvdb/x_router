@@ -25,6 +25,10 @@ void main() {
             builder: (_, __) => Container(),
           ),
           XRoute(
+            path: '/products/create',
+            builder: (_, __) => Container(),
+          ),
+          XRoute(
             path: '/products/:id',
             builder: (_, __) => Container(),
             childRouterConfig: XChildRouterConfig(
@@ -70,6 +74,13 @@ void main() {
           expect(activatedWithStack.matchingPath, equals('/products/123'));
         },
       );
+
+      test('should match the longest route first', () {
+        expect(
+          activatedRouteBuilder.build('/products/create').matchingPath,
+          equals('/products/create'),
+        );
+      });
 
       test(
         'should have the correct effective path',

@@ -70,6 +70,7 @@ void main() {
         expect(router.history.currentRoute.pathParams['id'], equals('5'));
       });
     });
+
     group('replace', () {
       testWidgets('Should render next page', (tester) async {
         await tester.pumpWidget(TestApp(router: router));

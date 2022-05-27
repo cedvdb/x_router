@@ -4,7 +4,7 @@ import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
-import 'x_children_routes.dart';
+import 'x_child_router_config.dart';
 import 'x_page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user

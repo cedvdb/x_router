@@ -38,7 +38,7 @@ class XRoutePattern {
       }
       return segment;
     });
-    return '/' + segments.join('/');
+    return '/${segments.join('/')}';
   }
 
   /// parses path against this route pattern
@@ -90,19 +90,18 @@ class XRoutePattern {
       pathParameters: params,
       path: path,
       patternPath: _uri.path,
-      matchingPath: '/' + matchingSegments.join('/'),
+      matchingPath: '/${matchingSegments.join('/')}',
       queryParameters: Uri.parse(path).queryParameters,
     );
   }
 
   /// sanitize path by removing leading and trailing spaces and backslashes
   static String sanitize(String path) {
-    path = '/' +
-        path
-            // remove leading and trailing spaces
-            .replaceAll(RegExp(r'^\s+|\s+$'), '')
-            // remove leading and trailing slashes
-            .replaceAll(RegExp(r'^\/+|\/+$'), '');
+    path = '/${path
+        // remove leading and trailing spaces
+        .replaceAll(RegExp(r'^\s+|\s+$'), '')
+        // remove leading and trailing slashes
+        .replaceAll(RegExp(r'^\/+|\/+$'), '')}';
     return Uri.encodeFull(path);
   }
 

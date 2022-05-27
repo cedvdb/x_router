@@ -1,3 +1,7 @@
+## [0.1.4] - 27/05/2022
+
+ - inconsequential internal change
+
 ## [0.1.3] - 04/04/2022
 
  - added ByPass Resolver action

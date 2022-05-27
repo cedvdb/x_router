@@ -86,9 +86,7 @@ class XRouter {
       onStateChanged: _refresh,
     );
 
-    _childRouterStore = XChildRouterStore(
-      routes: routes,
-    );
+    _childRouterStore = XChildRouterStore.fromRootRoutes(routes);
     // the page stack (activatedRoute) builder
     _activatedRouteBuilder = XActivatedRouteBuilder(
       routes: routes,

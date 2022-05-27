@@ -6,23 +6,26 @@ import 'package:x_router/x_router.dart';
 /// holds child routers to access their delegate easily
 /// if a route has children routes then it is a child router
 class XChildRouterStore {
-  final Map<String, XChildRouter> _childRouters = {};
+  final Map<String, XChildRouter> _childRouters;
 
-  XChildRouterStore({
-    required List<XRoute> routes,
-  }) {
-    _storeChildRouters(routes);
+  XChildRouterStore._(this._childRouters);
+
+  factory XChildRouterStore.fromRootRoutes(List<XRoute> routes) {
+    final childRouters = <String, XChildRouter>{};
+    _computeChildRoutersMap(routes, childRouters);
+    return XChildRouterStore._(childRouters);
   }
 
-  _storeChildRouters(List<XRoute> routes) {
+  static _computeChildRoutersMap(
+      List<XRoute> routes, Map<String, XChildRouter> childRouters) {
     for (final route in routes) {
       final children = route.childRouterConfig;
       if (children != null) {
-        _childRouters[route.path] = XChildRouter(
+        childRouters[route.path] = XChildRouter(
           basePath: route.path,
           routes: children.routes,
         );
-        _storeChildRouters(children.routes);
+        _computeChildRoutersMap(children.routes, childRouters);
       }
     }
   }
