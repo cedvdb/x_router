@@ -35,7 +35,6 @@ class XActivatedRouteBuilder {
     }
     // path that also match path from active routes of child router
     final effectivePath = route.computeDeepestMatchingPath(target);
-
     final upstack = matchings
         .map(
           (parentRoute) => _toActivatedRoute(

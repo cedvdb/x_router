@@ -1,3 +1,7 @@
+## [0.1.5] - 29/05/2022
+
+ - Fix issue where first declared routes in child router were matched first.
+
 ## [0.1.4] - 27/05/2022
 
  - inconsequential internal change

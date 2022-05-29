@@ -41,6 +41,10 @@ void main() {
                   path: '/products/:id/comments',
                   builder: (_, __) => Container(),
                 ),
+                XRoute(
+                  path: '/products/:id/info/longer',
+                  builder: (_, __) => Container(),
+                ),
               ],
             ),
           ),
@@ -75,13 +79,6 @@ void main() {
         },
       );
 
-      test('should match the longest route first', () {
-        expect(
-          activatedRouteBuilder.build('/products/create').matchingPath,
-          equals('/products/create'),
-        );
-      });
-
       test(
         'should have the correct effective path',
         () {
@@ -92,6 +89,19 @@ void main() {
               equals('/products/123/info'));
         },
       );
+
+      test('should match the longest route first', () {
+        expect(
+          activatedRouteBuilder.build('/products/create').effectivePath,
+          equals('/products/create'),
+        );
+        expect(
+          activatedRouteBuilder
+              .build('/products/123/info/longer')
+              .effectivePath,
+          equals('/products/123/info/longer'),
+        );
+      });
 
       test('should have the correct parameters', () {
         expect(activatedWithStack.pathParams['id'], equals('123'));

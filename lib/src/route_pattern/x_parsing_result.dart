@@ -41,7 +41,7 @@ class XParsingResult with EquatableMixin {
 
   @override
   String toString() {
-    return 'ParsingResult(path: $path, pattern: $patternPath, matches: $matches, pathParameters: $pathParameters)';
+    return 'ParsingResult(path: $path, matchingPath: $matchingPath, pattern: $patternPath, matches: $matches, pathParameters: $pathParameters, queryParameters: $queryParameters)';
   }
 
   @override
