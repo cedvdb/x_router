@@ -128,6 +128,8 @@ class XRoute {
       path: path,
       builder: builder ?? this.builder,
       isAddedToUpstack: isAddedToUpstack,
+      childRouterConfig: childRouterConfig,
+      titleBuilder: titleBuilder,
     );
   }
 

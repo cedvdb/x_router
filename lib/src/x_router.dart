@@ -119,7 +119,7 @@ class XRouter {
     if (_history.currentRoute.upstack.isNotEmpty) {
       final up = _history.currentRoute.upstack.first;
       _navigate(
-        up.matchingPath,
+        up.effectivePath,
         up.pathParams,
       );
     }
@@ -130,7 +130,7 @@ class XRouter {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
       _navigate(
-        previousRoute.matchingPath,
+        previousRoute.effectivePath,
         previousRoute.pathParams,
         removeHistoryThrough: previousRoute,
       );
@@ -140,7 +140,7 @@ class XRouter {
   /// alias for goTo(currentUrl)
   void _refresh() {
     _navigate(
-      _history.currentRoute.matchingPath,
+      _history.currentRoute.effectivePath,
       _history.currentRoute.pathParams,
     );
   }

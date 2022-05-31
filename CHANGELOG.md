@@ -1,3 +1,8 @@
+
+## [0.1.6] - 31/05/2022
+
+ - Fix issue where child router would refresh on parent router path.
+
 ## [0.1.5] - 29/05/2022
 
  - Fix issue where first declared routes in child router were matched first.
