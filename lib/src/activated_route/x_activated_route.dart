@@ -3,7 +3,8 @@ import 'package:flutter/widgets.dart';
 
 import '../../x_router.dart';
 
-/// Holds information about the currently displayed route and its downStack
+/// Holds information about the currently displayed route and its underneath
+/// stack
 class XActivatedRoute with EquatableMixin {
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;

@@ -25,15 +25,15 @@ void main() {
 
     group('findDelegates', () {
       test('should find router delegates', () {
-        expect(store.findDelegate('/parent'), isA<XRouterDelegate>());
+        expect(store.findChild('/parent'), isA<XRouterDelegate>());
       });
 
       test('should throw when none is found', () {
-        expect(() => store.findDelegate('/not_parent'),
+        expect(() => store.findChild('/not_parent'),
             throwsA(isA<XRouterException>()));
-        expect(() => store.findDelegate('/child'),
-            throwsA(isA<XRouterException>()));
-        expect(() => store.findDelegate('/parent/child'),
+        expect(
+            () => store.findChild('/child'), throwsA(isA<XRouterException>()));
+        expect(() => store.findChild('/parent/child'),
             throwsA(isA<XRouterException>()));
       });
     });

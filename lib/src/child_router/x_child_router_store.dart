@@ -30,13 +30,13 @@ class XChildRouterStore {
     }
   }
 
-  XRouterDelegate findDelegate(String path) {
+  XChildRouter findChild(String path) {
     final childRouter = _childRouters[path];
     if (childRouter == null) {
       throw XRouterException(
           description:
               'The path $path has not been configured as a child router');
     }
-    return childRouter.delegate;
+    return childRouter;
   }
 }
