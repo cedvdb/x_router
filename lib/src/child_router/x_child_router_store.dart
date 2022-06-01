@@ -17,7 +17,9 @@ class XChildRouterStore {
   }
 
   static _computeChildRoutersMap(
-      List<XRoute> routes, Map<String, XChildRouter> childRouters) {
+    List<XRoute> routes,
+    Map<String, XChildRouter> childRouters,
+  ) {
     for (final route in routes) {
       final children = route.children;
       childRouters[route.path] = XChildRouter(
