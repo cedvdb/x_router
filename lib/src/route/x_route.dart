@@ -132,8 +132,4 @@ class XRoute {
       titleBuilder: titleBuilder,
     );
   }
-
-  /// finds resolvers present in child routes
-  List<XResolver> findChildResolvers() =>
-      childRouterConfig?.findAllResolvers() ?? [];
 }

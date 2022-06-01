@@ -75,15 +75,9 @@ class XRouter {
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
   }) {
-    final allResolvers = [...resolvers];
-
-    for (final route in routes) {
-      allResolvers.addAll(route.findChildResolvers());
-    }
-
     _resolver = XRouterResolver(
       onEvent: _eventEmitter.addEvent,
-      resolvers: allResolvers,
+      resolvers: resolvers,
       onStateChanged: _refresh,
     );
 

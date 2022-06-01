@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
-class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
+class XRouterDelegate extends RouterDelegate<String>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin {
   @override
-  late GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   String? get currentConfiguration {
@@ -80,17 +81,6 @@ class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
         ),
       );
     }
-  }
-
-  @override
-  Future<bool> popRoute() async {
-    print('navigatorKey: $navigatorKey');
-    final NavigatorState? navigator = navigatorKey?.currentState;
-    if (navigator == null) {
-      return SynchronousFuture<bool>(false);
-    }
-    navigator.pop();
-    return true;
   }
 
   pop() {
