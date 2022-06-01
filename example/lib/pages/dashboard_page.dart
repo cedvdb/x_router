@@ -1,3 +1,4 @@
+import 'package:example/main.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
