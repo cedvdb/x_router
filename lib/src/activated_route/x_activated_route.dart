@@ -26,8 +26,8 @@ class XActivatedRoute with EquatableMixin {
   /// queryParameters = { 'orderBy': 'creationDate' }
   final Map<String, String> queryParams;
 
-  /// the parents matching routes, the downStack
-  final List<XActivatedRoute> downStack;
+  /// the parents matching routes, the poppableStack
+  final List<XActivatedRoute> poppableStack;
 
   /// the requested path matched against children route or if none, this route
 
@@ -38,7 +38,7 @@ class XActivatedRoute with EquatableMixin {
     required this.effectivePath,
     this.pathParams = const {},
     this.queryParams = const {},
-    this.downStack = const [],
+    this.poppableStack = const [],
   });
 
   // Used as a placeholder at the start of the app to
@@ -60,7 +60,7 @@ class XActivatedRoute with EquatableMixin {
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, downStack.length: ${downStack.length})';
+    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, poppableStack.length: ${poppableStack.length})';
   }
 
   @override
@@ -70,6 +70,6 @@ class XActivatedRoute with EquatableMixin {
         matchingPath,
         pathParams,
         queryParams,
-        downStack,
+        poppableStack,
       ];
 }

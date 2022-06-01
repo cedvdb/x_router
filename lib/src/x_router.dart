@@ -19,7 +19,7 @@ import 'route/x_page_builder.dart';
 // The process of navigation goes like this:
 // 1. parse target url
 // 2. resolve target url into maybe another (redirect)
-// 3. build the page stack (downStack)
+// 3. build the page stack (poppableStack)
 // 4. add to history
 // 5. render
 
@@ -102,8 +102,8 @@ class XRouter {
 
   /// goes to a location and adds it to the history
   ///
-  /// The downStack is generated with the url, if the url is /route1/route2
-  /// the downStack will be [Route1Page, Route2Page]
+  /// The poppableStack is generated with the url, if the url is /route1/route2
+  /// the poppableStack will be [Route1Page, Route2Page]
   void goTo(String target, {Map<String, String>? params}) {
     _eventEmitter.emit(
       NavigationStart(
@@ -128,8 +128,8 @@ class XRouter {
   /// Usually this method is called by flutter. Consider using [back]
   /// to go back chronologically
   void pop() {
-    if (_history.currentRoute.downStack.isNotEmpty) {
-      final up = _history.currentRoute.downStack.first;
+    if (_history.currentRoute.poppableStack.isNotEmpty) {
+      final up = _history.currentRoute.poppableStack.first;
       _navigate(
         up.effectivePath,
         up.pathParams,

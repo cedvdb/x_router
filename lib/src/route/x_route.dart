@@ -20,14 +20,14 @@ import 'x_page_builder.dart';
 /// {@template resolvers}
 /// The list of [resolvers] that are active for this specific route.
 /// In those resolvers, the target will always be matching the route and
-/// children if [isAddedToDownStack] is true.
+/// children if [isAddedToPoppableStack] is true.
 /// {@endtemplate}
 ///
-/// {@template isAddedToDownStack}
-/// The [isAddedToDownStack] represents whether the route will be added to
-/// the downStack when accessing longer paths.
+/// {@template isAddedToPoppableStack}
+/// The [isAddedToPoppableStack] represents whether the route will be added to
+/// the poppableStack when accessing longer paths.
 ///
-/// By default isAddedToDownStack is true, meaning that when we go to:
+/// By default isAddedToPoppableStack is true, meaning that when we go to:
 /// `/products/:id`, the routes `/`, `/products` and `/products/:id` will be in the navigator
 /// up stack when displaying `/products/123`. A little arrow ⬅ will be displayed in the app bar
 /// to go up the stack to `/products` then `/`.
@@ -45,8 +45,8 @@ class XRoute {
   /// {@macro builder}
   final XPageBuilder builder;
 
-  /// {@macro isAddedToDownStack}
-  final bool isAddedToDownStack;
+  /// {@macro isAddedToPoppableStack}
+  final bool isAddedToPoppableStack;
 
   /// browser tab title
   final XTitleBuilder? titleBuilder;
@@ -62,7 +62,7 @@ class XRoute {
     this.children = const [],
     this.pageKey,
     this.titleBuilder,
-    this.isAddedToDownStack = true,
+    this.isAddedToPoppableStack = true,
   }) : _parser = XRoutePattern(path);
 
   /// given a path, computes the depest match that could be found
@@ -103,18 +103,18 @@ class XRoute {
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
   bool match(String path) {
-    return _parser.match(path, matchChildren: isAddedToDownStack);
+    return _parser.match(path, matchChildren: isAddedToPoppableStack);
   }
 
   /// parses a path against this route
   /// the [path] is the path to be matched against this route
   XParsingResult parse(String path) {
-    return _parser.parse(path, matchChildren: isAddedToDownStack);
+    return _parser.parse(path, matchChildren: isAddedToPoppableStack);
   }
 
   @override
   String toString() {
-    return 'XRoute(path: $path, matchChildren: $isAddedToDownStack, $builder: ${builder.runtimeType})';
+    return 'XRoute(path: $path, matchChildren: $isAddedToPoppableStack, $builder: ${builder.runtimeType})';
   }
 
   XRoute copyWithBuilder({
@@ -124,7 +124,7 @@ class XRoute {
       pageKey: null,
       path: path,
       builder: builder ?? this.builder,
-      isAddedToDownStack: isAddedToDownStack,
+      isAddedToPoppableStack: isAddedToPoppableStack,
       children: children,
       titleBuilder: titleBuilder,
     );

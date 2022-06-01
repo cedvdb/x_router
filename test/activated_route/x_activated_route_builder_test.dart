@@ -18,7 +18,7 @@ void main() {
           XRoute(
             path: '/',
             builder: (_, __) => Container(),
-            isAddedToDownStack: false,
+            isAddedToPoppableStack: false,
           ),
           XRoute(
             path: '/products',
@@ -111,10 +111,10 @@ void main() {
         expect(route.queryParams['orderBy'], equals('creationDate'));
       });
 
-      test('should have the correct downStack', () {
-        expect(activatedNoMatchDown.downStack.length, equals(0));
-        expect(activatedMatchDown.downStack.length, equals(0));
-        expect(activatedWithStack.downStack.length, equals(1));
+      test('should have the correct poppableStack', () {
+        expect(activatedNoMatchDown.poppableStack.length, equals(0));
+        expect(activatedMatchDown.poppableStack.length, equals(0));
+        expect(activatedWithStack.poppableStack.length, equals(1));
       });
     });
   });

@@ -32,15 +32,15 @@ class XRouterDelegate extends RouterDelegate<String>
   @override
   Widget build(BuildContext context) {
     final pages = [
-      // downStack
-      ..._activatedRoute.downStack.map((r) => _buildPage(context, r)),
+      // poppableStack
+      ..._activatedRoute.poppableStack.map((r) => _buildPage(context, r)),
       // top
       _buildPage(context, _activatedRoute)
     ];
     _setBrowserTitle(context);
     return BackButtonListener(
       onBackButtonPressed: () {
-        if (_activatedRoute.downStack.isEmpty) {
+        if (_activatedRoute.poppableStack.isEmpty) {
           popRoute();
         } else {
           pop();
@@ -84,8 +84,8 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   pop() {
-    if (_activatedRoute.downStack.isNotEmpty) {
-      setNewRoutePath(_activatedRoute.downStack.last.matchingPath);
+    if (_activatedRoute.poppableStack.isNotEmpty) {
+      setNewRoutePath(_activatedRoute.poppableStack.last.matchingPath);
     }
   }
 
