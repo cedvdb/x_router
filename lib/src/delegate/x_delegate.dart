@@ -51,10 +51,14 @@ class XRouterDelegate extends RouterDelegate<String>
       key: navigatorKey,
       pages: pages,
       onPopPage: (route, res) {
-        print('popping child');
-        // pop();
-        // return route.didPop(res);
-        return false;
+        if (!_isRoot) {
+          final parentCtx =
+              context.findAncestorStateOfType<NavigatorState>()!.context;
+          // Navigator.of(parentCtx).pop(res);
+          return false;
+        }
+        pop();
+        return route.didPop(res);
       },
     );
   }
