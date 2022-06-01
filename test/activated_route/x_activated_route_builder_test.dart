@@ -31,22 +31,20 @@ void main() {
           XRoute(
             path: '/products/:id',
             builder: (_, __) => Container(),
-            childRouterConfig: XChildRouterConfig(
-              routes: [
-                XRoute(
-                  path: '/products/:id/info',
-                  builder: (_, __) => Container(),
-                ),
-                XRoute(
-                  path: '/products/:id/comments',
-                  builder: (_, __) => Container(),
-                ),
-                XRoute(
-                  path: '/products/:id/info/longer',
-                  builder: (_, __) => Container(),
-                ),
-              ],
-            ),
+            children: [
+              XRoute(
+                path: '/products/:id/info',
+                builder: (_, __) => Container(),
+              ),
+              XRoute(
+                path: '/products/:id/comments',
+                builder: (_, __) => Container(),
+              ),
+              XRoute(
+                path: '/products/:id/info/longer',
+                builder: (_, __) => Container(),
+              ),
+            ],
           ),
           XRoute(
             path: '/preferences',

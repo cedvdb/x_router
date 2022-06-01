@@ -40,32 +40,30 @@ final _routes = [
     path: RouteLocations.app,
     builder: (ctx, route) => const HomeLayout(),
     // those page will be placed inside the home layout page
-    childRouterConfig: XChildRouterConfig(
-      routes: [
-        XRoute(
-          path: RouteLocations.dashboard,
-          builder: (ctx, route) => const DashboardPage(),
-          titleBuilder: (_) => 'dashboard',
-        ),
-        XRoute(
-          path: RouteLocations.favorites,
-          builder: (ctx, route) => const FavoritesPage(),
-          titleBuilder: (_) => 'My favorites',
-        ),
-        XRoute(
-          path: RouteLocations.products,
-          builder: (ctx, route) {
-            return const ProductsPage();
-          },
-          titleBuilder: (_) => 'products',
-        ),
-        XRoute(
-          path: RouteLocations.productDetail,
-          builder: (ctx, activatedRoute) =>
-              ProductDetailsPage(activatedRoute.pathParams['id']!),
-        ),
-      ],
-    ),
+    children: [
+      XRoute(
+        path: RouteLocations.dashboard,
+        builder: (ctx, route) => const DashboardPage(),
+        titleBuilder: (_) => 'dashboard',
+      ),
+      XRoute(
+        path: RouteLocations.favorites,
+        builder: (ctx, route) => const FavoritesPage(),
+        titleBuilder: (_) => 'My favorites',
+      ),
+      XRoute(
+        path: RouteLocations.products,
+        builder: (ctx, route) {
+          return const ProductsPage();
+        },
+        titleBuilder: (_) => 'products',
+      ),
+      XRoute(
+        path: RouteLocations.productDetail,
+        builder: (ctx, activatedRoute) =>
+            ProductDetailsPage(activatedRoute.pathParams['id']!),
+      ),
+    ],
   ),
 ];
 

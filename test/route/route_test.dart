@@ -8,14 +8,12 @@ void main() {
       final route = XRoute(
         path: '/parent',
         builder: (_, __) => Container(),
-        childRouterConfig: XChildRouterConfig(
-          routes: [
-            XRoute(
-              path: '/parent/child',
-              builder: (_, __) => Container(),
-            )
-          ],
-        ),
+        children: [
+          XRoute(
+            path: '/parent/child',
+            builder: (_, __) => Container(),
+          )
+        ],
       );
       expect(
         route.computeDeepestMatchingPath('/parent'),

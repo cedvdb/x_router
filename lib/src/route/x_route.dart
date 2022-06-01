@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/route_pattern/x_parsing_result.dart';
 import 'package:x_router/src/route_pattern/x_route_pattern.dart';
 
-import 'x_child_router_config.dart';
 import 'x_page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user
@@ -53,15 +51,15 @@ class XRoute {
   /// browser tab title
   final XTitleBuilder? titleBuilder;
 
-  /// for nested routing
-  final XChildRouterConfig? childRouterConfig;
+  /// for nested routers
+  final children;
 
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
-    this.childRouterConfig,
+    this.children,
     this.pageKey,
     this.titleBuilder,
     this.isAddedToDownStack = true,
@@ -73,8 +71,7 @@ class XRoute {
     final parseResult = parse(path);
     var effectivePath = parseResult.matchingPath;
 
-    final childRoutes = childRouterConfig?.routes;
-    final hasChildRoutes = childRoutes != null;
+    final hasChildRoutes = children != null;
     final isSamePath = path == this.path;
     // we need to find the longest path that matches
     // so if there is no child route or the path is the same as this one there
@@ -92,7 +89,7 @@ class XRoute {
   }
 
   XRoute? _getChildMatch(String path) {
-    final childRoutes = childRouterConfig?.routes ?? [];
+    final childRoutes = children;
     // check if there is a match in childs
     try {
       // sort longest first
@@ -128,7 +125,7 @@ class XRoute {
       path: path,
       builder: builder ?? this.builder,
       isAddedToDownStack: isAddedToDownStack,
-      childRouterConfig: childRouterConfig,
+      children: children,
       titleBuilder: titleBuilder,
     );
   }

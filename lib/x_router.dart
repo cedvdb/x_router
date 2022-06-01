@@ -4,7 +4,6 @@ library x_router;
 
 export 'src/x_router.dart';
 export 'src/route/x_route.dart';
-export 'src/route/x_child_router_config.dart';
 export 'src/route_pattern/x_parsing_result.dart';
 export 'src/route_pattern/x_route_pattern.dart';
 export 'src/events/x_router_events.dart';

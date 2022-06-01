@@ -50,11 +50,11 @@ class XRouterDelegate extends RouterDelegate<String>
     return BackButtonListener(
       onBackButtonPressed: () {
         if (_activatedRoute.downStack.isEmpty) {
-          return SynchronousFuture(true);
+          popRoute();
         } else {
           pop();
-          return SynchronousFuture(false);
         }
+        return SynchronousFuture(false);
       },
       child: Navigator(
         key: navigatorKey,

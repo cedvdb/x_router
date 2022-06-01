@@ -50,22 +50,20 @@ XRouter createTestRouter({List<XResolver> resolvers = const []}) {
             router: router,
           ),
         ),
-        childRouterConfig: XChildRouterConfig(
-          routes: [
-            XRoute(
-              path: RouteLocation.productDetailsInfo,
-              builder: (_, __) => Container(
-                key: const ValueKey(RouteLocation.productDetailsInfo),
-              ),
+        children: [
+          XRoute(
+            path: RouteLocation.productDetailsInfo,
+            builder: (_, __) => Container(
+              key: const ValueKey(RouteLocation.productDetailsInfo),
             ),
-            XRoute(
-              path: RouteLocation.productDetailsComments,
-              builder: (_, __) => Container(
-                key: const ValueKey(RouteLocation.productDetailsComments),
-              ),
+          ),
+          XRoute(
+            path: RouteLocation.productDetailsComments,
+            builder: (_, __) => Container(
+              key: const ValueKey(RouteLocation.productDetailsComments),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ],
   );
