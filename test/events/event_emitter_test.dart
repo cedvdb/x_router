@@ -20,8 +20,8 @@ void main() {
           ],
         ),
       );
-      emitter.addEvent(const NavigationStart(target: '', params: {}));
-      emitter.addEvent(
+      emitter.emit(const NavigationStart(target: '', params: {}));
+      emitter.emit(
         NavigationEnd(
           activatedRoute: activatedRoute,
           target: '',

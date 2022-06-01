@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/events/x_event_emitter.dart';
+import 'package:x_router/src/events/x_router_events.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
@@ -18,8 +20,7 @@ class XRouterDelegate extends RouterDelegate<String>
     return null;
   }
 
-  /// callback called when the os receive a new route
-  final Function(String) onNewRoute;
+  final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
@@ -29,7 +30,6 @@ class XRouterDelegate extends RouterDelegate<String>
   final bool _isRoot;
 
   XRouterDelegate({
-    required this.onNewRoute,
     bool isRoot = true,
   }) : _isRoot = isRoot;
 
@@ -47,19 +47,24 @@ class XRouterDelegate extends RouterDelegate<String>
       _buildPage(context, _activatedRoute)
     ];
     _setBrowserTitle(context);
-    return Navigator(
-      key: navigatorKey,
-      pages: pages,
-      onPopPage: (route, res) {
-        if (!_isRoot) {
-          final parentCtx =
-              context.findAncestorStateOfType<NavigatorState>()!.context;
-          // Navigator.of(parentCtx).pop(res);
-          return false;
+    return BackButtonListener(
+      onBackButtonPressed: () {
+        if (_activatedRoute.downStack.isEmpty) {
+          return SynchronousFuture(true);
+        } else {
+          pop();
+          return SynchronousFuture(false);
         }
-        pop();
-        return route.didPop(res);
       },
+      child: Navigator(
+        key: navigatorKey,
+        pages: pages,
+        onPopPage: (route, res) {
+          pop();
+          route.didPop(res);
+          return false;
+        },
+      ),
     );
   }
 
@@ -95,7 +100,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) {
-    onNewRoute(configuration);
+    _eventEmitter.emit(NavigationStart(target: configuration));
     return SynchronousFuture(null);
   }
 }

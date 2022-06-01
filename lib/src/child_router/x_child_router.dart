@@ -12,7 +12,6 @@ class XChildRouter {
   /// renderer
   late final XRouterDelegate delegate = XRouterDelegate(
     isRoot: false,
-    onNewRoute: (path) => {},
   );
 
   final XEventEmitter _eventEmitter = XEventEmitter.instance;

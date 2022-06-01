@@ -92,7 +92,7 @@ final router = XRouter(
 );
 
 void main() async {
-  // router.eventStream.listen((event) => print(event));
+  router.eventStream.listen((event) => print(event));
   runApp(const MyApp());
 }
 
@@ -104,6 +104,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: router.informationParser,
       routerDelegate: router.delegate,
+      backButtonDispatcher: RootBackButtonDispatcher(),
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData.from(

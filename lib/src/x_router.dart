@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
@@ -48,10 +50,7 @@ class XRouter {
   RouteInformationParser<String> get informationParser => _informationParser;
 
   /// renderer
-  late final XRouterDelegate _delegate = XRouterDelegate(
-    // new route detected by the OS
-    onNewRoute: (path) => goTo(path),
-  );
+  late final XRouterDelegate _delegate = XRouterDelegate();
   RouterDelegate<String> get delegate => _delegate;
 
   late final RouteInformationProvider informationProvider =
@@ -71,12 +70,25 @@ class XRouter {
   late final XChildRouterStore _childRouterStore;
   XChildRouterStore get childRouterStore => _childRouterStore;
 
+  StreamSubscription? _eventStreamSubscription;
+
   XRouter({
     required List<XRoute> routes,
     List<XResolver> resolvers = const [],
   }) {
+    _eventStreamSubscription = _eventEmitter.eventStream
+        .where((event) => event is NavigationStart)
+        .cast<NavigationStart>()
+        .listen(
+          (event) => _navigate(
+            event.target,
+            event.params,
+            removeHistoryThrough: event.removeHistoryThrough,
+          ),
+        );
+
     _resolver = XRouterResolver(
-      onEvent: _eventEmitter.addEvent,
+      onEvent: _eventEmitter.emit,
       resolvers: resolvers,
       onStateChanged: _refresh,
     );
@@ -93,7 +105,12 @@ class XRouter {
   /// The downStack is generated with the url, if the url is /route1/route2
   /// the downStack will be [Route1Page, Route2Page]
   void goTo(String target, {Map<String, String>? params}) {
-    _navigate(target, params);
+    _eventEmitter.emit(
+      NavigationStart(
+        target: target,
+        params: params,
+      ),
+    );
   }
 
   /// replace the current history route
@@ -145,11 +162,6 @@ class XRouter {
     Map<String, String>? params, {
     XActivatedRoute? removeHistoryThrough,
   }) {
-    _eventEmitter.addEvent(NavigationStart(
-      target: target,
-      params: params,
-      removeHistoryThrough: removeHistoryThrough,
-    ));
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
     final activatedRoute = _buildActivatedRoute(
@@ -160,7 +172,7 @@ class XRouter {
     _history.add(activatedRoute);
     _render(activatedRoute);
 
-    _eventEmitter.addEvent(
+    _eventEmitter.emit(
       NavigationEnd(
         activatedRoute: activatedRoute,
         target: target,
@@ -171,19 +183,19 @@ class XRouter {
 
   /// parses an url by setting its parameter
   String _parseUrl(String target, Map<String, String>? params) {
-    _eventEmitter.addEvent(UrlParsingStart(target: target, params: params));
+    _eventEmitter.emit(UrlParsingStart(target: target, params: params));
     // if url starts with ./ then it's relative to current url
     final parser = XRoutePattern.maybeRelative(target, _history.currentUrl);
     final parsed = parser.addParameters(params);
-    _eventEmitter.addEvent(UrlParsingEnd(target: target, parsed: parsed));
+    _eventEmitter.emit(UrlParsingEnd(target: target, parsed: parsed));
     return parsed;
   }
 
   /// goes through all resolvers to see the final endpoint after redirection
   XRouterResolveResult _resolve(String target) {
-    _eventEmitter.addEvent(ResolvingStart(target: target));
+    _eventEmitter.emit(ResolvingStart(target: target));
     final resolved = _resolver.resolve(target);
-    _eventEmitter.addEvent(ResolvingEnd(target: target, result: resolved));
+    _eventEmitter.emit(ResolvingEnd(target: target, result: resolved));
     return resolved;
   }
 
@@ -198,14 +210,14 @@ class XRouter {
     String target, {
     XPageBuilder? builderOverride,
   }) {
-    _eventEmitter.addEvent(BuildStart(target: target));
+    _eventEmitter.emit(BuildStart(target: target));
     final activatedRoute = _activatedRouteBuilder.build(
       target,
       builderOverride: builderOverride,
     );
 
     _eventEmitter
-        .addEvent(BuildEnd(activatedRoute: activatedRoute, target: target));
+        .emit(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
   }
 
@@ -218,6 +230,7 @@ class XRouter {
   /// called because the router should always be active in the
   /// lifecycle of an application
   dispose() {
+    _eventStreamSubscription?.cancel();
     _resolver.dispose();
   }
 }

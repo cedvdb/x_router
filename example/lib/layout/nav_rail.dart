@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
@@ -77,7 +78,7 @@ class _NavRailState extends State<NavRail> {
     return NavigationRail(
       onDestinationSelected: _navigate,
       selectedIndex: _selectedTab,
-      extended: true,
+      extended: kIsWeb,
       destinations: const [
         // material you
         NavigationRailDestination(

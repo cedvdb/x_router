@@ -25,7 +25,7 @@ class NavigationStart extends NavigationEvent {
 
   const NavigationStart({
     required String target,
-    required this.params,
+    this.params = const {},
     this.removeHistoryThrough,
   }) : super(target);
 
@@ -74,7 +74,7 @@ class UrlParsingStart extends UrlParsingEvent {
   List<Object?> get props => [target, params];
 
   @override
-  String toString() => '  UrlParsingStart(target:$target, params: $params,)';
+  String toString() => 'UrlParsingStart(target:$target, params: $params,)';
 }
 
 class UrlParsingEnd extends UrlParsingEvent {
@@ -122,7 +122,7 @@ class BuildStart extends BuildEvent {
   List<Object?> get props => [target];
 
   @override
-  String toString() => '  BuildStart(target: $target)';
+  String toString() => 'BuildStart(target: $target)';
 }
 
 class BuildEnd extends BuildEvent {
@@ -135,7 +135,7 @@ class BuildEnd extends BuildEvent {
 
   @override
   String toString() =>
-      '  BuildEnd(target: $target, activatedRoute: $activatedRoute)';
+      'BuildEnd(target: $target, activatedRoute: $activatedRoute)';
 
   @override
   List<Object?> get props => [target, activatedRoute];

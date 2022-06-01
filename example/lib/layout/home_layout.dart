@@ -10,16 +10,25 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const NavRail(),
-        Expanded(
-          child: Router(
-            routerDelegate:
-                router.childRouterStore.findDelegate(RouteLocations.app),
+    return Container(
+      color: Theme.of(context).colorScheme.background,
+      child: SafeArea(
+        child: Scaffold(
+          body: Row(
+            children: [
+              const NavRail(),
+              Expanded(
+                child: Router(
+                  routerDelegate:
+                      router.childRouterStore.findDelegate(RouteLocations.app),
+                  backButtonDispatcher: ChildBackButtonDispatcher(
+                      Router.of(context).backButtonDispatcher!),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
