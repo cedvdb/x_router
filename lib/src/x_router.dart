@@ -45,13 +45,14 @@ class XRouter {
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.
   final XRouteInformationParser _informationParser = XRouteInformationParser();
-  XRouteInformationParser get informationParser => _informationParser;
+  RouteInformationParser<String> get informationParser => _informationParser;
 
   /// renderer
-  late final XRouterDelegate delegate = XRouterDelegate(
+  late final XRouterDelegate _delegate = XRouterDelegate(
     // new route detected by the OS
     onNewRoute: (path) => goTo(path),
   );
+  RouterDelegate<String> get delegate => _delegate;
 
   late final RouteInformationProvider informationProvider =
       PlatformRouteInformationProvider(
@@ -216,7 +217,7 @@ class XRouter {
 
   /// renders page stack on screen
   void _render(XActivatedRoute activatedRoute) {
-    delegate.render(activatedRoute);
+    _delegate.render(activatedRoute);
   }
 
   /// dispose of this router, usually that method is never

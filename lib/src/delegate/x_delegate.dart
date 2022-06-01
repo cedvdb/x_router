@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/activated_route/x_activated_route.dart';
 
-class XRouterDelegate extends RouterDelegate<String>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
+class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
   @override
   late GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -51,8 +50,9 @@ class XRouterDelegate extends RouterDelegate<String>
       key: navigatorKey,
       pages: pages,
       onPopPage: (route, res) {
-        pop();
-        return route.didPop(res);
+        // pop();
+        route.didPop(res);
+        return false;
       },
     );
   }
@@ -79,6 +79,17 @@ class XRouterDelegate extends RouterDelegate<String>
         ),
       );
     }
+  }
+
+  @override
+  Future<bool> popRoute() async {
+    print('navigatorKey: $navigatorKey');
+    final NavigatorState? navigator = navigatorKey?.currentState;
+    if (navigator == null) {
+      return SynchronousFuture<bool>(false);
+    }
+    navigator.pop();
+    return false;
   }
 
   pop() {

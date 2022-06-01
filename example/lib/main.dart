@@ -11,11 +11,8 @@ import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
-import 'pages/sign_in_page.dart';
-
 /// This example features a complex
 /// app navigation system with child routing
-/// tab navigation
 ///
 /// Most apps don't need all these features
 /// but despite the complexity the example
@@ -23,12 +20,14 @@ import 'pages/sign_in_page.dart';
 
 /// all the locations in the app
 class RouteLocations {
-  static const home = '/app';
-  static const dashboard = '$home/dashboard';
-  static const products = '$home/products';
-  static const favorites = '$home/favorites';
-  static const preferences = '$home/preferences';
-  static const productDetail = '$home/products/:id';
+  // this is the main page which will show the navigation
+  // the other pages are displayed inside that page above the nav
+  static const app = '/app';
+  static const dashboard = '$app/dashboard';
+  static const products = '$app/products';
+  static const favorites = '$app/favorites';
+  static const preferences = '$app/preferences';
+  static const productDetail = '$app/products/:id';
   static const productInfo = '$productDetail/info';
   static const productComments = '$productDetail/comments';
   static const signIn = '/sign-in';
@@ -38,38 +37,41 @@ class RouteLocations {
 final _routes = [
   XRoute(
     path: RouteLocations.signIn,
-    builder: (ctx, route) => SignInPage(),
+    builder: (ctx, activatedRoute) => SignInPage(),
     titleBuilder: (ctx) => 'sign in ! (Browser tab title)',
   ),
   XRoute(
     path: RouteLocations.preferences,
-    builder: (ctx, route) => const PreferencesPage(),
+    builder: (ctx, activatedRoute) => const PreferencesPage(),
     titleBuilder: (ctx) => translate(ctx, 'preferences'),
   ),
   XRoute(
+      path: RouteLocations.app,
+      builder: (context, activatedRoute) => HomeLayout(child: child)),
+  XRoute(
     path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(
+    builder: (ctx, activatedRoute) => const HomeLayout(
       child: DashboardPage(),
     ),
     titleBuilder: (_) => 'dashboard',
   ),
   XRoute(
     path: RouteLocations.products,
-    builder: (ctx, route) => const HomeLayout(
+    builder: (ctx, activatedRoute) => const HomeLayout(
       child: ProductsPage(),
     ),
     titleBuilder: (_) => 'products',
   ),
   XRoute(
     path: RouteLocations.favorites,
-    builder: (ctx, route) => const HomeLayout(
+    builder: (ctx, activatedRoute) => const HomeLayout(
       child: FavoritesPage(),
     ),
     titleBuilder: (_) => 'My favorites',
   ),
   XRoute(
     path: RouteLocations.productDetail,
-    builder: (ctx, route) => HomeLayout(
+    builder: (ctx, activatedRoute) => HomeLayout(
       child: ProductDetailsPage(route.pathParams['id']!),
     ),
     // nested Router !
@@ -96,13 +98,13 @@ final _routes = [
   ),
   // XRoute(
   //   path: RouteLocations.home,
-  //   builder: (ctx, route) => const HomePage(),
+  //   builder: (ctx, activatedRoute) => const HomePage(),
   //   childRouterConfig: XChildRouterConfig(
   //     routes: [
 
   //       // XRoute(
   //       //   path: RouteLocations.productInfo,
-  //       //   builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
+  //       //   builder: (ctx, activatedRoute) => ProductDetailsPage(route.pathParams['id']!),
   //       //   // here is a nested router
   //       //   // childRouterConfig: XChildRouterConfig(
   //       //   //   resolvers: [
@@ -137,7 +139,7 @@ final router = XRouter(
   resolvers: [
     AuthResolver(),
     XRedirectResolver(
-      from: RouteLocations.home,
+      from: RouteLocations.app,
       to: RouteLocations.dashboard,
       matchChildren: false,
     ),
@@ -146,7 +148,7 @@ final router = XRouter(
       to: '${RouteLocations.productDetail}/info',
       matchChildren: false,
     ),
-    XNotFoundResolver(redirectTo: RouteLocations.home, routes: _routes),
+    XNotFoundResolver(redirectTo: RouteLocations.app, routes: _routes),
   ],
   routes: _routes,
 );
@@ -163,7 +165,7 @@ class AuthResolver extends ValueNotifier implements XResolver {
     switch (value) {
       case AuthStatus.authenticated:
         if (target.startsWith(RouteLocations.signIn)) {
-          return const Redirect(RouteLocations.home);
+          return const Redirect(RouteLocations.app);
         } else {
           return const Next();
         }
@@ -203,10 +205,11 @@ class ProductFoundResolver implements XResolver {
 
 void main() async {
   // router.eventStream.listen((event) => print(event));
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
