@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class LoadingPage extends StatelessWidget {
   final String text;
-  const LoadingPage({required this.text});
+  const LoadingPage({super.key, required this.text});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

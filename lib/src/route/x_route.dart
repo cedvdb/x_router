@@ -71,7 +71,7 @@ class XRoute {
     final parseResult = parse(path);
     var effectivePath = parseResult.matchingPath;
 
-    final hasChildRoutes = children != null;
+    final hasChildRoutes = children.isNotEmpty;
     final isSamePath = path == this.path;
     // we need to find the longest path that matches
     // so if there is no child route or the path is the same as this one there

@@ -15,7 +15,7 @@ class ProductsPage extends StatelessWidget {
           for (var product in ProductsService.products)
             ListTile(
               title: Text(product.name),
-              subtitle: Text('\$ ' + product.price.toString()),
+              subtitle: Text('\$ ${product.price}'),
               onTap: () => router.goTo(RouteLocations.productDetail,
                   params: {'id': product.id}),
             )

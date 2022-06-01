@@ -32,7 +32,7 @@ final _routes = [
   // Root router routes
   XRoute(
     path: RouteLocations.signIn,
-    builder: (ctx, route) => SignInPage(),
+    builder: (ctx, route) => const SignInPage(),
     titleBuilder: (ctx) => translate(ctx, 'sign in ! (Browser tab title)'),
   ),
   // this page contains a child router
