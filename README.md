@@ -5,11 +5,10 @@ A simple and powerful routing lib that simplify having multiple child router.
 ## Features
 
   - [Easy navigation](#navigation)
-  - [Async guards / resolvers](#resolvers)
   - [Child routers](#child-router)
+  - [Async guards / resolvers](#resolvers)
   - [Relative navigation](#relative-navigation)
   - [Redirects](#add-redirects)
-  - [Tabs / bottom navigation support](#tabs-and-bottom-navigation-support)
   - [Translated browser tab title](#browser-tab-title)
   - [Url matching](#url-matching)
   - Router history
