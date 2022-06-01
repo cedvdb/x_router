@@ -11,7 +11,7 @@ class DashboardPage extends StatelessWidget {
         title: const Text('dashboard'),
         actions: [
           IconButton(
-              onPressed: () => router.goTo(RouteLocations.preferences),
+              onPressed: () => router.goTo(RouteLocations.account),
               icon: const Icon(Icons.settings))
         ],
       ),

@@ -21,115 +21,53 @@ import 'package:x_router/x_router.dart';
 /// all the locations in the app
 class RouteLocations {
   // this is the main page which will show the navigation
+  static const signIn = '/sign-in';
   // the other pages are displayed inside that page above the nav
   static const app = '/app';
   static const dashboard = '$app/dashboard';
   static const products = '$app/products';
-  static const favorites = '$app/favorites';
-  static const preferences = '$app/preferences';
+  static const account = '$app/preferences';
   static const productDetail = '$app/products/:id';
   static const productInfo = '$productDetail/info';
   static const productComments = '$productDetail/comments';
-  static const signIn = '/sign-in';
 }
 
 /// the routes for each location
 final _routes = [
+  // Root router routes
   XRoute(
     path: RouteLocations.signIn,
-    builder: (ctx, activatedRoute) => SignInPage(),
-    titleBuilder: (ctx) => 'sign in ! (Browser tab title)',
+    builder: (ctx, route) => SignInPage(),
+    titleBuilder: (ctx) => translate(ctx, 'sign in ! (Browser tab title)'),
   ),
   XRoute(
-    path: RouteLocations.preferences,
-    builder: (ctx, activatedRoute) => const PreferencesPage(),
+    path: RouteLocations.account,
+    builder: (ctx, route) => const PreferencesPage(),
     titleBuilder: (ctx) => translate(ctx, 'preferences'),
   ),
   XRoute(
-      path: RouteLocations.app,
-      builder: (context, activatedRoute) => HomeLayout(child: child)),
-  XRoute(
-    path: RouteLocations.dashboard,
-    builder: (ctx, activatedRoute) => const HomeLayout(
-      child: DashboardPage(),
-    ),
-    titleBuilder: (_) => 'dashboard',
+    path: RouteLocations.app,
+    builder: (ctx, route) => const HomeLayout(),
+    childRouterConfig: XChildRouterConfig(routes: [
+      XRoute(
+        path: RouteLocations.dashboard,
+        builder: (ctx, route) => const DashboardPage(),
+        titleBuilder: (_) => 'dashboard',
+      ),
+      XRoute(
+        path: RouteLocations.products,
+        builder: (ctx, route) {
+          return const ProductsPage();
+        },
+        titleBuilder: (_) => 'products',
+      ),
+      XRoute(
+        path: RouteLocations.favorites,
+        builder: (ctx, route) => const FavoritesPage(),
+        titleBuilder: (_) => 'My favorites',
+      ),
+    ]),
   ),
-  XRoute(
-    path: RouteLocations.products,
-    builder: (ctx, activatedRoute) => const HomeLayout(
-      child: ProductsPage(),
-    ),
-    titleBuilder: (_) => 'products',
-  ),
-  XRoute(
-    path: RouteLocations.favorites,
-    builder: (ctx, activatedRoute) => const HomeLayout(
-      child: FavoritesPage(),
-    ),
-    titleBuilder: (_) => 'My favorites',
-  ),
-  XRoute(
-    path: RouteLocations.productDetail,
-    builder: (ctx, activatedRoute) => HomeLayout(
-      child: ProductDetailsPage(route.pathParams['id']!),
-    ),
-    // nested Router !
-    childRouterConfig: XChildRouterConfig(
-      resolvers: [
-        XRedirectResolver(
-          from: RouteLocations.productDetail,
-          to: RouteLocations.productInfo,
-        ),
-      ],
-      routes: [
-        XRoute(
-          path: RouteLocations.productInfo,
-          builder: (_, __) =>
-              const Center(child: Text('info (Displayed via nested router)')),
-        ),
-        XRoute(
-          path: RouteLocations.productComments,
-          builder: (_, __) => const Center(
-              child: Text('comments (Displayed via nested router)')),
-        ),
-      ],
-    ),
-  ),
-  // XRoute(
-  //   path: RouteLocations.home,
-  //   builder: (ctx, activatedRoute) => const HomePage(),
-  //   childRouterConfig: XChildRouterConfig(
-  //     routes: [
-
-  //       // XRoute(
-  //       //   path: RouteLocations.productInfo,
-  //       //   builder: (ctx, activatedRoute) => ProductDetailsPage(route.pathParams['id']!),
-  //       //   // here is a nested router
-  //       //   // childRouterConfig: XChildRouterConfig(
-  //       //   //   resolvers: [
-  //       //   //     XRedirectResolver(
-  //       //   //       from: RouteLocations.productDetail,
-  //       //   //       to: RouteLocations.productInfo,
-  //       //   //     ),
-  //       //   //   ],
-  //       //   //   routes: [
-  //       //   //     XRoute(
-  //       //   //       path: RouteLocations.productInfo,
-  //       //   //       builder: (_, __) => const Center(
-  //       //   //           child: Text('info (Displayed via nested router)')),
-  //       //   //     ),
-  //       //   //     XRoute(
-  //       //   //       path: RouteLocations.productComments,
-  //       //   //       builder: (_, __) => const Center(
-  //       //   //           child: Text('comments (displayed via nested router)')),
-  //       //   //     ),
-  //       //   //   ],
-  //       //   // ),
-  //       // ),
-  //     ],
-  //   ),
-  // ),
 ];
 
 // the router instance used throughout the app,
