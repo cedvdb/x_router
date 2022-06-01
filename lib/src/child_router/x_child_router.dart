@@ -1,44 +1,46 @@
-import 'package:x_router/src/delegate/x_route_information_parser.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/x_router.dart';
+import 'package:flutter/material.dart';
+import 'package:x_router/src/router/base_router.dart';
 
 import '../activated_route/x_activated_route_builder.dart';
 import '../delegate/x_delegate.dart';
+import '../route/x_route.dart';
 
 /// Router that can be used as a child
-class XChildRouter {
+class XChildRouter implements BaseRouter {
+  final BaseRouter _parent;
+
+  @override
+  final List<XRoute> routes;
+
   /// page stack (activatedRoute) builder
-  late final XActivatedRouteBuilder _activatedRouteBuilder;
+  late final XActivatedRouteBuilder _activatedRouteBuilder =
+      XActivatedRouteBuilder(routes: routes);
 
   /// renderer
-  late final XRouterDelegate delegate = XRouterDelegate();
+  late final XRouterDelegate _delegate = XRouterDelegate();
+  @override
+  RouterDelegate get delegate => _delegate;
 
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
-  final XRouteInformationParser parser = XRouteInformationParser();
+  @override
+  final RouteInformationParser<String> informationParser;
 
-  /// the base path is the path where the child router is active
-  final String basePath;
-  late final XRoutePattern _basePattern;
+  @override
+  final RouteInformationProvider informationProvider;
+
+  late final BackButtonDispatcher _backButtonDispatcher =
+      ChildBackButtonDispatcher(_parent.backButtonDispatcher);
+  @override
+  BackButtonDispatcher get backButtonDispatcher => _backButtonDispatcher;
 
   XChildRouter({
-    required this.basePath,
-    required List<XRoute> routes,
-  }) {
-    _basePattern = XRoutePattern(basePath);
-    _activatedRouteBuilder = XActivatedRouteBuilder(routes: routes);
-    // the root resolver listens to navigation start and initialize the resolving
-    // process, the only thing required here is to init the rendering process
-    _eventEmitter.eventStream
-        .where((event) => event is ResolvingEnd)
-        .cast<ResolvingEnd>()
-        .listen((event) => _navigate(event.result.target));
-  }
+    required this.informationParser,
+    required this.informationProvider,
+    required BaseRouter parent,
+    required this.routes,
+  }) : _parent = parent;
 
-  _navigate(String target) {
-    final isNestedRoute = _basePattern.match(target, matchChildren: true);
-    if (isNestedRoute) {
-      final activatedRoute = _activatedRouteBuilder.build(target);
-      delegate.render(activatedRoute);
-    }
+  navigate(String target) {
+    final activatedRoute = _activatedRouteBuilder.build(target);
+    _delegate.render(activatedRoute);
   }
 }

@@ -12,7 +12,8 @@ import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/x_router.dart';
 
-import 'route/x_page_builder.dart';
+import '../route/x_page_builder.dart';
+import 'base_router.dart';
 
 // Note to the reader
 //
@@ -32,7 +33,12 @@ import 'route/x_page_builder.dart';
 ///   - replace
 ///   - back
 ///   - pop (This is usually handled by flutter)
-class XRouter {
+class XRouter implements BaseRouter {
+  @override
+  final List<XRoute> routes;
+
+  final List<XResolver> resolvers;
+
   /// emits the different steps of the navigation
   final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
@@ -40,65 +46,55 @@ class XRouter {
   Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
 
   /// chronological history
-  final XRouterHistory _history = XRouterHistory();
+  final _history = XRouterHistory();
 
   XRouterHistory get history => _history;
 
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.
-  final XRouteInformationParser _informationParser = XRouteInformationParser();
+  final _informationParser = XRouteInformationParser();
+  @override
   RouteInformationParser<String> get informationParser => _informationParser;
 
   /// renderer
-  late final XRouterDelegate _delegate = XRouterDelegate();
+  late final _delegate = XRouterDelegate();
+  @override
   RouterDelegate<String> get delegate => _delegate;
 
-  late final RouteInformationProvider informationProvider =
-      PlatformRouteInformationProvider(
+  late final _informationProvider = PlatformRouteInformationProvider(
     initialRouteInformation: RouteInformation(
       location: history.isEmpty ? null : history.currentUrl,
     ),
   );
+  @override
+  RouteInformationProvider get informationProvider => _informationProvider;
+
+  final _backButtonDispatcher = RootBackButtonDispatcher();
+  @override
+  BackButtonDispatcher get backButtonDispatcher => _backButtonDispatcher;
 
   /// the resolver responsible of resolving a route path (redirects)
-  late final XRouterResolver _resolver;
+  late final XRouterResolver _resolver = XRouterResolver(
+    onEvent: _eventEmitter.emit,
+    resolvers: resolvers,
+    onStateChanged: _refresh,
+  );
 
   /// page stack (activatedRoute) builder
-  late final XActivatedRouteBuilder _activatedRouteBuilder;
+  late final XActivatedRouteBuilder _activatedRouteBuilder =
+      XActivatedRouteBuilder(routes: routes);
 
   /// all child routers
-  late final XChildRouterStore _childRouterStore;
+  late final XChildRouterStore _childRouterStore =
+      XChildRouterStore.fromRootRoutes(routes);
   XChildRouterStore get childRouterStore => _childRouterStore;
 
   StreamSubscription? _eventStreamSubscription;
 
   XRouter({
-    required List<XRoute> routes,
-    List<XResolver> resolvers = const [],
-  }) {
-    _eventStreamSubscription = _eventEmitter.eventStream
-        .where((event) => event is NavigationStart)
-        .cast<NavigationStart>()
-        .listen(
-          (event) => _navigate(
-            event.target,
-            event.params,
-            removeHistoryThrough: event.removeHistoryThrough,
-          ),
-        );
-
-    _resolver = XRouterResolver(
-      onEvent: _eventEmitter.emit,
-      resolvers: resolvers,
-      onStateChanged: _refresh,
-    );
-
-    _childRouterStore = XChildRouterStore.fromRootRoutes(routes);
-    // the page stack (activatedRoute) builder
-    _activatedRouteBuilder = XActivatedRouteBuilder(
-      routes: routes,
-    );
-  }
+    required this.routes,
+    this.resolvers = const [],
+  });
 
   /// goes to a location and adds it to the history
   ///
@@ -171,7 +167,7 @@ class XRouter {
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
     _render(activatedRoute);
-
+    _childRouterStore.findChild(path).navigate(resolved);
     _eventEmitter.emit(
       NavigationEnd(
         activatedRoute: activatedRoute,
