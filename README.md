@@ -28,7 +28,7 @@ A simple and powerful routing lib that simplify having multiple child router.
 One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the browser arrow ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an down button, usually the icon ⬅ at the top of the app bar, to navigate down in the stack of pages that are superimposed on each others. In this doc, the word **downstack** is used to refer to the stack of pages accessible when pressing ⬅ and popping the current page.
 (for more information see https://developer.android.com/guide/navigation/navigation-principles)
 
-The main idea of this package is that the __downstack is a function of the url__ 
+One of the design decision idea of this package is that the __downstack is a function of the url__ 
 
 That is that for an url like `/products/123` we have a stack of two pages `[ProductsPage, ProductsDetailsPage]` by default.
 
@@ -72,8 +72,8 @@ For navigation you can use the `goTo(location)` method:
 
   - `goTo`: goes to location adding the target to history 
   - `replace`: removes current location from history and `goTo` location
-  - `pop`: if downstack is not empty `goTo` first location in downstack
-  - `back`: go back chronologically
+  - `pop`: if downstack is not empty `goTo` first location in downstack, else does nothing
+  - `back`: go back chronologically 
 
 
 #### Relative navigation
@@ -143,7 +143,7 @@ XRouter(
   resolvers: [
     XNotFoundResolver(redirectTo: '/'),
     XRedirectResolver(from: '/', to: 'dashboard'),
-    MyAuthGuard()
+    AuthResolver()
   ],
   routes: [
     XRoute( path: '/dashboard', builder: (ctx, activatedRoute) => DashboardPage()),
@@ -301,8 +301,6 @@ A series of resolvers are provided by the library:
 
 # Nested routing
 
-For nested routing you have the choice between using a child router or build on top of a tab system. 
-
 
 ## Child Router
 
@@ -310,142 +308,47 @@ First setup your view with flutter's `Router` as a child. That is where your chi
 
 ```dart
 
-class _ProductDetailsPageState extends State<ProductDetailsPage>
-    with SingleTickerProviderStateMixin {
-  TabController? _tabController;
-
-  @override
-  initState() {
-    _tabController = TabController(length: 2, vsync: this, );
-    super.initState();
-  }
-
-  @override
-  dispose() {
-    _routerSubscription?.cancel();
-    _tabController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('product details: ${widget.product!.name}'),
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: _navigate,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.home),
-            ),
-            Tab(
-              icon: Icon(Icons.comment),
-            ),
-          ],
-        ),
-      ),
-      body: Router(
-        routerDelegate: router.childRouterStore.findDelegate(
-          RouteLocations.productDetail,
-        ),
-      ),
-    );
-  }
-}
-
-```
-
-Next you probably want to react to navigation changes, in the example above we want to animate the tabs
-
-```dart
-  final Map<String, int> _tabIndexes = const {
-    RouteLocations.productInfo: 0,
-    RouteLocations.productComments: 1,
-  };
-
-  @override
-  initState() {
-    _tabController = TabController(length: 2, vsync: this);
-    _routerSubscription = router.eventStream
-        .where((event) => event is NavigationEnd)
-        .listen((_) => _changeTabIndex(router.history.currentUrl));
-    super.initState();
-  }
-
-  /// changes tab index given a path
-  _changeTabIndex(String path) {
-    final index = _findTabIndex(path);
-    if (index != null && index != _tabController?.index) {
-      _tabController?.animateTo(index);
-    }
-  }
-
-  /// finds the tab index given a path
-  int? _findTabIndex(String path) {
-    try {
-      return _tabIndexes.entries
-          .firstWhere((entry) => path.startsWith(entry.key))
-          .value;
-    } catch (e) {
-      return null;
-    }
-  }
-```
-
-Finally you have to define your routes:
-
-
-```dart
-XRoute(
-  path: RouteLocations.productDetail,
-  builder: (ctx, route) => ProductDetailsPage(route.pathParams['id']!),
-  // here is a nested router
-  childRouterConfig: XChildRouterConfig(
-    resolvers: [
-      XRedirectResolver(
-        from: RouteLocations.productDetail,
-        to: RouteLocations.productInfo,
-      ),
-    ],
-    routes: [
-      XRoute(
-        path: RouteLocations.productInfo,
-        builder: (_, __) =>
-            const Center(child: Text('info (Displayed via nested router)')),
-      ),
-      XRoute(
-        path: RouteLocations.productComments,
-        builder: (_, __) => const Center(
-            child: Text('comments (displayed via nested router)')),
-      ),
-    ],
-  ),
-),
-```
-
-# Tabs and Bottom navigation support
-
-For tabs support you have to make the url react to tab changes and the tabs have to react to url changes themselves. This is the same idea as for the child router. Let's see an example with bottom nav
-
-1. First let's create a reactive bottom nav.  This bottom bar will react to navigation events to animate itself
-
-```dart
-
-class BottomNav extends StatefulWidget {
-  const BottomNav({
+class HomeLayout extends StatelessWidget {
+  const HomeLayout({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<BottomNav> createState() => _BottomNavState();
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const NavRail(),
+        Expanded(
+          child: Router(
+            routerDelegate:
+                router.childRouterStore.findDelegate(RouteLocations.app),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class _BottomNavState extends State<BottomNav> {
-  final _tabsIndex = <String, int>{
-    RouteLocations.dashboard: 0,
-    RouteLocations.products: 1,
-    RouteLocations.favorites: 2,
+
+```
+
+Next you probably want to react to navigation changes, in the example above we want to animate the rail
+
+```dart
+ class NavRail extends StatefulWidget {
+  const NavRail({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<NavRail> createState() => _NavRailState();
+}
+
+class _NavRailState extends State<NavRail> {
+  final _tabsIndex = <XRoutePattern, int>{
+    XRoutePattern(RouteLocations.dashboard): 0,
+    XRoutePattern(RouteLocations.products): 1,
+    XRoutePattern(RouteLocations.favorites): 2,
   };
   StreamSubscription? navSubscription;
 
@@ -454,6 +357,7 @@ class _BottomNavState extends State<BottomNav> {
   @override
   void initState() {
     _selectedTab = _findTabIndex(router.history.currentUrl) ?? 0;
+    // if the user changes the URL via the browser, you want your rail to react
     navSubscription = router.eventStream
         .where((event) => event is NavigationEnd)
         .listen((nav) => _refreshBottomBar());
@@ -466,23 +370,22 @@ class _BottomNavState extends State<BottomNav> {
     super.dispose();
   }
 
-  /// finds the tab index associated with a path
-  int? _findTabIndex(String path) {
-    try {
-      return _tabsIndex.entries
-          .firstWhere((entry) => path.startsWith(entry.key))
-          .value;
-    } catch (e) {
-      return null;
-    }
-  }
-
   /// changes the selected tab when the url changes
   _refreshBottomBar() {
     final foundIndex = _findTabIndex(router.history.currentUrl);
     if (foundIndex != null) {
       setState(() => _selectedTab = foundIndex);
     }
+  }
+
+  /// finds the tab index associated with a path
+  int? _findTabIndex(String path) {
+    for (final pattern in _tabsIndex.keys) {
+      if (pattern.match(path, matchChildren: true)) {
+        return _tabsIndex[pattern];
+      }
+    }
+    return null;
   }
 
   /// when a tab is clicked, navigate to the target location
@@ -492,103 +395,71 @@ class _BottomNavState extends State<BottomNav> {
 
   /// finds the url path given a tab index
   String _findRoutePath(int index) {
-    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+    for (final entry in _tabsIndex.entries) {
+      if (entry.value == index) {
+        return entry.key.path;
+      }
+    }
+    return _tabsIndex.keys.first.path;
   }
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
+    return NavigationRail(
       onDestinationSelected: _navigate,
       selectedIndex: _selectedTab,
-      key: const ValueKey('bottom-navigation-bar'),
+      extended: true,
       destinations: const [
         // material you
-        NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
-        NavigationDestination(
-            label: 'products', icon: Icon(Icons.shopping_bag)),
-        NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
+        NavigationRailDestination(
+            label: Text('dashboard'), icon: Icon(Icons.home)),
+        NavigationRailDestination(
+            label: Text('products'), icon: Icon(Icons.shopping_bag)),
+        NavigationRailDestination(
+            label: Text('favorites'), icon: Icon(Icons.favorite))
       ],
     );
   }
 }
-
 ```
 
+Finally you have to define your routes:
 
- 2. Next let's create an App layout that uses this bottom bar. It has a child input, and animates itself when its input changes
 
 ```dart
-
-class HomeLayout extends StatefulWidget {
-  final Widget child;
-  const HomeLayout({
-    Key? key,
-    required this.child,
-  }) : super(key: const ValueKey('homelayout'));
-
-  @override
-  State<HomeLayout> createState() => _HomeLayoutState();
-}
-
-class _HomeLayoutState extends State<HomeLayout>
-    with SingleTickerProviderStateMixin {
-  late Widget child;
-
-  @override
-  void initState() {
-    super.initState();
-    child = widget.child;
-  }
-
-  @override
-  void didUpdateWidget(HomeLayout old) {
-    child = widget.child;
-    super.didUpdateWidget(old);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const BottomNav(),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        switchInCurve: Curves.easeIn,
-        switchOutCurve: Curves.easeOut,
-        child: child,
-      ),
-    );
-  }
-}
-
-```
-
-3. You can now use your layout when defining you routes
-
-```dart
-    XRoute(
-    path: RouteLocations.dashboard,
-    builder: (ctx, route) => const HomeLayout(
-      child: DashboardPage(),
-    ),
-    titleBuilder: (_, __) => 'dashboard',
-  ),
+  // this is the main page where the nav rail appears
   XRoute(
-    path: RouteLocations.products,
-    builder: (ctx, route) => const HomeLayout(
-      child: ProductsPage(),
+    path: RouteLocations.app,
+    builder: (ctx, route) => const HomeLayout(),
+    // those page will be placed inside the home layout page
+    childRouterConfig: XChildRouterConfig(
+      routes: [
+        XRoute(
+          path: RouteLocations.dashboard,
+          builder: (ctx, route) => const DashboardPage(),
+          titleBuilder: (_) => 'dashboard',
+        ),
+        XRoute(
+          path: RouteLocations.favorites,
+          builder: (ctx, route) => const FavoritesPage(),
+          titleBuilder: (_) => 'My favorites',
+        ),
+        XRoute(
+          path: RouteLocations.products,
+          builder: (ctx, route) {
+            return const ProductsPage();
+          },
+          titleBuilder: (_) => 'products',
+        ),
+        XRoute(
+          path: RouteLocations.productDetail,
+          builder: (ctx, activatedRoute) =>
+              ProductDetailsPage(activatedRoute.pathParams['id']!),
+        ),
+      ],
     ),
-    titleBuilder: (_, __) => 'products',
   ),
-  XRoute(
-    path: RouteLocations.favorites,
-    builder: (ctx, route) => const HomeLayout(
-      child: FavoritesPage(),
-    ),
-    titleBuilder: (_, __) => 'My favorites',
-  ),
-
 ```
-
 
 # Browser tab titles
 
@@ -620,3 +491,4 @@ That means that if you defined a router with only a `/dashboard` route:
 
 When the user access the path `/dashboard/something-undefined`, the url in the browser will change to `/dashboard` and the user 
 will access `/dashboard`.
+
