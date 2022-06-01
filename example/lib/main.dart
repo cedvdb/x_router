@@ -7,16 +7,14 @@ import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';
 import 'package:example/services/auth_service.dart';
-import 'package:example/services/products_service.dart';
 import 'package:flutter/material.dart';
 import 'package:x_router/x_router.dart';
 
 /// This example features a complex
-/// app navigation system with child routing
+/// app navigation system with child routing and reactive resolvers
 ///
-/// Most apps don't need all these features
-/// but despite the complexity the example
-/// is quite understandable
+/// The goal here is not to show the feature
+/// not necessarily to have a simple getting started example.
 
 /// all the locations in the app
 class RouteLocations {
@@ -26,7 +24,8 @@ class RouteLocations {
   static const app = '/app';
   static const dashboard = '$app/dashboard';
   static const products = '$app/products';
-  static const account = '$app/preferences';
+  static const favorites = '$app/favorites';
+  static const preferences = '$app/preferences';
   static const productDetail = '$app/products/:id';
   static const productInfo = '$productDetail/info';
   static const productComments = '$productDetail/comments';
@@ -41,41 +40,50 @@ final _routes = [
     titleBuilder: (ctx) => translate(ctx, 'sign in ! (Browser tab title)'),
   ),
   XRoute(
-    path: RouteLocations.account,
+    path: RouteLocations.preferences,
     builder: (ctx, route) => const PreferencesPage(),
     titleBuilder: (ctx) => translate(ctx, 'preferences'),
   ),
+  // this page contains a child router
   XRoute(
     path: RouteLocations.app,
     builder: (ctx, route) => const HomeLayout(),
-    childRouterConfig: XChildRouterConfig(routes: [
-      XRoute(
-        path: RouteLocations.dashboard,
-        builder: (ctx, route) => const DashboardPage(),
-        titleBuilder: (_) => 'dashboard',
-      ),
-      XRoute(
-        path: RouteLocations.products,
-        builder: (ctx, route) {
-          return const ProductsPage();
-        },
-        titleBuilder: (_) => 'products',
-      ),
-      XRoute(
-        path: RouteLocations.favorites,
-        builder: (ctx, route) => const FavoritesPage(),
-        titleBuilder: (_) => 'My favorites',
-      ),
-    ]),
+    childRouterConfig: XChildRouterConfig(
+      routes: [
+        XRoute(
+          path: RouteLocations.dashboard,
+          builder: (ctx, route) => const DashboardPage(),
+          titleBuilder: (_) => 'dashboard',
+        ),
+        XRoute(
+          path: RouteLocations.favorites,
+          builder: (ctx, route) => const FavoritesPage(),
+          titleBuilder: (_) => 'My favorites',
+        ),
+        XRoute(
+          path: RouteLocations.products,
+          builder: (ctx, route) {
+            return const ProductsPage();
+          },
+          titleBuilder: (_) => 'products',
+        ),
+        XRoute(
+          path: RouteLocations.productDetail,
+          builder: (ctx, activatedRoute) =>
+              ProductDetailsPage(activatedRoute.pathParams['id']!),
+        ),
+      ],
+    ),
   ),
 ];
 
-// the router instance used throughout the app,
-// It is up to you if you want to let it as a global variable, use injection,
-// inherited widget to access it.. That's outside the scope.
+// the router instance used throughout the app
 final router = XRouter(
+  routes: _routes,
   resolvers: [
+    // Auth reactive resolver, redirects when unauthenticated / authenticated
     AuthResolver(),
+    // redirects app to dashboard
     XRedirectResolver(
       from: RouteLocations.app,
       to: RouteLocations.dashboard,
@@ -86,9 +94,9 @@ final router = XRouter(
       to: '${RouteLocations.productDetail}/info',
       matchChildren: false,
     ),
+    // will redirect to app when a route is not found
     XNotFoundResolver(redirectTo: RouteLocations.app, routes: _routes),
   ],
-  routes: _routes,
 );
 
 /// goes to login page if we are not signed in.
@@ -100,15 +108,17 @@ class AuthResolver extends ValueNotifier implements XResolver {
 
   @override
   XResolverAction resolve(String target) {
+    final isSignIn =
+        XRoutePattern(RouteLocations.signIn).match(target, matchChildren: true);
     switch (value) {
       case AuthStatus.authenticated:
-        if (target.startsWith(RouteLocations.signIn)) {
+        if (isSignIn) {
           return const Redirect(RouteLocations.app);
         } else {
           return const Next();
         }
       case AuthStatus.unautenticated:
-        if (target.startsWith(RouteLocations.signIn)) {
+        if (isSignIn) {
           return const Next();
         } else {
           return const Redirect(RouteLocations.signIn);
@@ -119,25 +129,6 @@ class AuthResolver extends ValueNotifier implements XResolver {
           (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
         );
     }
-  }
-}
-
-/// checks if the product exists, else redirect to product details page
-class ProductFoundResolver implements XResolver {
-  final _productDetailsPattern = XRoutePattern(RouteLocations.productDetail);
-  @override
-  XResolverAction resolve(String target) {
-    final parsed = _productDetailsPattern.parse(target, matchChildren: true);
-    final productId = parsed.pathParameters['id'];
-    if (parsed.matches) {
-      try {
-        ProductsService.products
-            .firstWhere((product) => product.id == productId);
-      } catch (e) {
-        return const Redirect(RouteLocations.productDetail);
-      }
-    }
-    return const Next();
   }
 }
 
@@ -157,11 +148,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData.from(
-              colorScheme: const ColorScheme.light(
-                  primary: Colors.blue, secondary: Colors.blue))
-          .copyWith(
-        textSelectionTheme:
-            const TextSelectionThemeData(selectionColor: Colors.orange),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+        ),
+        useMaterial3: true,
       ),
     );
   }

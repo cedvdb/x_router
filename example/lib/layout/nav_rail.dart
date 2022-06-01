@@ -5,20 +5,20 @@ import 'package:x_router/x_router.dart';
 
 import '../main.dart';
 
-class BottomNav extends StatefulWidget {
-  const BottomNav({
+class NavRail extends StatefulWidget {
+  const NavRail({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<BottomNav> createState() => _BottomNavState();
+  State<NavRail> createState() => _NavRailState();
 }
 
-class _BottomNavState extends State<BottomNav> {
-  final _tabsIndex = <String, int>{
-    RouteLocations.dashboard: 0,
-    RouteLocations.products: 1,
-    RouteLocations.favorites: 2,
+class _NavRailState extends State<NavRail> {
+  final _tabsIndex = <XRoutePattern, int>{
+    XRoutePattern(RouteLocations.dashboard): 0,
+    XRoutePattern(RouteLocations.products): 1,
+    XRoutePattern(RouteLocations.favorites): 2,
   };
   StreamSubscription? navSubscription;
 
@@ -47,39 +47,45 @@ class _BottomNavState extends State<BottomNav> {
     }
   }
 
+  /// finds the tab index associated with a path
+  int? _findTabIndex(String path) {
+    for (final pattern in _tabsIndex.keys) {
+      if (pattern.match(path, matchChildren: true)) {
+        return _tabsIndex[pattern];
+      }
+    }
+    return null;
+  }
+
   /// when a tab is clicked, navigate to the target location
   _navigate(int index) {
     router.goTo(_findRoutePath(index));
   }
 
-  /// finds the tab index associated with a path
-  int? _findTabIndex(String path) {
-    try {
-      return _tabsIndex.entries
-          .firstWhere((entry) => path.startsWith(entry.key))
-          .value;
-    } catch (e) {
-      return null;
-    }
-  }
-
   /// finds the url path given a tab index
   String _findRoutePath(int index) {
-    return _tabsIndex.entries.firstWhere((entry) => entry.value == index).key;
+    for (final entry in _tabsIndex.entries) {
+      if (entry.value == index) {
+        return entry.key.path;
+      }
+    }
+    return _tabsIndex.keys.first.path;
   }
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
+    return NavigationRail(
       onDestinationSelected: _navigate,
       selectedIndex: _selectedTab,
-      key: const ValueKey('bottom-navigation-bar'),
+      extended: true,
       destinations: const [
         // material you
-        NavigationDestination(label: 'dashboard', icon: Icon(Icons.home)),
-        NavigationDestination(
-            label: 'products', icon: Icon(Icons.shopping_bag)),
-        NavigationDestination(label: 'favorites', icon: Icon(Icons.favorite))
+        NavigationRailDestination(
+            label: Text('dashboard'), icon: Icon(Icons.home)),
+        NavigationRailDestination(
+            label: Text('products'), icon: Icon(Icons.shopping_bag)),
+        NavigationRailDestination(
+            label: Text('favorites'), icon: Icon(Icons.favorite))
       ],
     );
   }

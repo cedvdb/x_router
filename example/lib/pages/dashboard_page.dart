@@ -3,7 +3,7 @@ import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage();
+  const DashboardPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +11,7 @@ class DashboardPage extends StatelessWidget {
         title: const Text('dashboard'),
         actions: [
           IconButton(
-              onPressed: () => router.goTo(RouteLocations.account),
+              onPressed: () => router.goTo(RouteLocations.preferences),
               icon: const Icon(Icons.settings))
         ],
       ),
@@ -20,12 +20,9 @@ class DashboardPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Tabs navigation',
-              style: Theme.of(context).textTheme.headline5,
+            const Text(
+              'Sign out automatically redirects to auth page',
             ),
-            const Text('- Tabs change url'),
-            const Text('- Animation is not stopped'),
             const SizedBox(
               height: 20,
             ),

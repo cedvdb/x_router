@@ -1,4 +1,4 @@
-import 'package:example/layout/bottom_nav.dart';
+import 'package:example/layout/nav_rail.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
@@ -6,7 +6,7 @@ import '../main.dart';
 class HomeLayout extends StatefulWidget {
   const HomeLayout({
     Key? key,
-  }) : super(key: const ValueKey('homelayout'));
+  }) : super(key: key);
 
   @override
   State<HomeLayout> createState() => _HomeLayoutState();
@@ -28,29 +28,16 @@ class _HomeLayoutState extends State<HomeLayout>
 
   @override
   Widget build(BuildContext context) {
-    final routerWidget = Router(
-      key: const ValueKey('value'),
-      routerDelegate: router.childRouterStore.findDelegate(RouteLocations.home),
-    );
-    return Scaffold(
-      body: LayoutBuilder(builder: (context, _) {
-        return Row(
-          children: [
-            NavigationRail(
-              destinations: const [
-                NavigationRailDestination(
-                    label: Text('dashboard'), icon: Icon(Icons.home)),
-                NavigationRailDestination(
-                    label: Text('products'), icon: Icon(Icons.shopping_bag)),
-                NavigationRailDestination(
-                    label: Text('favorites'), icon: Icon(Icons.favorite))
-              ],
-              selectedIndex: 0,
-            ),
-            Expanded(child: routerWidget),
-          ],
-        );
-      }),
+    return Row(
+      children: [
+        const NavRail(),
+        Expanded(
+          child: Router(
+            routerDelegate:
+                router.childRouterStore.findDelegate(RouteLocations.app),
+          ),
+        ),
+      ],
     );
   }
 }

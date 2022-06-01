@@ -8,7 +8,8 @@ import 'package:x_router/x_router.dart';
 class ProductDetailsPage extends StatefulWidget {
   final Product? product;
 
-  ProductDetailsPage(String id) : product = ProductsService.getById(id);
+  ProductDetailsPage(String id, {super.key})
+      : product = ProductsService.getById(id);
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
