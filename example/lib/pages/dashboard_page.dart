@@ -1,4 +1,3 @@
-import 'package:example/main.dart';
 import 'package:example/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -9,11 +8,6 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('dashboard'),
-        actions: [
-          IconButton(
-              onPressed: () => router.goTo(RouteLocations.preferences),
-              icon: const Icon(Icons.settings))
-        ],
       ),
       body: Center(
         child: Column(

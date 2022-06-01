@@ -17,11 +17,7 @@ class ProductsService {
     Product(id: '4', name: 'Book 4', price: 1.5)
   ];
 
-  static Product? getById(String id) {
-    try {
-      return products.firstWhere((element) => element.id == id);
-    } catch (_) {
-      return null;
-    }
+  static Product getById(String id) {
+    return products.firstWhere((element) => element.id == id);
   }
 }

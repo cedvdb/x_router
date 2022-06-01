@@ -35,7 +35,7 @@ class XActivatedRouteBuilder {
     }
     // path that also match path from active routes of child router
     final effectivePath = route.computeDeepestMatchingPath(target);
-    final upstack = matchings
+    final downStack = matchings
         .map(
           (parentRoute) => _toActivatedRoute(
             target,
@@ -49,7 +49,7 @@ class XActivatedRouteBuilder {
       target,
       effectivePath,
       route,
-      upstack,
+      downStack,
     );
     return activatedRoute;
   }
@@ -58,7 +58,7 @@ class XActivatedRouteBuilder {
     String path,
     String effectivePath,
     XRoute route, [
-    List<XActivatedRoute> upstack = const [],
+    List<XActivatedRoute> downStack = const [],
   ]) {
     final parsed = route.parse(path);
     return XActivatedRoute(
@@ -68,7 +68,7 @@ class XActivatedRouteBuilder {
       matchingPath: parsed.matchingPath,
       pathParams: parsed.pathParameters,
       queryParams: parsed.queryParameters,
-      upstack: upstack,
+      downStack: downStack,
     );
   }
 

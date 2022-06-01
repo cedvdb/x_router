@@ -99,7 +99,7 @@ void main() {
         await tester.pumpAndSettle();
         router.pop();
         await tester.pumpAndSettle();
-        // products is above in upstack
+        // products is above in downStack
         expect(
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
       });

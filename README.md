@@ -1,6 +1,6 @@
 # x_router
 
-A simple and powerful routing framework for flutter.
+A simple and powerful routing lib that simplify having multiple child router.
 
 ## Features
 
@@ -25,10 +25,10 @@ A simple and powerful routing framework for flutter.
 
 ## Core idea
 
-One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the browser arrow ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an up button, usually the icon ⬅ at the top of the app bar, to navigate up in the stack of pages that are superimposed on each others. In this doc, the word **upstack** is used to refer to the stack of pages accessible when pressing ⬅ and popping the current page.
+One area that seem to be a point of confusion for developers is the different back buttons. On the web there is the back button, usually using the browser arrow ◀, to navigate chronologically through the pages we visited before. While in an application there is typically also an down button, usually the icon ⬅ at the top of the app bar, to navigate down in the stack of pages that are superimposed on each others. In this doc, the word **downstack** is used to refer to the stack of pages accessible when pressing ⬅ and popping the current page.
 (for more information see https://developer.android.com/guide/navigation/navigation-principles)
 
-The main idea of this package is that the __upstack is a function of the url__ 
+The main idea of this package is that the __downstack is a function of the url__ 
 
 That is that for an url like `/products/123` we have a stack of two pages `[ProductsPage, ProductsDetailsPage]` by default.
 
@@ -42,15 +42,15 @@ Let's take this fairly common and complex scenario:
   '/products/:id' => when the user wants to see a specific product
 ```
 
-In this scenario it is apparent that the **upstack** can be defined as a function of the url path where each segment of the path is a screen in the stack.
-For example when on the '/products/:id' route the **upstack** will look like this:
+In this scenario it is apparent that the **downstack** can be defined as a function of the url path where each segment of the path is a screen in the stack.
+For example when on the '/products/:id' route the **downstack** will look like this:
 
 ```
   - ProductsScreen
   - ProductDetailsScreen
 ```
 
-This is the approach this library takes to create the **upstack** by default.
+This is the approach this library takes to create the **downstack** by default.
 
 
 ## Usage
@@ -72,7 +72,7 @@ For navigation you can use the `goTo(location)` method:
 
   - `goTo`: goes to location adding the target to history 
   - `replace`: removes current location from history and `goTo` location
-  - `pop`: if upstack is not empty `goTo` first location in upstack
+  - `pop`: if downstack is not empty `goTo` first location in downstack
   - `back`: go back chronologically
 
 

@@ -2,7 +2,6 @@ import 'package:example/layout/home_layout.dart';
 import 'package:example/pages/dashboard_page.dart';
 import 'package:example/pages/favorites_page.dart';
 import 'package:example/pages/loading_page.dart';
-import 'package:example/pages/preferences_page.dart';
 import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';
@@ -25,10 +24,7 @@ class RouteLocations {
   static const dashboard = '$app/dashboard';
   static const products = '$app/products';
   static const favorites = '$app/favorites';
-  static const preferences = '$app/preferences';
   static const productDetail = '$app/products/:id';
-  static const productInfo = '$productDetail/info';
-  static const productComments = '$productDetail/comments';
 }
 
 /// the routes for each location
@@ -39,15 +35,11 @@ final _routes = [
     builder: (ctx, route) => SignInPage(),
     titleBuilder: (ctx) => translate(ctx, 'sign in ! (Browser tab title)'),
   ),
-  XRoute(
-    path: RouteLocations.preferences,
-    builder: (ctx, route) => const PreferencesPage(),
-    titleBuilder: (ctx) => translate(ctx, 'preferences'),
-  ),
   // this page contains a child router
   XRoute(
     path: RouteLocations.app,
     builder: (ctx, route) => const HomeLayout(),
+    // those page will be placed inside the home layout page
     childRouterConfig: XChildRouterConfig(
       routes: [
         XRoute(
@@ -99,6 +91,34 @@ final router = XRouter(
   ],
 );
 
+void main() async {
+  // router.eventStream.listen((event) => print(event));
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routeInformationParser: router.informationParser,
+      routerDelegate: router.delegate,
+      debugShowCheckedModeBanner: false,
+      title: 'XRouter Demo',
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+        ),
+        useMaterial3: true,
+      ),
+    );
+  }
+}
+
+// fake translate
+String translate(BuildContext ctx, String text) => text;
+
 /// goes to login page if we are not signed in.
 class AuthResolver extends ValueNotifier implements XResolver {
   AuthResolver() : super(AuthStatus.unknown) {
@@ -131,31 +151,3 @@ class AuthResolver extends ValueNotifier implements XResolver {
     }
   }
 }
-
-void main() async {
-  // router.eventStream.listen((event) => print(event));
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: router.informationParser,
-      routerDelegate: router.delegate,
-      debugShowCheckedModeBanner: false,
-      title: 'XRouter Demo',
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-        ),
-        useMaterial3: true,
-      ),
-    );
-  }
-}
-
-// fake translate
-String translate(BuildContext ctx, String text) => text;

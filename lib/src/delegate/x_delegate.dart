@@ -40,8 +40,8 @@ class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      // upstack
-      ..._activatedRoute.upstack.map((r) => _buildPage(context, r)),
+      // downStack
+      ..._activatedRoute.downStack.map((r) => _buildPage(context, r)),
       // top
       _buildPage(context, _activatedRoute)
     ];
@@ -50,8 +50,9 @@ class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
       key: navigatorKey,
       pages: pages,
       onPopPage: (route, res) {
+        print('popping child');
         // pop();
-        route.didPop(res);
+        // return route.didPop(res);
         return false;
       },
     );
@@ -89,12 +90,12 @@ class XRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
       return SynchronousFuture<bool>(false);
     }
     navigator.pop();
-    return false;
+    return true;
   }
 
   pop() {
-    if (_activatedRoute.upstack.isNotEmpty) {
-      setNewRoutePath(_activatedRoute.upstack.last.matchingPath);
+    if (_activatedRoute.downStack.isNotEmpty) {
+      setNewRoutePath(_activatedRoute.downStack.last.matchingPath);
     }
   }
 

@@ -1,5 +1,5 @@
 name: x_router
-description: A simple and powerful routing frameworks for flutter. Uses Navigator 2.0 under the hood.
+description: A simple and powerful routing lib that simplify having multiple child router.
 version: 0.1.6
 homepage: https://github.com/cedvdb/x_router
 

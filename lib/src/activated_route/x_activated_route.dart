@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../x_router.dart';
 
-/// Holds information about the currently displayed route and its upstack
+/// Holds information about the currently displayed route and its downStack
 class XActivatedRoute with EquatableMixin {
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;
@@ -25,8 +25,8 @@ class XActivatedRoute with EquatableMixin {
   /// queryParameters = { 'orderBy': 'creationDate' }
   final Map<String, String> queryParams;
 
-  /// the parents matching routes, the upstack
-  final List<XActivatedRoute> upstack;
+  /// the parents matching routes, the downStack
+  final List<XActivatedRoute> downStack;
 
   /// the requested path matched against children route or if none, this route
 
@@ -37,7 +37,7 @@ class XActivatedRoute with EquatableMixin {
     required this.effectivePath,
     this.pathParams = const {},
     this.queryParams = const {},
-    this.upstack = const [],
+    this.downStack = const [],
   });
 
   // Used as a placeholder at the start of the app to
@@ -59,7 +59,7 @@ class XActivatedRoute with EquatableMixin {
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, upstack.length: ${upstack.length})';
+    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, downStack.length: ${downStack.length})';
   }
 
   @override
@@ -69,6 +69,6 @@ class XActivatedRoute with EquatableMixin {
         matchingPath,
         pathParams,
         queryParams,
-        upstack,
+        downStack,
       ];
 }
