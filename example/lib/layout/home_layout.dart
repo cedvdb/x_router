@@ -10,6 +10,7 @@ class HomeLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final childRouter = router.childRouterStore.findChild(RouteLocations.app);
     return Container(
       color: Theme.of(context).colorScheme.background,
       child: SafeArea(
@@ -19,8 +20,9 @@ class HomeLayout extends StatelessWidget {
               const NavRail(),
               Expanded(
                 child: Router(
-                  routerDelegate:
-                      router.childRouterStore.findDelegate(RouteLocations.app),
+                  routerDelegate: childRouter.delegate,
+                  routeInformationParser: router.informationParser,
+                  routeInformationProvider: router.informationProvider,
                   backButtonDispatcher: ChildBackButtonDispatcher(
                       Router.of(context).backButtonDispatcher!),
                 ),

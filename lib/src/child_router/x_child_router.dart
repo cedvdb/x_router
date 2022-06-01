@@ -1,3 +1,4 @@
+import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/x_router.dart';
 
@@ -10,11 +11,10 @@ class XChildRouter {
   late final XActivatedRouteBuilder _activatedRouteBuilder;
 
   /// renderer
-  late final XRouterDelegate delegate = XRouterDelegate(
-    isRoot: false,
-  );
+  late final XRouterDelegate delegate = XRouterDelegate();
 
   final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  final XRouteInformationParser parser = XRouteInformationParser();
 
   /// the base path is the path where the child router is active
   final String basePath;

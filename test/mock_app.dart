@@ -100,8 +100,9 @@ class ProductDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Router(
-      routerDelegate:
-          router.childRouterStore.findDelegate(RouteLocation.productDetails),
+      routerDelegate: router.childRouterStore
+          .findChild(RouteLocation.productDetails)
+          .delegate,
     );
   }
 }

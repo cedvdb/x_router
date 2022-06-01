@@ -14,10 +14,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    if (_isRoot) {
-      return _activatedRoute.effectivePath;
-    }
-    return null;
+    return _activatedRoute.matchingPath;
   }
 
   final XEventEmitter _eventEmitter = XEventEmitter.instance;
@@ -25,13 +22,7 @@ class XRouterDelegate extends RouterDelegate<String>
   /// the routes that we need to display
   XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
 
-  /// child router do not need to report when a new route has been
-  /// reached only the top router
-  final bool _isRoot;
-
-  XRouterDelegate({
-    bool isRoot = true,
-  }) : _isRoot = isRoot;
+  XRouterDelegate();
 
   void render(XActivatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;

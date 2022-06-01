@@ -90,7 +90,7 @@ final router = XRouter(
 );
 
 void main() async {
-  router.eventStream.listen((event) => print(event));
+  // router.eventStream.listen((event) => print(event));
   runApp(const MyApp());
 }
 
