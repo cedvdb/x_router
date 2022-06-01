@@ -1,11 +1,11 @@
 import 'package:example/layout/bottom_nav.dart';
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 class HomeLayout extends StatefulWidget {
-  final Widget child;
   const HomeLayout({
     Key? key,
-    required this.child,
   }) : super(key: const ValueKey('homelayout'));
 
   @override
@@ -19,25 +19,38 @@ class _HomeLayoutState extends State<HomeLayout>
   @override
   void initState() {
     super.initState();
-    child = widget.child;
   }
 
   @override
   void didUpdateWidget(HomeLayout old) {
-    child = widget.child;
     super.didUpdateWidget(old);
   }
 
   @override
   Widget build(BuildContext context) {
+    final routerWidget = Router(
+      key: const ValueKey('value'),
+      routerDelegate: router.childRouterStore.findDelegate(RouteLocations.home),
+    );
     return Scaffold(
-      bottomNavigationBar: const BottomNav(),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        switchInCurve: Curves.easeIn,
-        switchOutCurve: Curves.easeOut,
-        child: child,
-      ),
+      body: LayoutBuilder(builder: (context, _) {
+        return Row(
+          children: [
+            NavigationRail(
+              destinations: const [
+                NavigationRailDestination(
+                    label: Text('dashboard'), icon: Icon(Icons.home)),
+                NavigationRailDestination(
+                    label: Text('products'), icon: Icon(Icons.shopping_bag)),
+                NavigationRailDestination(
+                    label: Text('favorites'), icon: Icon(Icons.favorite))
+              ],
+              selectedIndex: 0,
+            ),
+            Expanded(child: routerWidget),
+          ],
+        );
+      }),
     );
   }
 }
