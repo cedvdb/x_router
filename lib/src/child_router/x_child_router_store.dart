@@ -20,13 +20,11 @@ class XChildRouterStore {
       List<XRoute> routes, Map<String, XChildRouter> childRouters) {
     for (final route in routes) {
       final children = route.children;
-      if (children != null) {
-        childRouters[route.path] = XChildRouter(
-          basePath: route.path,
-          routes: children.routes,
-        );
-        _computeChildRoutersMap(children.routes, childRouters);
-      }
+      childRouters[route.path] = XChildRouter(
+        basePath: route.path,
+        routes: children,
+      );
+      _computeChildRoutersMap(children, childRouters);
     }
   }
 

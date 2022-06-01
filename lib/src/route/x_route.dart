@@ -52,14 +52,14 @@ class XRoute {
   final XTitleBuilder? titleBuilder;
 
   /// for nested routers
-  final children;
+  final List<XRoute> children;
 
   final XRoutePattern _parser;
 
   XRoute({
     required this.path,
     required this.builder,
-    this.children,
+    this.children = const [],
     this.pageKey,
     this.titleBuilder,
     this.isAddedToDownStack = true,
