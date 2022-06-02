@@ -30,7 +30,7 @@ class XChildRouter implements BaseRouter {
       _parent.informationParser;
 
   @override
-  late final RouteInformationProvider informationProvider =
+  RouteInformationProvider get informationProvider =>
       _parent.informationProvider;
 
   late final BackButtonDispatcher _backButtonDispatcher =

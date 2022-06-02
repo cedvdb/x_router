@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/history/router_history.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
@@ -117,19 +116,6 @@ class XRouter implements BaseRouter {
     );
   }
 
-  /// [goTo] route above the current one in the page stack if any
-  /// Usually this method is called by flutter. Consider using [back]
-  /// to go back chronologically
-  XNavigatedRoute? pop() {
-    if (_history.currentRoute.poppableStack.isNotEmpty) {
-      final up = _history.currentRoute.poppableStack.first;
-      _navigate(
-        up.effectivePath,
-        up.pathParams,
-      );
-    }
-  }
-
   /// goes back chronologically
   XNavigatedRoute? back() {
     final previousRoute = _history.previousRoute;
@@ -140,6 +126,7 @@ class XRouter implements BaseRouter {
         removeHistoryThrough: previousRoute,
       );
     }
+    return null;
   }
 
   /// alias for goTo(currentUrl)
@@ -158,6 +145,7 @@ class XRouter implements BaseRouter {
     _eventEmitter.emit(NavigationStart(target: target));
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
+    target = resolved.target;
     // this is the stack of page for the current router
     var navigatedRoute = _buildNavigatedRoute(
       resolved.target,
@@ -168,13 +156,13 @@ class XRouter implements BaseRouter {
     if (navigatedRoute.route.children.isNotEmpty) {
       final child = _childRouterStore.findChild(navigatedRoute.route.path)
           as XChildRouter;
-      final navigatedRouteChild = child.navigate(resolved.target);
+      final navigatedRouteChild = child.navigate(target);
       navigatedRoute = navigatedRoute.copyWith(child: navigatedRouteChild);
     }
-
-    _render(navigatedRoute);
     _history.removeThrough(removeHistoryThrough);
     _history.add(navigatedRoute);
+
+    _render(navigatedRoute);
     _eventEmitter.emit(
       NavigationEnd(
         target: resolved.target,
