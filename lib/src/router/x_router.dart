@@ -86,7 +86,7 @@ class XRouter implements BaseRouter {
 
   /// all child routers
   late final XChildRouterStore _childRouterStore =
-      XChildRouterStore.fromRootRoutes(routes);
+      XChildRouterStore.fromRootRoutes(this, routes);
   XChildRouterStore get childRouterStore => _childRouterStore;
 
   StreamSubscription? _eventStreamSubscription;
@@ -167,7 +167,7 @@ class XRouter implements BaseRouter {
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
     _render(activatedRoute);
-    _childRouterStore.findChild(path).navigate(resolved);
+    _childRouterStore.findChild(activatedRoute.route).navigate(resolved.target);
     _eventEmitter.emit(
       NavigationEnd(
         activatedRoute: activatedRoute,

@@ -22,10 +22,12 @@ class XChildRouter implements BaseRouter {
   RouterDelegate get delegate => _delegate;
 
   @override
-  final RouteInformationParser<String> informationParser;
+  late final RouteInformationParser<String> informationParser =
+      _parent.informationParser;
 
   @override
-  final RouteInformationProvider informationProvider;
+  late final RouteInformationProvider informationProvider =
+      _parent.informationProvider;
 
   late final BackButtonDispatcher _backButtonDispatcher =
       ChildBackButtonDispatcher(_parent.backButtonDispatcher);
@@ -33,13 +35,11 @@ class XChildRouter implements BaseRouter {
   BackButtonDispatcher get backButtonDispatcher => _backButtonDispatcher;
 
   XChildRouter({
-    required this.informationParser,
-    required this.informationProvider,
     required BaseRouter parent,
     required this.routes,
   }) : _parent = parent;
 
-  navigate(String target) {
+  void navigate(String target) {
     final activatedRoute = _activatedRouteBuilder.build(target);
     _delegate.render(activatedRoute);
   }
