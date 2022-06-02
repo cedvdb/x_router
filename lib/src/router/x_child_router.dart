@@ -56,6 +56,10 @@ class XChildRouter implements BaseRouter {
           as XChildRouter;
       final navigatedRouteChild = child.navigate(target);
       navigatedRoute = navigatedRoute.copyWith(child: navigatedRouteChild);
+    } else {
+      informationProvider.routerReportsNewRouteInformation(
+        RouteInformation(location: navigatedRoute.matchingPath),
+      );
     }
 
     _delegate.render(navigatedRoute);

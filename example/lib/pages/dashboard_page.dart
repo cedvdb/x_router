@@ -34,9 +34,7 @@ class DashboardPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () => AuthService.instance.signOut(),
-              child: const Text(
-                'Sing out',
-              ),
+              child: const Text('Sing out'),
             ),
           ],
         ),

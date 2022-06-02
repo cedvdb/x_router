@@ -72,7 +72,7 @@ final router = XRouter(
   routes: _routes,
   resolvers: [
     // Auth reactive resolver, redirects when unauthenticated / authenticated
-    // AuthResolver(),
+    AuthResolver(),
     // redirects app to dashboard
     XRedirectResolver(
       from: RouteLocations.app,
@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
       routeInformationParser: router.informationParser,
       routerDelegate: router.delegate,
       routeInformationProvider: router.informationProvider,
-      // backButtonDispatcher: router.backButtonDispatcher,
+      backButtonDispatcher: router.backButtonDispatcher,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData.from(

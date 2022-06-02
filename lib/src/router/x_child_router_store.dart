@@ -11,7 +11,10 @@ class XChildRouterStore {
 
   XChildRouterStore._(this._childRouters);
 
-  factory XChildRouterStore.fromRoutes(BaseRouter parent, List<XRoute> routes) {
+  factory XChildRouterStore.fromRoutes(
+    BaseRouter parent,
+    List<XRoute> routes,
+  ) {
     final childRouters = <String, BaseRouter>{};
     _computeChildRoutersMap(parent, routes, childRouters);
     return XChildRouterStore._(childRouters);
@@ -30,7 +33,6 @@ class XChildRouterStore {
           routes: route.children,
         );
         childRoutersMap[route.path] = childRouter;
-        _computeChildRoutersMap(childRouter, route.children, childRoutersMap);
       }
     }
   }

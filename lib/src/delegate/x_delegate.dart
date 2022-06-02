@@ -12,7 +12,10 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    if (_navigatedRoute.child == null) return _navigatedRoute.effectivePath;
+    // the bottom route reports route information
+    if (_navigatedRoute.route.children.isEmpty) {
+      return _navigatedRoute.effectivePath;
+    }
     return null;
   }
 
