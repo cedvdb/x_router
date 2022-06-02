@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
 abstract class XRouterEvent with EquatableMixin {
@@ -21,7 +21,7 @@ class NavigationEvent extends XRouterEvent {
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
-  final XActivatedRoute? removeHistoryThrough;
+  final XNavigatedRoute? removeHistoryThrough;
 
   const NavigationStart({
     required String target,
@@ -37,8 +37,8 @@ class NavigationStart extends NavigationEvent {
 }
 
 class NavigationEnd extends NavigationEvent {
-  final XActivatedRoute activatedRoute;
-  final XActivatedRoute? previous;
+  final XNavigatedRoute activatedRoute;
+  final XNavigatedRoute? previous;
   const NavigationEnd({
     required String target,
     required this.activatedRoute,
@@ -126,7 +126,7 @@ class BuildStart extends BuildEvent {
 }
 
 class BuildEnd extends BuildEvent {
-  final XActivatedRoute activatedRoute;
+  final XNavigatedRoute activatedRoute;
 
   const BuildEnd({
     required this.activatedRoute,

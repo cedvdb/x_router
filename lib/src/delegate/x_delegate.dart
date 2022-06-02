@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/events/x_router_events.dart';
 
@@ -20,11 +20,11 @@ class XRouterDelegate extends RouterDelegate<String>
   final XEventEmitter _eventEmitter = XEventEmitter.instance;
 
   /// the routes that we need to display
-  XActivatedRoute _activatedRoute = XActivatedRoute.nulled();
+  XNavigatedRoute _activatedRoute = XNavigatedRoute.nulled();
 
   XRouterDelegate();
 
-  void render(XActivatedRoute activatedRoute) {
+  void render(XNavigatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
     notifyListeners();
   }
@@ -61,7 +61,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   Page _buildPage(
     BuildContext context,
-    XActivatedRoute activatedRoute,
+    XNavigatedRoute activatedRoute,
   ) {
     final route = activatedRoute.route;
     final child = route.builder(context, activatedRoute);

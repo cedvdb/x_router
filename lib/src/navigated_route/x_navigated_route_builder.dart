@@ -1,14 +1,14 @@
-import 'package:x_router/src/activated_route/x_activated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/route/x_default_routes.dart';
 import 'package:x_router/src/route/x_page_builder.dart';
 
 import '../route/x_route.dart';
 
 /// builds an Activated route when provided a `path`.
-class XActivatedRouteBuilder {
+class XNavigatedRouteBuilder {
   final List<XRoute> _routes;
 
-  XActivatedRouteBuilder({
+  XNavigatedRouteBuilder({
     required List<XRoute> routes,
   }) : _routes = routes;
 
@@ -16,7 +16,7 @@ class XActivatedRouteBuilder {
   ///
   /// That is if we access /products/:id, the page stack will consists of
   /// `[ProductDetailsPage, ProductsPage]`
-  XActivatedRoute build(String target, {XPageBuilder? builderOverride}) {
+  XNavigatedRoute build(String target, {XPageBuilder? builderOverride}) {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     final isFound = matchings.isNotEmpty;
 
@@ -54,14 +54,14 @@ class XActivatedRouteBuilder {
     return activatedRoute;
   }
 
-  XActivatedRoute _toActivatedRoute(
+  XNavigatedRoute _toActivatedRoute(
     String path,
     String effectivePath,
     XRoute route, [
-    List<XActivatedRoute> poppableStack = const [],
+    List<XNavigatedRoute> poppableStack = const [],
   ]) {
     final parsed = route.parse(path);
-    return XActivatedRoute(
+    return XNavigatedRoute(
       requestedPath: path,
       effectivePath: effectivePath,
       route: route,

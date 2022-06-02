@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
 import 'package:x_router/src/child_router/x_child_router_store.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
@@ -81,8 +81,8 @@ class XRouter implements BaseRouter {
   );
 
   /// page stack (activatedRoute) builder
-  late final XActivatedRouteBuilder _activatedRouteBuilder =
-      XActivatedRouteBuilder(routes: routes);
+  late final XNavigatedRouteBuilder _activatedRouteBuilder =
+      XNavigatedRouteBuilder(routes: routes);
 
   /// all child routers
   late final XChildRouterStore _childRouterStore =
@@ -156,7 +156,7 @@ class XRouter implements BaseRouter {
   void _navigate(
     String target,
     Map<String, String>? params, {
-    XActivatedRoute? removeHistoryThrough,
+    XNavigatedRoute? removeHistoryThrough,
   }) {
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
@@ -202,7 +202,7 @@ class XRouter implements BaseRouter {
   /// if [builderOverride] is present, the builder of activated
   /// route will be [builderOverride] instead of the XRoute builder
   /// This is to allow pages to be in a loading state
-  XActivatedRoute _buildActivatedRoute(
+  XNavigatedRoute _buildActivatedRoute(
     String target, {
     XPageBuilder? builderOverride,
   }) {
@@ -218,7 +218,7 @@ class XRouter implements BaseRouter {
   }
 
   /// renders page stack on screen
-  void _render(XActivatedRoute activatedRoute) {
+  void _render(XNavigatedRoute activatedRoute) {
     _delegate.render(activatedRoute);
   }
 

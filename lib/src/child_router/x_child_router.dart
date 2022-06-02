@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:x_router/src/router/base_router.dart';
 
-import '../activated_route/x_activated_route_builder.dart';
+import '../navigated_route/x_navigated_route_builder.dart';
 import '../delegate/x_delegate.dart';
 import '../route/x_route.dart';
 
@@ -13,8 +13,8 @@ class XChildRouter implements BaseRouter {
   final List<XRoute> routes;
 
   /// page stack (activatedRoute) builder
-  late final XActivatedRouteBuilder _activatedRouteBuilder =
-      XActivatedRouteBuilder(routes: routes);
+  late final XNavigatedRouteBuilder _activatedRouteBuilder =
+      XNavigatedRouteBuilder(routes: routes);
 
   /// renderer
   late final XRouterDelegate _delegate = XRouterDelegate();

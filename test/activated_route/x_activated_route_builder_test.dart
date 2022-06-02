@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:x_router/src/activated_route/x_activated_route.dart';
-import 'package:x_router/src/activated_route/x_activated_route_builder.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
 import 'package:x_router/x_router.dart';
 
 void main() {
   group('Activated Route Builder', () {
-    late XActivatedRouteBuilder activatedRouteBuilder;
-    late XActivatedRoute activatedNoMatchDown;
-    late XActivatedRoute activatedMatchDown;
-    late XActivatedRoute activatedWithStack;
-    late XActivatedRoute activatedWithChildRouter;
+    late XNavigatedRouteBuilder activatedRouteBuilder;
+    late XNavigatedRoute activatedNoMatchDown;
+    late XNavigatedRoute activatedMatchDown;
+    late XNavigatedRoute activatedWithStack;
+    late XNavigatedRoute activatedWithChildRouter;
 
     setUp(() {
-      activatedRouteBuilder = XActivatedRouteBuilder(
+      activatedRouteBuilder = XNavigatedRouteBuilder(
         routes: [
           XRoute(
             path: '/',

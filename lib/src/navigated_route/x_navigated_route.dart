@@ -5,7 +5,7 @@ import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its underneath
 /// stack
-class XActivatedRoute with EquatableMixin {
+class XNavigatedRoute with EquatableMixin {
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;
 
@@ -27,11 +27,11 @@ class XActivatedRoute with EquatableMixin {
   final Map<String, String> queryParams;
 
   /// the parents matching routes, the poppableStack
-  final List<XActivatedRoute> poppableStack;
+  final List<XNavigatedRoute> poppableStack;
 
   /// the requested path matched against children route or if none, this route
 
-  const XActivatedRoute({
+  const XNavigatedRoute({
     required this.route,
     required this.requestedPath,
     required this.matchingPath,
@@ -43,12 +43,12 @@ class XActivatedRoute with EquatableMixin {
 
   // Used as a placeholder at the start of the app to
   // not have a nullable and for testing
-  factory XActivatedRoute.nulled([String path = '']) {
-    return XActivatedRoute.forPath('');
+  factory XNavigatedRoute.nulled([String path = '']) {
+    return XNavigatedRoute.forPath('');
   }
 
-  factory XActivatedRoute.forPath(String path) {
-    return XActivatedRoute(
+  factory XNavigatedRoute.forPath(String path) {
+    return XNavigatedRoute(
         route: XRoute(
           path: path,
           builder: (ctx, params) => Container(),
