@@ -88,7 +88,7 @@ class XRouter implements BaseRouter {
 
   /// all child routers
   late final XChildRouterStore _childRouterStore =
-      XChildRouterStore.fromRootRoutes(this, routes);
+      XChildRouterStore.fromRoutes(this, routes);
   XChildRouterStore get childRouterStore => _childRouterStore;
 
   StreamSubscription? _eventStreamSubscription;
@@ -155,6 +155,7 @@ class XRouter implements BaseRouter {
     Map<String, String>? params, {
     XNavigatedRoute? removeHistoryThrough,
   }) {
+    _eventEmitter.emit(NavigationStart(target: target));
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
     // this is the stack of page for the current router
@@ -176,8 +177,8 @@ class XRouter implements BaseRouter {
     _history.add(navigatedRoute);
     _eventEmitter.emit(
       NavigationEnd(
+        target: resolved.target,
         navigatedRoute: navigatedRoute,
-        target: target,
         previous: _history.previousRoute,
       ),
     );

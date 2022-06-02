@@ -22,7 +22,7 @@ class HomeLayout extends StatelessWidget {
                 child: Router(
                   routerDelegate: childRouter.delegate,
                   routeInformationParser: childRouter.informationParser,
-                  // routeInformationProvider: childRouter.informationProvider,
+                  routeInformationProvider: childRouter.informationProvider,
                   // backButtonDispatcher: childRouter.backButtonDispatcher,
                 ),
               ),

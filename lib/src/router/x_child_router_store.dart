@@ -11,8 +11,7 @@ class XChildRouterStore {
 
   XChildRouterStore._(this._childRouters);
 
-  factory XChildRouterStore.fromRootRoutes(
-      XRouter parent, List<XRoute> routes) {
+  factory XChildRouterStore.fromRoutes(BaseRouter parent, List<XRoute> routes) {
     final childRouters = <String, BaseRouter>{};
     _computeChildRoutersMap(parent, routes, childRouters);
     return XChildRouterStore._(childRouters);

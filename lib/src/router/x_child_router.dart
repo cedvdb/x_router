@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:x_router/src/events/x_event_emitter.dart';
+import 'package:x_router/src/events/x_router_events.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/router/base_router.dart';
+import 'package:x_router/src/router/x_child_router_store.dart';
 
 import '../navigated_route/x_navigated_route_builder.dart';
 import '../delegate/x_delegate.dart';
@@ -35,14 +38,35 @@ class XChildRouter implements BaseRouter {
   @override
   BackButtonDispatcher get backButtonDispatcher => _backButtonDispatcher;
 
+  late final XChildRouterStore _childRouterStore =
+      XChildRouterStore.fromRoutes(this, routes);
+
   XChildRouter({
     required BaseRouter parent,
     required this.routes,
   }) : _parent = parent;
 
   XNavigatedRoute navigate(String target) {
-    final navigatedRoute = _activatedRouteBuilder.build(target);
+    XEventEmitter.instance.emit(ChildNavigationStart(target: target));
+    var navigatedRoute = _activatedRouteBuilder.build(target);
+
+    // adds child routers
+    if (navigatedRoute.route.children.isNotEmpty) {
+      final child = _childRouterStore.findChild(navigatedRoute.route.path)
+          as XChildRouter;
+      final navigatedRouteChild = child.navigate(target);
+      navigatedRoute = navigatedRoute.copyWith(child: navigatedRouteChild);
+    }
+
     _delegate.render(navigatedRoute);
+
+    XEventEmitter.instance.emit(
+      ChildNavigationEnd(
+        target: target,
+        navigatedRoute: navigatedRoute,
+      ),
+    );
+
     return navigatedRoute;
   }
 }

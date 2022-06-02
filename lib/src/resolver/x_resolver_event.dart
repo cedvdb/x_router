@@ -5,8 +5,8 @@ class ResolverResolveStart extends ResolvingEvent {
 
   ResolverResolveStart({
     required this.resolver,
-    required String target,
-  }) : super(target);
+    required super.target,
+  });
 
   @override
   String toString() =>
@@ -23,8 +23,8 @@ class ResolverResolveEnd extends ResolvingEvent {
   ResolverResolveEnd({
     required this.resolver,
     required this.resolved,
-    required String target,
-  }) : super(target);
+    required super.target,
+  });
 
   @override
   String toString() =>

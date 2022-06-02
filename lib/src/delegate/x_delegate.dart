@@ -12,7 +12,8 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    return _navigatedRoute.effectivePath;
+    if (_navigatedRoute.child == null) return _navigatedRoute.effectivePath;
+    return null;
   }
 
   final void Function(String) onNewPath;
@@ -65,7 +66,7 @@ class XRouterDelegate extends RouterDelegate<String>
         pages: pages,
         onPopPage: (route, res) {
           pop();
-          route.didPop(res);
+          // route.didPop(res);
           return false;
         },
       );

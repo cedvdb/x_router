@@ -54,7 +54,7 @@ class XRoute {
   /// for nested routers
   final List<XRoute> children;
 
-  final XRoutePattern _parser;
+  final XRoutePattern _pattern;
 
   XRoute({
     required this.path,
@@ -63,53 +63,18 @@ class XRoute {
     this.pageKey,
     this.titleBuilder,
     this.isAddedToPoppableStack = true,
-  }) : _parser = XRoutePattern(path);
-
-  /// given a path, computes the depest match that could be found
-  /// on this route or any of its children
-  String computeDeepestMatchingPath(String path) {
-    final parseResult = parse(path);
-    var effectivePath = parseResult.matchingPath;
-
-    final hasChildRoutes = children.isNotEmpty;
-    final isSamePath = path == this.path;
-    // we need to find the longest path that matches
-    // so if there is no child route or the path is the same as this one there
-    // is no need to keep going
-    if (!hasChildRoutes || isSamePath) {
-      return effectivePath;
-    }
-    // if a child route match then the effective path will be longer
-    XRoute? childMatch = _getChildMatch(path);
-    // if there are child match we get their effective path path
-    if (childMatch != null) {
-      effectivePath = childMatch.computeDeepestMatchingPath(path);
-    }
-    return effectivePath;
-  }
-
-  XRoute? _getChildMatch(String path) {
-    final childRoutes = children;
-    // check if there is a match in childs
-    try {
-      // sort longest first
-      childRoutes.sort((a, b) => b.path.compareTo(a.path));
-      return childRoutes.firstWhere((route) => route.match(path));
-    } catch (e) {
-      return null;
-    }
-  }
+  }) : _pattern = XRoutePattern(path);
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
   bool match(String path) {
-    return _parser.match(path, matchChildren: isAddedToPoppableStack);
+    return _pattern.match(path, matchChildren: isAddedToPoppableStack);
   }
 
   /// parses a path against this route
   /// the [path] is the path to be matched against this route
   XParsingResult parse(String path) {
-    return _parser.parse(path, matchChildren: isAddedToPoppableStack);
+    return _pattern.parse(path, matchChildren: isAddedToPoppableStack);
   }
 
   @override

@@ -5,18 +5,19 @@ import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
 abstract class XRouterEvent with EquatableMixin {
   final String target;
-  const XRouterEvent(this.target);
+  const XRouterEvent({required this.target});
 
   @override
   String toString() => '$runtimeType(target: $target)';
+
+  @override
+  List<Object?> get props => [target];
 }
 
 // navigation events
 
 class NavigationEvent extends XRouterEvent {
-  const NavigationEvent(String target) : super(target);
-  @override
-  List<Object?> get props => [target];
+  const NavigationEvent({required super.target});
 }
 
 class NavigationStart extends NavigationEvent {
@@ -24,10 +25,10 @@ class NavigationStart extends NavigationEvent {
   final XNavigatedRoute? removeHistoryThrough;
 
   const NavigationStart({
-    required String target,
+    required super.target,
     this.params = const {},
     this.removeHistoryThrough,
-  }) : super(target);
+  });
 
   @override
   List<Object?> get props => [target, params];
@@ -40,10 +41,10 @@ class NavigationEnd extends NavigationEvent {
   final XNavigatedRoute navigatedRoute;
   final XNavigatedRoute? previous;
   const NavigationEnd({
-    required String target,
+    required super.target,
     required this.navigatedRoute,
     required this.previous,
-  }) : super(target);
+  });
 
   @override
   List<Object?> get props => [target, navigatedRoute, previous];
@@ -53,22 +54,36 @@ class NavigationEnd extends NavigationEvent {
       'NavigationEnd(target: $target, activatedRoute: $navigatedRoute, previousRoute: $previous)';
 }
 
+abstract class ChildNavigationEvent extends XRouterEvent {
+  const ChildNavigationEvent({required super.target});
+}
+
+class ChildNavigationStart extends XRouterEvent {
+  const ChildNavigationStart({required super.target});
+}
+
+class ChildNavigationEnd extends XRouterEvent {
+  final XNavigatedRoute navigatedRoute;
+  const ChildNavigationEnd(
+      {required super.target, required this.navigatedRoute});
+  @override
+  String toString() =>
+      'ChildNavigationEnd(target: $target, activatedRoute: $navigatedRoute)';
+}
+
 // url parsing events
 
 abstract class UrlParsingEvent extends XRouterEvent {
-  const UrlParsingEvent(String target) : super(target);
-
-  @override
-  List<Object?> get props => [target];
+  const UrlParsingEvent({required super.target});
 }
 
 class UrlParsingStart extends UrlParsingEvent {
   final Map<String, String>? params;
 
   const UrlParsingStart({
-    required String target,
+    required super.target,
     required this.params,
-  }) : super(target);
+  });
 
   @override
   List<Object?> get props => [target, params];
@@ -79,27 +94,22 @@ class UrlParsingStart extends UrlParsingEvent {
 
 class UrlParsingEnd extends UrlParsingEvent {
   final String parsed;
-  const UrlParsingEnd({required this.parsed, required String target})
-      : super(target);
+  const UrlParsingEnd({required this.parsed, required super.target});
 }
 
 // resolving event
 
 abstract class ResolvingEvent extends XRouterEvent {
-  const ResolvingEvent(String target) : super(target);
+  const ResolvingEvent({required super.target});
 }
 
 class ResolvingStart extends ResolvingEvent {
-  const ResolvingStart({required String target}) : super(target);
-
-  @override
-  List<Object?> get props => [target];
+  const ResolvingStart({required super.target});
 }
 
 class ResolvingEnd extends ResolvingEvent {
   final XRouterResolveResult result;
-  const ResolvingEnd({required this.result, required String target})
-      : super(target);
+  const ResolvingEnd({required this.result, required super.target});
   @override
   List<Object?> get props => [target, result];
 
@@ -110,19 +120,13 @@ class ResolvingEnd extends ResolvingEvent {
 // build events
 
 abstract class BuildEvent extends XRouterEvent {
-  const BuildEvent(String target) : super(target);
+  const BuildEvent({required super.target});
 }
 
 class BuildStart extends BuildEvent {
   const BuildStart({
-    required String target,
-  }) : super(target);
-
-  @override
-  List<Object?> get props => [target];
-
-  @override
-  String toString() => 'BuildStart(target: $target)';
+    required super.target,
+  });
 }
 
 class BuildEnd extends BuildEvent {
@@ -130,8 +134,8 @@ class BuildEnd extends BuildEvent {
 
   const BuildEnd({
     required this.activatedRoute,
-    required String target,
-  }) : super(target);
+    required super.target,
+  });
 
   @override
   String toString() =>

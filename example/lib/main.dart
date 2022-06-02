@@ -72,7 +72,7 @@ final router = XRouter(
   routes: _routes,
   resolvers: [
     // Auth reactive resolver, redirects when unauthenticated / authenticated
-    AuthResolver(),
+    // AuthResolver(),
     // redirects app to dashboard
     XRedirectResolver(
       from: RouteLocations.app,
