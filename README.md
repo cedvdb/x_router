@@ -71,7 +71,6 @@ For navigation you can use the `goTo(location)` method:
 
   - `goTo`: goes to location adding the target to history 
   - `replace`: removes current location from history and `goTo` location
-  - `pop`: if downstack is not empty `goTo` first location in downstack, else does nothing
   - `back`: go back chronologically 
 
 

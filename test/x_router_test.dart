@@ -91,31 +91,6 @@ void main() {
       });
     });
 
-    group('pop', () {
-      testWidgets('Should render next page', (tester) async {
-        await tester.pumpWidget(TestApp(router: router));
-        await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetails);
-        await tester.pumpAndSettle();
-        router.pop();
-        await tester.pumpAndSettle();
-        // products is above in poppableStack
-        expect(
-            find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
-      });
-      testWidgets('should add in history', (tester) async {
-        await tester.pumpWidget(TestApp(router: router));
-        await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
-        await tester.pumpAndSettle();
-        router.pop();
-        await tester.pumpAndSettle();
-        expect(router.history.length, equals(3));
-        expect(router.history.currentRoute.effectivePath,
-            equals(RouteLocation.home));
-      });
-    });
-
     group('back', () {
       testWidgets('Should render next page', (tester) async {
         await tester.pumpWidget(TestApp(router: router));

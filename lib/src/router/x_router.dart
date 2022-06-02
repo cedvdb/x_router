@@ -87,7 +87,7 @@ class XRouter implements BaseRouter {
 
   /// all child routers
   late final XChildRouterStore _childRouterStore =
-      XChildRouterStore.fromRoutes(this, routes);
+      XChildRouterStore.forParent(this);
   XChildRouterStore get childRouterStore => _childRouterStore;
 
   StreamSubscription? _eventStreamSubscription;

@@ -39,7 +39,7 @@ void main() {
         XNavigatedRoute(
           route: XRoute(path: '', builder: (_, __) => Container()),
           requestedPath: '/path/to/resource',
-          matchingPath: '/path/to',
+          matchingPath: '/path',
         ),
       );
       expect(history.length, equals(2));

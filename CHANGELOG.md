@@ -1,3 +1,8 @@
+## [0.2.0] - 02/06/2022
+
+ - This minor release was foccussed on having
+   good support for child routers.
+ - The pop method has been removed, you should use Navigator.of(ctx).pop() instead.
 
 ## [0.1.6] - 31/05/2022
 

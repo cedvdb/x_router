@@ -19,33 +19,33 @@ XRouter createTestRouter({List<XResolver> resolvers = const []}) {
       XRoute(
         titleBuilder: (_) => 'sign in !',
         path: RouteLocation.signIn,
-        builder: (ctx, activeRoute) => Container(
+        builder: (ctx, navigatedRoute) => Container(
           key: const ValueKey(RouteLocation.signIn),
         ),
       ),
       XRoute(
         path: RouteLocation.preferences,
-        builder: (ctx, activeRoute) => Container(
+        builder: (ctx, navigatedRoute) => Container(
           key: const ValueKey(RouteLocation.preferences),
         ),
       ),
       XRoute(
         path: RouteLocation.home,
-        builder: (ctx, activeRoute) =>
+        builder: (ctx, navigatedRoute) =>
             Container(key: const ValueKey(RouteLocation.home)),
       ),
       XRoute(
         path: RouteLocation.products,
         titleBuilder: (_) => 'products',
-        builder: (ctx, activeRoute) => Container(
+        builder: (ctx, navigatedRoute) => Container(
           key: const ValueKey(RouteLocation.products),
         ),
       ),
       XRoute(
         path: RouteLocation.productDetails,
-        builder: (ctx, activeRoute) => Container(
+        builder: (ctx, navigatedRoute) => Container(
           key: ValueKey(
-              '${RouteLocation.productDetails}-${activeRoute.pathParams["id"]}'),
+              '${RouteLocation.productDetails}-${navigatedRoute.pathParams["id"]}'),
           child: ProductDetailsPage(
             router: router,
           ),
@@ -81,8 +81,9 @@ class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routeInformationParser: router.informationParser,
       routerDelegate: router.delegate,
+      routeInformationParser: router.informationParser,
+      routeInformationProvider: router.informationProvider,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData(

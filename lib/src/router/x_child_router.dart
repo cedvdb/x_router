@@ -39,7 +39,7 @@ class XChildRouter implements BaseRouter {
   BackButtonDispatcher get backButtonDispatcher => _backButtonDispatcher;
 
   late final XChildRouterStore _childRouterStore =
-      XChildRouterStore.fromRoutes(this, routes);
+      XChildRouterStore.forParent(this);
 
   XChildRouter({
     required BaseRouter parent,

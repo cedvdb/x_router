@@ -1,6 +1,5 @@
 import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/router/base_router.dart';
-import 'package:x_router/x_router.dart';
 
 import 'x_child_router.dart';
 
@@ -11,25 +10,23 @@ class XChildRouterStore {
 
   XChildRouterStore._(this._childRouters);
 
-  factory XChildRouterStore.fromRoutes(
+  factory XChildRouterStore.forParent(
     BaseRouter parent,
-    List<XRoute> routes,
   ) {
     final childRouters = <String, BaseRouter>{};
-    _computeChildRoutersMap(parent, routes, childRouters);
+    _computeChildRoutersMap(parent, childRouters);
     return XChildRouterStore._(childRouters);
   }
 
   static _computeChildRoutersMap(
-    BaseRouter router,
-    List<XRoute> routes,
+    BaseRouter parent,
     Map<String, BaseRouter> childRoutersMap,
   ) {
-    for (final route in routes) {
+    for (final route in parent.routes) {
       final hasChildren = route.children.isNotEmpty;
       if (hasChildren) {
         final childRouter = XChildRouter(
-          parent: router,
+          parent: parent,
           routes: route.children,
         );
         childRoutersMap[route.path] = childRouter;
