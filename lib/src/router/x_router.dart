@@ -83,7 +83,7 @@ class XRouter implements BaseRouter {
   );
 
   /// page stack (activatedRoute) builder
-  late final XNavigatedRouteBuilder _activatedRouteBuilder =
+  late final XNavigatedRouteBuilder _navigatedRouteBuilder =
       XNavigatedRouteBuilder(routes: routes);
 
   /// all child routers
@@ -157,18 +157,21 @@ class XRouter implements BaseRouter {
   }) {
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
-    var navigatedRoute = _buildActivatedRoute(
+    // this is the stack of page for the current router
+    var navigatedRoute = _buildNavigatedRoute(
       resolved.target,
       builderOverride: resolved.builderOverride,
     );
-    _render(navigatedRoute);
 
+    // adds child routers
     if (navigatedRoute.route.children.isNotEmpty) {
       final child = _childRouterStore.findChild(navigatedRoute.route.path)
           as XChildRouter;
       final navigatedRouteChild = child.navigate(resolved.target);
       navigatedRoute = navigatedRoute.copyWith(child: navigatedRouteChild);
     }
+
+    _render(navigatedRoute);
     _history.removeThrough(removeHistoryThrough);
     _history.add(navigatedRoute);
     _eventEmitter.emit(
@@ -206,12 +209,12 @@ class XRouter implements BaseRouter {
   /// if [builderOverride] is present, the builder of activated
   /// route will be [builderOverride] instead of the XRoute builder
   /// This is to allow pages to be in a loading state
-  XNavigatedRoute _buildActivatedRoute(
+  XNavigatedRoute _buildNavigatedRoute(
     String target, {
     XPageBuilder? builderOverride,
   }) {
     _eventEmitter.emit(BuildStart(target: target));
-    final activatedRoute = _activatedRouteBuilder.build(
+    final activatedRoute = _navigatedRouteBuilder.build(
       target,
       builderOverride: builderOverride,
     );

@@ -34,29 +34,25 @@ class XNavigatedRouteBuilder {
       route = route.copyWithBuilder(builder: builderOverride);
     }
     // path that also match path from active routes of child router
-    final effectivePath = route.computeDeepestMatchingPath(target);
     final poppableStack = matchings
         .map(
-          (parentRoute) => _toActivatedRoute(
+          (parentRoute) => _toNavigatedRoute(
             target,
-            effectivePath,
             parentRoute,
           ),
         )
         .toList();
 
-    final activatedRoute = _toActivatedRoute(
+    final activatedRoute = _toNavigatedRoute(
       target,
-      effectivePath,
       route,
       poppableStack,
     );
     return activatedRoute;
   }
 
-  XNavigatedRoute _toActivatedRoute(
+  XNavigatedRoute _toNavigatedRoute(
     String path,
-    String effectivePath,
     XRoute route, [
     List<XNavigatedRoute> poppableStack = const [],
   ]) {

@@ -12,7 +12,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    return _navigatedRoute.matchingPath;
+    return _navigatedRoute.effectivePath;
   }
 
   final void Function(String) onNewPath;
