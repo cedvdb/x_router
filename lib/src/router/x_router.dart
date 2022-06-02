@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
+import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/history/router_history.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
@@ -101,15 +102,15 @@ class XRouter implements BaseRouter {
   ///
   /// The poppableStack is generated with the url, if the url is /route1/route2
   /// the poppableStack will be [Route1Page, Route2Page]
-  void goTo(String target, {Map<String, String>? params}) {
-    _navigate(target, params);
+  XNavigatedRoute goTo(String target, {Map<String, String>? params}) {
+    return _navigate(target, params);
   }
 
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
-  void replace(String target, {Map<String, String>? params}) {
-    _navigate(
+  XNavigatedRoute replace(String target, {Map<String, String>? params}) {
+    return _navigate(
       target,
       params,
       removeHistoryThrough: _history.currentRoute,
@@ -119,7 +120,7 @@ class XRouter implements BaseRouter {
   /// [goTo] route above the current one in the page stack if any
   /// Usually this method is called by flutter. Consider using [back]
   /// to go back chronologically
-  void pop() {
+  XNavigatedRoute? pop() {
     if (_history.currentRoute.poppableStack.isNotEmpty) {
       final up = _history.currentRoute.poppableStack.first;
       _navigate(
@@ -130,10 +131,10 @@ class XRouter implements BaseRouter {
   }
 
   /// goes back chronologically
-  void back() {
+  XNavigatedRoute? back() {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
-      _navigate(
+      return _navigate(
         previousRoute.effectivePath,
         previousRoute.pathParams,
         removeHistoryThrough: previousRoute,
@@ -142,34 +143,34 @@ class XRouter implements BaseRouter {
   }
 
   /// alias for goTo(currentUrl)
-  void _refresh() {
-    _navigate(
+  XNavigatedRoute _refresh() {
+    return _navigate(
       _history.currentRoute.effectivePath,
       _history.currentRoute.pathParams,
     );
   }
 
-  void _navigate(
+  XNavigatedRoute _navigate(
     String target,
     Map<String, String>? params, {
     XNavigatedRoute? removeHistoryThrough,
   }) {
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
-    final navigatedRoute = _buildActivatedRoute(
+    var navigatedRoute = _buildActivatedRoute(
       resolved.target,
       builderOverride: resolved.builderOverride,
     );
-    var historyPath = navigatedRoute.matchingPath;
     _render(navigatedRoute);
 
     if (navigatedRoute.route.children.isNotEmpty) {
       final child = _childRouterStore.findChild(navigatedRoute.route.path)
           as XChildRouter;
       final navigatedRouteChild = child.navigate(resolved.target);
+      navigatedRoute = navigatedRoute.copyWith(child: navigatedRouteChild);
     }
     _history.removeThrough(removeHistoryThrough);
-    _history.add(activatedRoute);
+    _history.add(navigatedRoute);
     _eventEmitter.emit(
       NavigationEnd(
         navigatedRoute: navigatedRoute,
@@ -177,6 +178,7 @@ class XRouter implements BaseRouter {
         previous: _history.previousRoute,
       ),
     );
+    return navigatedRoute;
   }
 
   /// parses an url by setting its parameter

@@ -63,7 +63,6 @@ class XNavigatedRouteBuilder {
     final parsed = route.parse(path);
     return XNavigatedRoute(
       requestedPath: path,
-      effectivePath: effectivePath,
       route: route,
       matchingPath: parsed.matchingPath,
       pathParams: parsed.pathParameters,

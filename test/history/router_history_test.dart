@@ -32,7 +32,6 @@ void main() {
           route: XRoute(path: '', builder: (_, __) => Container()),
           requestedPath: '/path/to/resource/with-gibberish-end',
           matchingPath: '/path',
-          effectivePath: '/path/to/resource',
         ),
       );
       expect(history.length, equals(2));
@@ -41,7 +40,6 @@ void main() {
           route: XRoute(path: '', builder: (_, __) => Container()),
           requestedPath: '/path/to/resource',
           matchingPath: '/path/to',
-          effectivePath: '/path/to/resource',
         ),
       );
       expect(history.length, equals(2));

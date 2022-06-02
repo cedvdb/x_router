@@ -10,8 +10,6 @@ import '../route/x_route.dart';
 class XChildRouter implements BaseRouter {
   final BaseRouter _parent;
   @override
-  final Function(String path) onNavigationEnd;
-  @override
   final List<XRoute> routes;
 
   /// page stack (activatedRoute) builder
@@ -20,7 +18,7 @@ class XChildRouter implements BaseRouter {
 
   /// renderer
   late final XRouterDelegate _delegate =
-      XRouterDelegate(onNewPath: onNavigationEnd, debugLabel: 'child router');
+      XRouterDelegate(onNewPath: navigate, debugLabel: 'child router');
   @override
   RouterDelegate get delegate => _delegate;
 
@@ -40,7 +38,6 @@ class XChildRouter implements BaseRouter {
   XChildRouter({
     required BaseRouter parent,
     required this.routes,
-    required this.onNavigationEnd,
   }) : _parent = parent;
 
   XNavigatedRoute navigate(String target) {

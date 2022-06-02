@@ -22,7 +22,6 @@ class XChildRouterStore {
     BaseRouter router,
     List<XRoute> routes,
     Map<String, BaseRouter> childRoutersMap,
-    Function(String path) onNavigationEnd,
   ) {
     for (final route in routes) {
       final hasChildren = route.children.isNotEmpty;

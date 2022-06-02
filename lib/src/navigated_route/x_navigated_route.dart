@@ -15,8 +15,11 @@ class XNavigatedRoute with EquatableMixin {
   /// the part of the path that is matching pattern
   final String matchingPath;
 
-  /// the matching path for this route or any of its child router's routes
-  final String effectivePath;
+  /// the path that matches the deepest child route
+  String get effectivePath {
+    if (child != null) return child!.effectivePath;
+    return matchingPath;
+  }
 
   /// parameters found in the path, eg:  for route pattern /team/:id and path /team/123
   /// parameters = { 'id': '123' }
@@ -29,13 +32,14 @@ class XNavigatedRoute with EquatableMixin {
   /// the parents matching routes, the poppableStack
   final List<XNavigatedRoute> poppableStack;
 
-  /// the requested path matched against children route or if none, this route
+  /// navigated route from a child router
+  final XNavigatedRoute? child;
 
   const XNavigatedRoute({
     required this.route,
     required this.requestedPath,
     required this.matchingPath,
-    required this.effectivePath,
+    this.child,
     this.pathParams = const {},
     this.queryParams = const {},
     this.poppableStack = const [],
@@ -49,27 +53,48 @@ class XNavigatedRoute with EquatableMixin {
 
   factory XNavigatedRoute.forPath(String path) {
     return XNavigatedRoute(
-        route: XRoute(
-          path: path,
-          builder: (ctx, params) => Container(),
-        ),
-        requestedPath: path,
-        matchingPath: path,
-        effectivePath: path);
+      route: XRoute(
+        path: path,
+        builder: (ctx, params) => Container(),
+      ),
+      requestedPath: path,
+      matchingPath: path,
+    );
   }
 
   @override
   String toString() {
-    return 'XActivatedRoute(path: $requestedPath, route: ${route.path}, effectivePath: $matchingPath, parameters: $pathParams, queryParameters: $queryParams, poppableStack.length: ${poppableStack.length})';
+    return 'XActivatedRoute(route: ${route.path}, matchingPath: $matchingPath, requestedPath: $requestedPath, parameters: $pathParams, queryParameters: $queryParams, poppableStack.length: ${poppableStack.length}, child: $child)';
   }
 
   @override
   List<Object?> get props => [
-        requestedPath,
         route,
+        requestedPath,
         matchingPath,
         pathParams,
         queryParams,
         poppableStack,
+        child,
       ];
+
+  XNavigatedRoute copyWith({
+    XRoute? route,
+    String? requestedPath,
+    String? matchingPath,
+    Map<String, String>? pathParams,
+    Map<String, String>? queryParams,
+    List<XNavigatedRoute>? poppableStack,
+    XNavigatedRoute? child,
+  }) {
+    return XNavigatedRoute(
+      route: route ?? this.route,
+      requestedPath: requestedPath ?? this.requestedPath,
+      matchingPath: matchingPath ?? this.matchingPath,
+      pathParams: pathParams ?? this.pathParams,
+      queryParams: queryParams ?? this.queryParams,
+      poppableStack: poppableStack ?? this.poppableStack,
+      child: child ?? this.child,
+    );
+  }
 }
