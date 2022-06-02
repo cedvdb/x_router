@@ -15,7 +15,19 @@ class DashboardPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              'Sign out automatically redirects to auth page',
+              'This page is displayed inside a child router',
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              'The products page shows a stack of pages inside a child router',
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              'Sign out automatically redirects to auth page thanks to reactive resolvers',
             ),
             const SizedBox(
               height: 20,

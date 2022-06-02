@@ -6,13 +6,13 @@ import 'package:x_router/x_router.dart';
 /// holds child routers to access their delegate easily
 /// if a route has children routes then it is a child router
 class XChildRouterStore {
-  final Map<XRoute, XChildRouter> _childRouters;
+  final Map<String, XChildRouter> _childRouters;
 
   XChildRouterStore._(this._childRouters);
 
   factory XChildRouterStore.fromRootRoutes(
       XRouter parent, List<XRoute> routes) {
-    final childRouters = <XRoute, XChildRouter>{};
+    final childRouters = <String, XChildRouter>{};
     _computeChildRoutersMap(parent, routes, childRouters);
     return XChildRouterStore._(childRouters);
   }
@@ -20,7 +20,7 @@ class XChildRouterStore {
   static _computeChildRoutersMap(
     BaseRouter router,
     List<XRoute> routes,
-    Map<XRoute, BaseRouter> childRoutersMap,
+    Map<String, BaseRouter> childRoutersMap,
   ) {
     for (final route in routes) {
       final hasChildren = route.children.isNotEmpty;
@@ -29,18 +29,17 @@ class XChildRouterStore {
           parent: router,
           routes: route.children,
         );
-        childRoutersMap[route] = childRouter;
+        childRoutersMap[route.path] = childRouter;
         _computeChildRoutersMap(childRouter, route.children, childRoutersMap);
       }
     }
   }
 
-  XChildRouter findChild(XRoute route) {
-    final childRouter = _childRouters[route];
+  XChildRouter findChild(String routePath) {
+    final childRouter = _childRouters[routePath];
     if (childRouter == null) {
       throw XRouterException(
-          description:
-              'The route ${route.path} does not contain a child router');
+          description: 'The route $routePath does not contain a child router');
     }
     return childRouter;
   }

@@ -17,7 +17,7 @@ class XChildRouter implements BaseRouter {
       XNavigatedRouteBuilder(routes: routes);
 
   /// renderer
-  late final XRouterDelegate _delegate = XRouterDelegate();
+  late final XRouterDelegate _delegate = XRouterDelegate(onNewPath: null);
   @override
   RouterDelegate get delegate => _delegate;
 

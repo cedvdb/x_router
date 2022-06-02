@@ -4,7 +4,7 @@ import 'package:x_router/src/route/x_page_builder.dart';
 
 import '../route/x_route.dart';
 
-/// builds an Activated route when provided a `path`.
+/// builds an NavigatedRoute when provided a `path`.
 class XNavigatedRouteBuilder {
   final List<XRoute> _routes;
 

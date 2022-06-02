@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/src/events/x_router_events.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
@@ -17,12 +16,12 @@ class XRouterDelegate extends RouterDelegate<String>
     return _activatedRoute.matchingPath;
   }
 
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  final void Function(String)? onNewPath;
 
   /// the routes that we need to display
   XNavigatedRoute _activatedRoute = XNavigatedRoute.nulled();
 
-  XRouterDelegate();
+  XRouterDelegate({required this.onNewPath});
 
   void render(XNavigatedRoute activatedRoute) {
     _activatedRoute = activatedRoute;
@@ -91,7 +90,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) {
-    _eventEmitter.emit(NavigationStart(target: configuration));
+    onNewPath?.call(configuration);
     return SynchronousFuture(null);
   }
 }

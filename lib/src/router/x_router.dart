@@ -57,7 +57,7 @@ class XRouter implements BaseRouter {
   RouteInformationParser<String> get informationParser => _informationParser;
 
   /// renderer
-  late final _delegate = XRouterDelegate();
+  late final _delegate = XRouterDelegate(onNewPath: goTo);
   @override
   RouterDelegate<String> get delegate => _delegate;
 
@@ -101,12 +101,8 @@ class XRouter implements BaseRouter {
   /// The poppableStack is generated with the url, if the url is /route1/route2
   /// the poppableStack will be [Route1Page, Route2Page]
   void goTo(String target, {Map<String, String>? params}) {
-    _eventEmitter.emit(
-      NavigationStart(
-        target: target,
-        params: params,
-      ),
-    );
+    print('goto');
+    _navigate(target, params);
   }
 
   /// replace the current history route
@@ -167,7 +163,11 @@ class XRouter implements BaseRouter {
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
     _render(activatedRoute);
-    _childRouterStore.findChild(activatedRoute.route).navigate(resolved.target);
+    if (activatedRoute.route.children.isNotEmpty) {
+      _childRouterStore
+          .findChild(activatedRoute.route.path)
+          .navigate(resolved.target);
+    }
     _eventEmitter.emit(
       NavigationEnd(
         activatedRoute: activatedRoute,
