@@ -10,7 +10,6 @@ void main() {
     late XNavigatedRoute activatedNoMatchDown;
     late XNavigatedRoute activatedMatchDown;
     late XNavigatedRoute activatedWithPoppableStack;
-    late XNavigatedRoute activatedWithChildRouter;
 
     setUp(() {
       activatedRouteBuilder = XNavigatedRouteBuilder(
