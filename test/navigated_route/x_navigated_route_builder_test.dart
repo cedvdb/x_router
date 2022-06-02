@@ -9,7 +9,7 @@ void main() {
     late XNavigatedRouteBuilder activatedRouteBuilder;
     late XNavigatedRoute activatedNoMatchDown;
     late XNavigatedRoute activatedMatchDown;
-    late XNavigatedRoute activatedWithStack;
+    late XNavigatedRoute activatedWithPoppableStack;
     late XNavigatedRoute activatedWithChildRouter;
 
     setUp(() {
@@ -31,20 +31,18 @@ void main() {
           XRoute(
             path: '/products/:id',
             builder: (_, __) => Container(),
-            children: [
-              XRoute(
-                path: '/products/:id/info',
-                builder: (_, __) => Container(),
-              ),
-              XRoute(
-                path: '/products/:id/comments',
-                builder: (_, __) => Container(),
-              ),
-              XRoute(
-                path: '/products/:id/info/longer',
-                builder: (_, __) => Container(),
-              ),
-            ],
+          ),
+          XRoute(
+            path: '/products/:id/info',
+            builder: (_, __) => Container(),
+          ),
+          XRoute(
+            path: '/products/:id/comments',
+            builder: (_, __) => Container(),
+          ),
+          XRoute(
+            path: '/products/:id/info/longer',
+            builder: (_, __) => Container(),
           ),
           XRoute(
             path: '/preferences',
@@ -54,18 +52,13 @@ void main() {
       );
       activatedNoMatchDown = activatedRouteBuilder.build('/');
       activatedMatchDown = activatedRouteBuilder.build('/products');
-      activatedWithStack =
-          activatedRouteBuilder.build('/products/123/an-unknown-route');
-      activatedWithChildRouter =
-          activatedRouteBuilder.build('/products/123/info/an-unknown-route');
+      activatedWithPoppableStack = activatedRouteBuilder.build('/products/123');
     });
 
     group('build', () {
       test('should have the correct requested path', () {
         expect(activatedNoMatchDown.requestedPath, equals('/'));
         expect(activatedMatchDown.requestedPath, equals('/products'));
-        expect(activatedWithStack.requestedPath,
-            equals('/products/123/an-unknown-route'));
       });
 
       test(
@@ -73,18 +66,8 @@ void main() {
         () {
           expect(activatedNoMatchDown.matchingPath, equals('/'));
           expect(activatedMatchDown.matchingPath, equals('/products'));
-          expect(activatedWithStack.matchingPath, equals('/products/123'));
-        },
-      );
-
-      test(
-        'should have the correct effective path',
-        () {
-          expect(activatedNoMatchDown.effectivePath, equals('/'));
-          expect(activatedMatchDown.effectivePath, equals('/products'));
-          expect(activatedWithStack.effectivePath, equals('/products/123'));
-          expect(activatedWithChildRouter.effectivePath,
-              equals('/products/123/info'));
+          expect(
+              activatedWithPoppableStack.matchingPath, equals('/products/123'));
         },
       );
 
@@ -102,7 +85,7 @@ void main() {
       });
 
       test('should have the correct parameters', () {
-        expect(activatedWithStack.pathParams['id'], equals('123'));
+        expect(activatedWithPoppableStack.pathParams['id'], equals('123'));
       });
 
       test('should have the correct query parameters', () {
@@ -114,7 +97,7 @@ void main() {
       test('should have the correct poppableStack', () {
         expect(activatedNoMatchDown.poppableStack.length, equals(0));
         expect(activatedMatchDown.poppableStack.length, equals(0));
-        expect(activatedWithStack.poppableStack.length, equals(1));
+        expect(activatedWithPoppableStack.poppableStack.length, equals(1));
       });
     });
   });
