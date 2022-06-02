@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/router/base_router.dart';
 
 import '../navigated_route/x_navigated_route_builder.dart';
@@ -8,7 +9,8 @@ import '../route/x_route.dart';
 /// Router that can be used as a child
 class XChildRouter implements BaseRouter {
   final BaseRouter _parent;
-
+  @override
+  final Function(String path) onNavigationEnd;
   @override
   final List<XRoute> routes;
 
@@ -17,7 +19,8 @@ class XChildRouter implements BaseRouter {
       XNavigatedRouteBuilder(routes: routes);
 
   /// renderer
-  late final XRouterDelegate _delegate = XRouterDelegate(onNewPath: null);
+  late final XRouterDelegate _delegate =
+      XRouterDelegate(onNewPath: onNavigationEnd, debugLabel: 'child router');
   @override
   RouterDelegate get delegate => _delegate;
 
@@ -37,10 +40,12 @@ class XChildRouter implements BaseRouter {
   XChildRouter({
     required BaseRouter parent,
     required this.routes,
+    required this.onNavigationEnd,
   }) : _parent = parent;
 
-  void navigate(String target) {
-    final activatedRoute = _activatedRouteBuilder.build(target);
-    _delegate.render(activatedRoute);
+  XNavigatedRoute navigate(String target) {
+    final navigatedRoute = _activatedRouteBuilder.build(target);
+    _delegate.render(navigatedRoute);
+    return navigatedRoute;
   }
 }

@@ -21,10 +21,9 @@ class HomeLayout extends StatelessWidget {
               Expanded(
                 child: Router(
                   routerDelegate: childRouter.delegate,
-                  routeInformationParser: router.informationParser,
-                  routeInformationProvider: router.informationProvider,
-                  backButtonDispatcher: ChildBackButtonDispatcher(
-                      Router.of(context).backButtonDispatcher!),
+                  routeInformationParser: childRouter.informationParser,
+                  // routeInformationProvider: childRouter.informationProvider,
+                  // backButtonDispatcher: childRouter.backButtonDispatcher,
                 ),
               ),
             ],

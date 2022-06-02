@@ -102,7 +102,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: router.informationParser,
       routerDelegate: router.delegate,
-      backButtonDispatcher: RootBackButtonDispatcher(),
+      routeInformationProvider: router.informationProvider,
+      // backButtonDispatcher: router.backButtonDispatcher,
       debugShowCheckedModeBanner: false,
       title: 'XRouter Demo',
       theme: ThemeData.from(

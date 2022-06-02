@@ -1,19 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:x_router/src/navigated_route/x_navigated_route.dart';
-import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
-import 'package:x_router/src/child_router/x_child_router_store.dart';
 import 'package:x_router/src/delegate/x_delegate.dart';
 import 'package:x_router/src/delegate/x_route_information_parser.dart';
 import 'package:x_router/src/events/x_event_emitter.dart';
 import 'package:x_router/src/history/router_history.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route.dart';
+import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
+import 'package:x_router/src/router/x_child_router.dart';
 import 'package:x_router/x_router.dart';
 
 import '../route/x_page_builder.dart';
 import 'base_router.dart';
+import 'x_child_router_store.dart';
 
 // Note to the reader
 //
@@ -101,7 +102,6 @@ class XRouter implements BaseRouter {
   /// The poppableStack is generated with the url, if the url is /route1/route2
   /// the poppableStack will be [Route1Page, Route2Page]
   void goTo(String target, {Map<String, String>? params}) {
-    print('goto');
     _navigate(target, params);
   }
 
@@ -156,21 +156,23 @@ class XRouter implements BaseRouter {
   }) {
     final parsed = _parseUrl(target, params);
     final resolved = _resolve(parsed);
-    final activatedRoute = _buildActivatedRoute(
+    final navigatedRoute = _buildActivatedRoute(
       resolved.target,
       builderOverride: resolved.builderOverride,
     );
+    var historyPath = navigatedRoute.matchingPath;
+    _render(navigatedRoute);
+
+    if (navigatedRoute.route.children.isNotEmpty) {
+      final child = _childRouterStore.findChild(navigatedRoute.route.path)
+          as XChildRouter;
+      final navigatedRouteChild = child.navigate(resolved.target);
+    }
     _history.removeThrough(removeHistoryThrough);
     _history.add(activatedRoute);
-    _render(activatedRoute);
-    if (activatedRoute.route.children.isNotEmpty) {
-      _childRouterStore
-          .findChild(activatedRoute.route.path)
-          .navigate(resolved.target);
-    }
     _eventEmitter.emit(
       NavigationEnd(
-        activatedRoute: activatedRoute,
+        navigatedRoute: navigatedRoute,
         target: target,
         previous: _history.previousRoute,
       ),

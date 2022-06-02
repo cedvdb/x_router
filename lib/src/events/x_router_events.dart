@@ -37,20 +37,20 @@ class NavigationStart extends NavigationEvent {
 }
 
 class NavigationEnd extends NavigationEvent {
-  final XNavigatedRoute activatedRoute;
+  final XNavigatedRoute navigatedRoute;
   final XNavigatedRoute? previous;
   const NavigationEnd({
     required String target,
-    required this.activatedRoute,
+    required this.navigatedRoute,
     required this.previous,
   }) : super(target);
 
   @override
-  List<Object?> get props => [target, activatedRoute, previous];
+  List<Object?> get props => [target, navigatedRoute, previous];
 
   @override
   String toString() =>
-      'NavigationEnd(target: $target, activatedRoute: $activatedRoute, previousRoute: $previous)';
+      'NavigationEnd(target: $target, activatedRoute: $navigatedRoute, previousRoute: $previous)';
 }
 
 // url parsing events

@@ -14,7 +14,7 @@ void main() {
           [
             const NavigationStart(target: '', params: {}),
             NavigationEnd(
-                activatedRoute: activatedRoute,
+                navigatedRoute: activatedRoute,
                 target: '',
                 previous: activatedRoute),
           ],
@@ -23,7 +23,7 @@ void main() {
       emitter.emit(const NavigationStart(target: '', params: {}));
       emitter.emit(
         NavigationEnd(
-          activatedRoute: activatedRoute,
+          navigatedRoute: activatedRoute,
           target: '',
           previous: activatedRoute,
         ),

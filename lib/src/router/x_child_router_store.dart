@@ -1,18 +1,19 @@
-import 'package:x_router/src/child_router/x_child_router.dart';
 import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/router/base_router.dart';
 import 'package:x_router/x_router.dart';
 
+import 'x_child_router.dart';
+
 /// holds child routers to access their delegate easily
 /// if a route has children routes then it is a child router
 class XChildRouterStore {
-  final Map<String, XChildRouter> _childRouters;
+  final Map<String, BaseRouter> _childRouters;
 
   XChildRouterStore._(this._childRouters);
 
   factory XChildRouterStore.fromRootRoutes(
       XRouter parent, List<XRoute> routes) {
-    final childRouters = <String, XChildRouter>{};
+    final childRouters = <String, BaseRouter>{};
     _computeChildRoutersMap(parent, routes, childRouters);
     return XChildRouterStore._(childRouters);
   }
@@ -21,6 +22,7 @@ class XChildRouterStore {
     BaseRouter router,
     List<XRoute> routes,
     Map<String, BaseRouter> childRoutersMap,
+    Function(String path) onNavigationEnd,
   ) {
     for (final route in routes) {
       final hasChildren = route.children.isNotEmpty;
@@ -35,7 +37,7 @@ class XChildRouterStore {
     }
   }
 
-  XChildRouter findChild(String routePath) {
+  BaseRouter findChild(String routePath) {
     final childRouter = _childRouters[routePath];
     if (childRouter == null) {
       throw XRouterException(

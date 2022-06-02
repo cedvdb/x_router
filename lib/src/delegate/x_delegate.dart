@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
 
 class XRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
@@ -13,18 +12,23 @@ class XRouterDelegate extends RouterDelegate<String>
 
   @override
   String? get currentConfiguration {
-    return _activatedRoute.matchingPath;
+    return _navigatedRoute.matchingPath;
   }
 
-  final void Function(String)? onNewPath;
+  final void Function(String) onNewPath;
 
   /// the routes that we need to display
-  XNavigatedRoute _activatedRoute = XNavigatedRoute.nulled();
+  XNavigatedRoute _navigatedRoute = XNavigatedRoute.nulled();
 
-  XRouterDelegate({required this.onNewPath});
+  final String? debugLabel;
+
+  XRouterDelegate({
+    required this.onNewPath,
+    this.debugLabel,
+  });
 
   void render(XNavigatedRoute activatedRoute) {
-    _activatedRoute = activatedRoute;
+    _navigatedRoute = activatedRoute;
     notifyListeners();
   }
 
@@ -32,30 +36,16 @@ class XRouterDelegate extends RouterDelegate<String>
   Widget build(BuildContext context) {
     final pages = [
       // poppableStack
-      ..._activatedRoute.poppableStack.map((r) => _buildPage(context, r)),
+      ..._navigatedRoute.poppableStack.map((r) => _buildPage(context, r)),
       // top
-      _buildPage(context, _activatedRoute)
+      _buildPage(context, _navigatedRoute)
     ];
     _setBrowserTitle(context);
-    return BackButtonListener(
-      onBackButtonPressed: () {
-        if (_activatedRoute.poppableStack.isEmpty) {
-          popRoute();
-        } else {
-          pop();
-        }
-        return SynchronousFuture(false);
-      },
-      child: Navigator(
-        key: navigatorKey,
-        pages: pages,
-        onPopPage: (route, res) {
-          pop();
-          route.didPop(res);
-          return false;
-        },
-      ),
-    );
+    final navigator = _buildNavigator(pages);
+    if (Router.of(context).backButtonDispatcher != null) {
+      _wrapWithBackButtonListener(navigator);
+    }
+    return navigator;
   }
 
   Page _buildPage(
@@ -70,8 +60,30 @@ class XRouterDelegate extends RouterDelegate<String>
     );
   }
 
+  Navigator _buildNavigator(List<Page> pages) => Navigator(
+        key: navigatorKey,
+        pages: pages,
+        onPopPage: (route, res) {
+          pop();
+          route.didPop(res);
+          return false;
+        },
+      );
+
+  Widget _wrapWithBackButtonListener(Navigator navigator) => BackButtonListener(
+        onBackButtonPressed: () {
+          if (_navigatedRoute.poppableStack.isEmpty) {
+            popRoute();
+          } else {
+            pop();
+          }
+          return SynchronousFuture(false);
+        },
+        child: navigator,
+      );
+
   void _setBrowserTitle(BuildContext context) {
-    final titleBuilder = _activatedRoute.route.titleBuilder;
+    final titleBuilder = _navigatedRoute.route.titleBuilder;
     if (kIsWeb && titleBuilder != null) {
       SystemChrome.setApplicationSwitcherDescription(
         ApplicationSwitcherDescription(
@@ -83,14 +95,14 @@ class XRouterDelegate extends RouterDelegate<String>
   }
 
   pop() {
-    if (_activatedRoute.poppableStack.isNotEmpty) {
-      setNewRoutePath(_activatedRoute.poppableStack.last.matchingPath);
+    if (_navigatedRoute.poppableStack.isNotEmpty) {
+      setNewRoutePath(_navigatedRoute.poppableStack.last.matchingPath);
     }
   }
 
   @override
   Future<void> setNewRoutePath(String configuration) {
-    onNewPath?.call(configuration);
+    onNewPath(configuration);
     return SynchronousFuture(null);
   }
 }

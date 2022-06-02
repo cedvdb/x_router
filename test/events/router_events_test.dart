@@ -21,11 +21,11 @@ void main() {
       );
       expect(
         ev.NavigationEnd(
-            activatedRoute: activatedRoute,
+            navigatedRoute: activatedRoute,
             target: '',
             previous: activatedRoute),
         equals(ev.NavigationEnd(
-            activatedRoute: activatedRoute,
+            navigatedRoute: activatedRoute,
             target: '',
             previous: activatedRoute)),
       );
