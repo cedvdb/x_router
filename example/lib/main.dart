@@ -120,34 +120,28 @@ class MyApp extends StatelessWidget {
 String translate(BuildContext ctx, String text) => text;
 
 /// goes to login page if we are not signed in.
-class AuthResolver extends ValueNotifier implements XResolver {
-  AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.instance.authStatusStream
-        .listen((authStatus) => value = authStatus);
-  }
+class AuthResolver with XResolver {
+  AuthResolver();
 
   @override
-  XResolverAction resolve(String target) {
-    final isSignIn =
+  Future<XResolverAction> resolve(String target) async {
+    final isSignInRoute =
         XRoutePattern(RouteLocations.signIn).match(target, matchChildren: true);
-    switch (value) {
+    final authStatus = await AuthService.instance.authStatusStream.first;
+    switch (authStatus) {
       case AuthStatus.authenticated:
-        if (isSignIn) {
+        if (isSignInRoute) {
           return const Redirect(RouteLocations.app);
         } else {
           return const Next();
         }
       case AuthStatus.unautenticated:
-        if (isSignIn) {
+      default:
+        if (isSignInRoute) {
           return const Next();
         } else {
           return const Redirect(RouteLocations.signIn);
         }
-      case AuthStatus.unknown:
-      default:
-        return Loading(
-          (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
-        );
     }
   }
 }

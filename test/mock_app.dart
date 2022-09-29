@@ -116,7 +116,7 @@ class MockAuthResolver extends ValueNotifier implements XResolver {
   signOut() => value = false;
 
   @override
-  XResolverAction resolve(String target) {
+  Future<XResolverAction> resolve(String target) async {
     switch (value) {
       case true:
         if (target.startsWith(RouteLocation.signIn)) {
@@ -125,17 +125,12 @@ class MockAuthResolver extends ValueNotifier implements XResolver {
           return const Next();
         }
       case false:
+      default:
         if (target.startsWith(RouteLocation.signIn)) {
           return const Next();
         } else {
           return const Redirect(RouteLocation.signIn);
         }
-      default:
-        return Loading(
-          (ctx, route) => Container(
-            key: const ValueKey('loading-screen'),
-          ),
-        );
     }
   }
 }

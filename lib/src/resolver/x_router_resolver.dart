@@ -12,41 +12,26 @@ class XRouterResolver {
 
   final List<XResolver> resolvers;
   Function(XRouterEvent) onEvent;
-  final void Function() onStateChanged;
 
   XRouterResolver({
     required this.onEvent,
     required this.resolvers,
-    required this.onStateChanged,
-  }) {
-    _listenResolversStateChanges(resolvers);
-  }
+  });
 
   /// resolve target path against the list of resolvers
   ///
   /// [calls] since this can easily lead to infinite loop by user error
   /// the calls attribute is to keep track of the number of times this fn
   /// was called recursively
-  XRouterResolveResult resolve(
+  Future<XRouterResolveResult> resolve(
     String path, {
     bool isRedirect = false,
     int calls = 0,
-  }) {
+  }) async {
     _guardInfiniteLoop(calls);
     var target = path;
     for (final resolver in resolvers) {
-      final resolved = _computeResolvedTarget(resolver, target);
-
-      if (resolved is Loading) {
-        // if it is loading we need to wait for an effective result
-        // so this is the end, but we override the builder
-        // so the client can display a loading screen
-        return XRouterResolveResult(
-          builderOverride: resolved.loadingScreenBuilder,
-          target: target,
-        );
-      }
-
+      final resolved = await _computeResolvedTarget(resolver, target);
       // if it is a redirect then we start the resolving process over
       if (resolved is Redirect) {
         return resolve(
@@ -55,23 +40,19 @@ class XRouterResolver {
           calls: calls + 1,
         );
       }
-
-      if (resolved is ByPass) {
-        return XRouterResolveResult(target: target);
-      }
     }
     // if we reach here we have resolved the final route
     return XRouterResolveResult(target: target);
   }
 
   /// resolve path against a specific resolver
-  XResolverAction _computeResolvedTarget(
+  Future<XResolverAction> _computeResolvedTarget(
     XResolver resolver,
     String path,
-  ) {
+  ) async {
     onEvent(ResolverResolveStart(resolver: resolver, target: path));
 
-    final resolved = resolver.resolve(path);
+    final resolved = await resolver.resolve(path);
     onEvent(ResolverResolveEnd(
         resolver: resolver, target: path, resolved: resolved));
     return resolved;
@@ -88,22 +69,6 @@ class XRouterResolver {
             'where resolver A is resolving to a route with resolver B and '
             'resolver B is resolving to a route with resolver A',
       );
-    }
-  }
-
-  void _listenResolversStateChanges(List<XResolver> resolvers) {
-    for (final resolver in resolvers) {
-      if (resolver is Listenable) {
-        (resolver as Listenable).addListener(onStateChanged);
-      }
-    }
-  }
-
-  dispose() {
-    for (final resolver in resolvers) {
-      if (resolver is Listenable) {
-        (resolver as Listenable).removeListener(onStateChanged);
-      }
     }
   }
 }

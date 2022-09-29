@@ -20,7 +20,7 @@ class XRedirectResolver with XResolver {
         from = XRoutePattern(from);
 
   @override
-  XResolverAction resolve(String target) {
+  Future<XResolverAction> resolve(String target) async {
     final parsed = from.parse(target, matchChildren: matchChildren);
     if (parsed.matches && (when == null || when!() == true)) {
       // we add the params to the redirect

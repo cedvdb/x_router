@@ -81,17 +81,4 @@ class XRoute {
   String toString() {
     return 'XRoute(path: $path, matchChildren: $isAddedToPoppableStack, $builder: ${builder.runtimeType})';
   }
-
-  XRoute copyWithBuilder({
-    XPageBuilder? builder,
-  }) {
-    return XRoute(
-      pageKey: null,
-      path: path,
-      builder: builder ?? this.builder,
-      isAddedToPoppableStack: isAddedToPoppableStack,
-      children: children,
-      titleBuilder: titleBuilder,
-    );
-  }
 }

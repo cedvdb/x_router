@@ -2,15 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/x_router.dart';
 
-class ReactiveResolver extends ValueNotifier<bool> with XResolver {
-  ReactiveResolver() : super(false);
-
-  @override
-  XResolverAction resolve(String target) {
-    return const Next();
-  }
-}
-
 void main() {
   group('NotFoundResolver', () {
     final routes = [
@@ -29,20 +20,20 @@ void main() {
           XNotFoundResolver(redirectTo: '/redirected', routes: routes);
       // found
       expect(
-        notFoundResolver.resolve('/dashboard'),
+        await notFoundResolver.resolve('/dashboard'),
         equals(const Next()),
       );
       // not found
       expect(
-        notFoundResolver.resolve('/'),
+        await notFoundResolver.resolve('/'),
         equals(const Redirect('/redirected')),
       );
       expect(
-        notFoundResolver.resolve('/redirected'),
+        await notFoundResolver.resolve('/redirected'),
         equals(const Next()),
       );
       expect(
-        notFoundResolver.resolve('/not-found'),
+        await notFoundResolver.resolve('/not-found'),
         equals(const Redirect('/redirected')),
       );
     });

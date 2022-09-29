@@ -6,15 +6,17 @@ A simple and powerful routing lib that simplify having multiple child router.
 
   - [Easy navigation](#navigation)
   - [Child routers](#child-router)
-  - [Async guards / resolvers](#resolvers)
+  - [resolvers](#resolvers)
   - [Relative navigation](#relative-navigation)
   - [Redirects](#add-redirects)
-  - [Translated browser tab title](#browser-tab-title)
+  - [Localized browser tab title](#browser-tab-title)
   - [Url matching](#url-matching)
   - Router history
   - Event driven
-  - Test coverage
 
+## Notice
+
+This library is susceptible of making breaking changes without deprecation.
 
 <br><br>
 
@@ -160,7 +162,7 @@ XRouter(
 
 When a page is accessed via a path ('/path'). That path goes through each resolvers provided to the router sequentially to return a resolved path.
 
-Each resolver can return either `Redirect`,  `Next`, `ByPass` or `Loading`. The difference between those is explained later.
+Each resolver can return either a future of `Redirect` or `Next`.
 
 To create a resolver, just use the mixin `XResolver`. Here is an example of a redirect resolver:
 
@@ -176,7 +178,7 @@ class XRedirectResolver with XResolver {
   });
 
   @override
-  XResolverAction resolve(String target) async {
+  Future<XResolverAction> resolve(String target) async {
     // you can use the XRoutePattern class instead of startsWith
     // which will also match for patterns like /products/:id
     if (target.startsWith(from)) {
@@ -191,103 +193,10 @@ resolvers can return 3 type of value:
 
   - `Next`: proceeds to the next resolver until we reach the end 
   - `Redirect`: redirects to a target and goes through each resolver again with a new path
-  - `ByPass`: stops the resolving process at the current target
-  - `Loading`: stops the resolving process at the target but display a custom widget on screen until it is ready (see next section)
-
-
-# Reactive resolvers
-
-Reactive resolvers are resolvers that react to changes in your application app state.
-
-If you need your resolver to trigger on state change, you can simply implement any `Listenable` (ChangeNotifier, ValueNotifier,...).
-
-The canonical example of a reactive resolver use case is authentication. 
-
-In the following example, when the authentication status changes, the XRouter will be notified of
-such a change and the resolving process will start again.
-
-- If the user is authenticated he will be redirected to /home (if not already there)
-- If the user is unauthenticated he will be redirected to /sign-in (if not already there)
-- If the auth status is unknow a loadingScreen will be shown until `notifyListeners()` is called.
-
-
-```dart
-class AuthResolver extends ValueNotifier with XResolver {
-
-  AuthResolver() : super(AuthStatus.unknown) {
-    AuthService.authStatusStream
-        .listen((authStatus) => value = authStatus);
-  }
-
-  @override
-  XResolverAction resolve(String target) {
-    switch (value) {
-      case AuthStatus.authenticated:
-        if (target.startsWith(RouteLocations.signIn)) {
-          return const Redirect(RouteLocations.home);
-        } else {
-          return const Next();
-        }
-      case AuthStatus.unautenticated:
-        if (target.startsWith(RouteLocations.signIn)) {
-          return const Next();
-        } else {
-          return const Redirect(RouteLocations.signIn);
-        }
-      case AuthStatus.unknown:
-      default:
-        return Loading(
-          (_, __) => const LoadingPage(text: 'Guard: Checking Auth Status'),
-        );
-    }
-  }
-}
-```
-
-This is powerful because you then don't need to worry about redirection on user authentication anywhere in your app, you just login and logout. 
-
-When the app does not know the authentication status, at the start of the application, it will be in a pending state and display the widget of your choice.
-
 
 ```diff
 ! Note: All resolvers are active for all paths
 ```
-
-A good practice for resolver is to have them light and decoupled from your app. Your app should not call them.
-
-```diff
-+  // good
-
-+  class AuthResolver extends ValueNotifier implements XResolver {
-+
-+    AuthResolver() : super(AuthStatus.unknown) {
-+      AuthService.authStatusStream
-+          .listen((authStatus) => value = authStatus);
-+    }
-+
-+    @override
-+    XResolverAction resolve(String target) {
-+      // ...
-+    }
-+  }
-
-- // bad
-
--  class AuthResolver extends ValueNotifier implements XResolver {
--    AuthResolver() : super(null);
--
--    signIn() => value = true;
--
--    signOut() => value = false;
--
--    @override
--    XResolverAction resolve(String target) {
--      // ...
--    }
--  }
-
-```
-
 
 ### Built-resolvers
 

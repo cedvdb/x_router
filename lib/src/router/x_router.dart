@@ -78,7 +78,6 @@ class XRouter implements BaseRouter {
   late final XRouterResolver _resolver = XRouterResolver(
     onEvent: _eventEmitter.emit,
     resolvers: resolvers,
-    onStateChanged: _refresh,
   );
 
   /// page stack (activatedRoute) builder
@@ -101,14 +100,15 @@ class XRouter implements BaseRouter {
   ///
   /// The poppableStack is generated with the url, if the url is /route1/route2
   /// the poppableStack will be [Route1Page, Route2Page]
-  XNavigatedRoute goTo(String target, {Map<String, String>? params}) {
+  Future<XNavigatedRoute> goTo(String target, {Map<String, String>? params}) {
     return _navigate(target, params);
   }
 
   /// replace the current history route
   ///
   /// The page stack follows the same process as [goTo]
-  XNavigatedRoute replace(String target, {Map<String, String>? params}) {
+  Future<XNavigatedRoute> replace(String target,
+      {Map<String, String>? params}) {
     return _navigate(
       target,
       params,
@@ -117,7 +117,7 @@ class XRouter implements BaseRouter {
   }
 
   /// goes back chronologically
-  XNavigatedRoute? back() {
+  Future<XNavigatedRoute?> back() async {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
       return _navigate(
@@ -130,21 +130,21 @@ class XRouter implements BaseRouter {
   }
 
   /// alias for goTo(currentUrl)
-  XNavigatedRoute _refresh() {
+  Future<XNavigatedRoute> refresh() {
     return _navigate(
       _history.currentRoute.effectivePath,
       _history.currentRoute.pathParams,
     );
   }
 
-  XNavigatedRoute _navigate(
+  Future<XNavigatedRoute> _navigate(
     String target,
     Map<String, String>? params, {
     XNavigatedRoute? removeHistoryThrough,
-  }) {
+  }) async {
     _eventEmitter.emit(NavigationStart(target: target));
     final parsed = _parseUrl(target, params);
-    final resolved = _resolve(parsed);
+    final resolved = await _resolve(parsed);
     target = resolved.target;
     // this is the stack of page for the current router
     var navigatedRoute = _buildNavigatedRoute(
@@ -184,9 +184,9 @@ class XRouter implements BaseRouter {
   }
 
   /// goes through all resolvers to see the final endpoint after redirection
-  XRouterResolveResult _resolve(String target) {
+  Future<XRouterResolveResult> _resolve(String target) async {
     _eventEmitter.emit(ResolvingStart(target: target));
-    final resolved = _resolver.resolve(target);
+    final resolved = await _resolver.resolve(target);
     _eventEmitter.emit(ResolvingEnd(target: target, result: resolved));
     return resolved;
   }
@@ -203,11 +203,7 @@ class XRouter implements BaseRouter {
     XPageBuilder? builderOverride,
   }) {
     _eventEmitter.emit(BuildStart(target: target));
-    final activatedRoute = _navigatedRouteBuilder.build(
-      target,
-      builderOverride: builderOverride,
-    );
-
+    final activatedRoute = _navigatedRouteBuilder.build(target);
     _eventEmitter
         .emit(BuildEnd(activatedRoute: activatedRoute, target: target));
     return activatedRoute;
@@ -223,6 +219,5 @@ class XRouter implements BaseRouter {
   /// lifecycle of an application
   dispose() {
     _eventStreamSubscription?.cancel();
-    _resolver.dispose();
   }
 }

@@ -13,7 +13,7 @@ class XNotFoundResolver with XResolver {
   });
 
   @override
-  XResolverAction resolve(String target) {
+  Future<XResolverAction> resolve(String target) async {
     try {
       routes.firstWhere(
         (r) => r.match(target),

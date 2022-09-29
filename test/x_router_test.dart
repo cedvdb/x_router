@@ -59,10 +59,11 @@ void main() {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
         // 2
-        router.goTo(RouteLocation.productDetailsComments, params: {'id': '5'});
+        await router
+            .goTo(RouteLocation.productDetailsComments, params: {'id': '5'});
         await tester.pumpAndSettle();
         // 3
-        router.goTo('./info');
+        await router.goTo('./info');
 
         expect(router.history.length, equals(3));
         expect(router.history.currentRoute.effectivePath,
@@ -134,18 +135,6 @@ void main() {
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.effectivePath,
             equals(RouteLocation.products));
-      });
-
-      testWidgets('Should display loading if resolver is not ready',
-          (tester) async {
-        final authResolver = MockAuthResolver();
-        router = createTestRouter(
-          resolvers: [authResolver],
-        );
-        await tester.pumpWidget(TestApp(router: router));
-        await tester.pump(const Duration(milliseconds: 400));
-        await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey('loading-screen')), findsOneWidget);
       });
 
       testWidgets('should redirect if redirector state changed',

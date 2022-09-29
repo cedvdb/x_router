@@ -12,12 +12,12 @@ void main() {
       );
       final redirectWithParamsResolver =
           XRedirectResolver(from: '/products/:id', to: '/products/:id/info');
-      expect(
-          redirectResolver.resolve('/'), equals(const Redirect('/dashboard')));
+      expect(await redirectResolver.resolve('/'),
+          equals(const Redirect('/dashboard')));
       shouldRedirect = false;
-      expect(redirectResolver.resolve('/'), equals(const Next()));
-      expect(redirectResolver.resolve('/other'), equals(const Next()));
-      expect(redirectWithParamsResolver.resolve('/products/123'),
+      expect(await redirectResolver.resolve('/'), equals(const Next()));
+      expect(await redirectResolver.resolve('/other'), equals(const Next()));
+      expect(await redirectWithParamsResolver.resolve('/products/123'),
           equals(const Redirect('/products/123/info')));
     });
   });

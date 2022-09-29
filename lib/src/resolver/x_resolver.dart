@@ -1,7 +1,7 @@
-import 'package:x_router/x_router.dart';
+import 'package:x_router/src/resolver/x_resolver_actions.dart';
 
 /// mixin to
 abstract class XResolver<T> {
   /// resolve a route with the current state
-  XResolverAction resolve(String target);
+  Future<XResolverAction> resolve(String target);
 }

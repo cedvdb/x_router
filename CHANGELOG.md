@@ -1,3 +1,7 @@
+## [0.3.0] 
+ - removed reactive resolvers
+ - made resolvers async
+
 ## [0.2.0] - 02/06/2022
 
  - This minor release was foccussed on having

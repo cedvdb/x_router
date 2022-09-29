@@ -1,6 +1,5 @@
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/route/x_default_routes.dart';
-import 'package:x_router/src/route/x_page_builder.dart';
 
 import '../route/x_route.dart';
 
@@ -16,7 +15,7 @@ class XNavigatedRouteBuilder {
   ///
   /// That is if we access /products/:id, the page stack will consists of
   /// `[ProductDetailsPage, ProductsPage]`
-  XNavigatedRoute build(String target, {XPageBuilder? builderOverride}) {
+  XNavigatedRoute build(String target) {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     final isFound = matchings.isNotEmpty;
 
@@ -26,13 +25,6 @@ class XNavigatedRouteBuilder {
 
     var route = matchings.removeAt(0);
 
-    // todo note (uncap) : The next line does not fit inside this method, as its
-    // not really the point of this function, because of this line it is
-    // doing two things at once. This could be refactored
-    // in yet another (tiny) layer. Something to think about, left as pending.
-    if (builderOverride != null) {
-      route = route.copyWithBuilder(builder: builderOverride);
-    }
     // path that also match path from active routes of child router
     final poppableStack = matchings
         .map(
