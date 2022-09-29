@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:x_router/src/events/x_router_events.dart';
 import 'package:x_router/src/exceptions/x_router_exception.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';

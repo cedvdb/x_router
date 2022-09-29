@@ -1,7 +1,6 @@
 import 'package:example/layout/home_layout.dart';
 import 'package:example/pages/dashboard_page.dart';
 import 'package:example/pages/favorites_page.dart';
-import 'package:example/pages/loading_page.dart';
 import 'package:example/pages/product_details_page.dart';
 import 'package:example/pages/products_page.dart';
 import 'package:example/pages/sign_in_page.dart';

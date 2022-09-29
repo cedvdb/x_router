@@ -1,6 +1,6 @@
 name: x_router
 description: A simple and powerful routing lib that simplify having multiple child router.
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/cedvdb/x_router
 
 environment:
