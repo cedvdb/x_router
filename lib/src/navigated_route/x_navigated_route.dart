@@ -5,7 +5,7 @@ import '../../x_router.dart';
 
 /// Holds information about the currently displayed route and its underneath
 /// stack
-class XNavigatedRoute with EquatableMixin {
+class NavigatedRoute with EquatableMixin {
   /// the route pattern matched onto. eg: `Route(path: '/team/:id')`
   final XRoute route;
 
@@ -30,12 +30,12 @@ class XNavigatedRoute with EquatableMixin {
   final Map<String, String> queryParams;
 
   /// the parents matching routes, the poppableStack
-  final List<XNavigatedRoute> poppableStack;
+  final List<NavigatedRoute> poppableStack;
 
   /// navigated route from a child router
-  final XNavigatedRoute? child;
+  final NavigatedRoute? child;
 
-  const XNavigatedRoute({
+  const NavigatedRoute({
     required this.route,
     required this.requestedPath,
     required this.matchingPath,
@@ -47,12 +47,12 @@ class XNavigatedRoute with EquatableMixin {
 
   // Used as a placeholder at the start of the app to
   // not have a nullable and for testing
-  factory XNavigatedRoute.nulled([String path = '']) {
-    return XNavigatedRoute.forPath('');
+  factory NavigatedRoute.nulled([String path = '']) {
+    return NavigatedRoute.forPath('');
   }
 
-  factory XNavigatedRoute.forPath(String path) {
-    return XNavigatedRoute(
+  factory NavigatedRoute.forPath(String path) {
+    return NavigatedRoute(
       route: XRoute(
         path: path,
         builder: (ctx, params) => Container(),
@@ -78,16 +78,16 @@ class XNavigatedRoute with EquatableMixin {
         child,
       ];
 
-  XNavigatedRoute copyWith({
+  NavigatedRoute copyWith({
     XRoute? route,
     String? requestedPath,
     String? matchingPath,
     Map<String, String>? pathParams,
     Map<String, String>? queryParams,
-    List<XNavigatedRoute>? poppableStack,
-    XNavigatedRoute? child,
+    List<NavigatedRoute>? poppableStack,
+    NavigatedRoute? child,
   }) {
-    return XNavigatedRoute(
+    return NavigatedRoute(
       route: route ?? this.route,
       requestedPath: requestedPath ?? this.requestedPath,
       matchingPath: matchingPath ?? this.matchingPath,

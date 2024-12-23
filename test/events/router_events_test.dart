@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
-import 'package:x_router/src/events/x_router_events.dart' as ev;
+import 'package:x_router/src/events.dart' as ev;
 
 void main() {
   group('Event', () {
     test('Should have simple equality', () {
-      final activatedRoute = XNavigatedRoute.nulled();
+      final activatedRoute = NavigatedRoute.nulled();
       expect(
         const ev.NavigationStart(
           target: 'target',

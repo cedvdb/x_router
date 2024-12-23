@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 /// The result of trying to match a path against a route.
-class XParsingResult with EquatableMixin {
-  const XParsingResult({
+class ParsingResult with EquatableMixin {
+  const ParsingResult({
     required this.matches,
     required this.path,
     required this.patternPath,

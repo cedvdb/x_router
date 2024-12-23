@@ -1,7 +1,7 @@
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
-import 'package:x_router/src/route/x_default_routes.dart';
+import 'package:x_router/src/route/default_routes.dart';
 
-import '../route/x_route.dart';
+import '../route/route.dart';
 
 /// builds an NavigatedRoute when provided a `path`.
 class XNavigatedRouteBuilder {
@@ -15,7 +15,7 @@ class XNavigatedRouteBuilder {
   ///
   /// That is if we access /products/:id, the page stack will consists of
   /// `[ProductDetailsPage, ProductsPage]`
-  XNavigatedRoute build(String target) {
+  NavigatedRoute build(String target) {
     var matchings = _getOrderedPartiallyMatchingRoutes(target);
     final isFound = matchings.isNotEmpty;
 
@@ -43,13 +43,13 @@ class XNavigatedRouteBuilder {
     return activatedRoute;
   }
 
-  XNavigatedRoute _toNavigatedRoute(
+  NavigatedRoute _toNavigatedRoute(
     String path,
     XRoute route, [
-    List<XNavigatedRoute> poppableStack = const [],
+    List<NavigatedRoute> poppableStack = const [],
   ]) {
     final parsed = route.parse(path);
-    return XNavigatedRoute(
+    return NavigatedRoute(
       requestedPath: path,
       route: route,
       matchingPath: parsed.matchingPath,

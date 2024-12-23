@@ -125,7 +125,7 @@ class AuthResolver with XResolver {
   @override
   Future<XResolverAction> resolve(String target) async {
     final isSignInRoute =
-        XRoutePattern(RouteLocations.signIn).match(target, matchChildren: true);
+        RoutePattern(RouteLocations.signIn).match(target, matchChildren: true);
     final authStatus = await AuthService.instance.authStatusStream.first;
     switch (authStatus) {
       case AuthStatus.authenticated:

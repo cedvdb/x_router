@@ -1,4 +1,4 @@
-import 'package:x_router/src/exceptions/x_router_exception.dart';
+import 'package:x_router/src/exceptions.dart';
 import 'package:x_router/src/router/base_router.dart';
 
 import 'x_child_router.dart';

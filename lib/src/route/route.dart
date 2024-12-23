@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:x_router/src/route_pattern/x_parsing_result.dart';
-import 'package:x_router/src/route_pattern/x_route_pattern.dart';
+import 'package:x_router/src/route_pattern/parsing_result.dart';
+import 'package:x_router/src/route_pattern/route_pattern.dart';
 
-import 'x_page_builder.dart';
+import 'page_builder.dart';
 
 /// An XRoute represents a route that can be accessed by the user
 ///
@@ -54,7 +54,7 @@ class XRoute {
   /// for nested routers
   final List<XRoute> children;
 
-  final XRoutePattern _pattern;
+  final RoutePattern _pattern;
 
   XRoute({
     required this.path,
@@ -63,7 +63,7 @@ class XRoute {
     this.pageKey,
     this.titleBuilder,
     this.isAddedToPoppableStack = true,
-  }) : _pattern = XRoutePattern(path);
+  }) : _pattern = RoutePattern(path);
 
   /// matches a path against this route
   /// the [path] is the path to be matched against this route
@@ -73,7 +73,7 @@ class XRoute {
 
   /// parses a path against this route
   /// the [path] is the path to be matched against this route
-  XParsingResult parse(String path) {
+  ParsingResult parse(String path) {
     return _pattern.parse(path, matchChildren: isAddedToPoppableStack);
   }
 

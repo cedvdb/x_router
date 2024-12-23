@@ -22,7 +22,7 @@ class XRouterDelegate extends RouterDelegate<String>
   final void Function(String) onNewPath;
 
   /// the routes that we need to display
-  XNavigatedRoute _navigatedRoute = XNavigatedRoute.nulled();
+  NavigatedRoute _navigatedRoute = NavigatedRoute.nulled();
 
   final String? debugLabel;
 
@@ -31,7 +31,7 @@ class XRouterDelegate extends RouterDelegate<String>
     this.debugLabel,
   });
 
-  void render(XNavigatedRoute activatedRoute) {
+  void render(NavigatedRoute activatedRoute) {
     _navigatedRoute = activatedRoute;
     notifyListeners();
   }
@@ -54,7 +54,7 @@ class XRouterDelegate extends RouterDelegate<String>
 
   Page _buildPage(
     BuildContext context,
-    XNavigatedRoute activatedRoute,
+    NavigatedRoute activatedRoute,
   ) {
     final route = activatedRoute.route;
     final child = route.builder(context, activatedRoute);

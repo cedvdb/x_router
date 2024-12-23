@@ -7,9 +7,9 @@ import 'package:x_router/x_router.dart';
 void main() {
   group('Activated Route Builder', () {
     late XNavigatedRouteBuilder activatedRouteBuilder;
-    late XNavigatedRoute activatedNoMatchDown;
-    late XNavigatedRoute activatedMatchDown;
-    late XNavigatedRoute activatedWithPoppableStack;
+    late NavigatedRoute activatedNoMatchDown;
+    late NavigatedRoute activatedMatchDown;
+    late NavigatedRoute activatedWithPoppableStack;
 
     setUp(() {
       activatedRouteBuilder = XNavigatedRouteBuilder(

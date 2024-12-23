@@ -12,7 +12,7 @@ class PreferencesPage extends StatelessWidget {
           onPressed: () {
             router.history.hasPreviousRoute
                 ? router.back()
-                : router.goTo(RouteLocations.dashboard);
+                : router.go(RouteLocations.dashboard);
           },
         ),
         title: const Text('preferences'),

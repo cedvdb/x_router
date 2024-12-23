@@ -1,5 +1,5 @@
-import 'package:x_router/src/events/x_router_events.dart';
-import 'package:x_router/src/exceptions/x_router_exception.dart';
+import 'package:x_router/src/events.dart';
+import 'package:x_router/src/exceptions.dart';
 import 'package:x_router/src/resolver/x_resolver.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
@@ -10,7 +10,7 @@ class XRouterResolver {
   // singleton
 
   final List<XResolver> resolvers;
-  Function(XRouterEvent) onEvent;
+  Function(RouterEvent) onEvent;
 
   XRouterResolver({
     required this.onEvent,

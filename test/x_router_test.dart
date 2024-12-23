@@ -27,7 +27,7 @@ void main() {
       testWidgets('should render next page', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
+        router.go(RouteLocation.products);
         await tester.pumpAndSettle();
         expect(
             find.byKey(const ValueKey(RouteLocation.products)), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
       testWidgets('should use parameters', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetails, params: {'id': '123'});
+        router.go(RouteLocation.productDetails, params: {'id': '123'});
         await tester.pumpAndSettle();
         expect(
             find.byKey(const ValueKey('${RouteLocation.productDetails}-123')),
@@ -45,7 +45,7 @@ void main() {
       testWidgets('should add to history', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
+        router.go(RouteLocation.products);
         await tester.pumpAndSettle();
         expect(router.history.length, equals(2));
         expect(router.history.currentRoute.effectivePath,
@@ -60,10 +60,10 @@ void main() {
         await tester.pumpAndSettle();
         // 2
         await router
-            .goTo(RouteLocation.productDetailsComments, params: {'id': '5'});
+            .go(RouteLocation.productDetailsComments, params: {'id': '5'});
         await tester.pumpAndSettle();
         // 3
-        await router.goTo('./info');
+        await router.go('./info');
 
         expect(router.history.length, equals(3));
         expect(router.history.currentRoute.effectivePath,
@@ -96,7 +96,7 @@ void main() {
       testWidgets('Should render next page', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
+        router.go(RouteLocation.products);
         await tester.pumpAndSettle();
         router.back();
         await tester.pumpAndSettle();
@@ -105,7 +105,7 @@ void main() {
       testWidgets('should remove in history', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.products);
+        router.go(RouteLocation.products);
         await tester.pumpAndSettle();
         router.back();
         await tester.pumpAndSettle();
@@ -131,7 +131,7 @@ void main() {
         expect(router.history.currentRoute.effectivePath,
             equals(RouteLocation.products));
         // goes back to first redirect
-        router.goTo(RouteLocation.preferences);
+        router.go(RouteLocation.preferences);
         expect(router.history.length, equals(1));
         expect(router.history.currentRoute.effectivePath,
             equals(RouteLocation.products));
@@ -163,7 +163,7 @@ void main() {
       testWidgets('should access child router page', (tester) async {
         await tester.pumpWidget(TestApp(router: router));
         await tester.pumpAndSettle();
-        router.goTo(RouteLocation.productDetailsInfo, params: {'id': 'id'});
+        router.go(RouteLocation.productDetailsInfo, params: {'id': 'id'});
         await tester.pumpAndSettle();
         expect(router.history.length, equals(2));
         expect(find.byKey(const ValueKey('${RouteLocation.productDetails}-id')),
@@ -172,7 +172,7 @@ void main() {
             findsOneWidget);
         expect(find.byKey(const ValueKey(RouteLocation.productDetailsComments)),
             findsNothing);
-        router.goTo(RouteLocation.productDetailsComments, params: {'id': 'id'});
+        router.go(RouteLocation.productDetailsComments, params: {'id': 'id'});
 
         await tester.pumpAndSettle();
         await tester.pump(const Duration(seconds: 1));

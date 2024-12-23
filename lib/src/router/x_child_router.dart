@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/src/events/x_router_events.dart';
+import 'package:x_router/src/events.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/router/base_router.dart';
 import 'package:x_router/src/router/x_child_router_store.dart';
 
 import '../navigated_route/x_navigated_route_builder.dart';
-import '../delegate/x_delegate.dart';
-import '../route/x_route.dart';
+import '../delegate.dart';
+import '../route/route.dart';
 
 /// Router that can be used as a child
 class XChildRouter implements BaseRouter {
@@ -46,8 +45,8 @@ class XChildRouter implements BaseRouter {
     required this.routes,
   }) : _parent = parent;
 
-  XNavigatedRoute navigate(String target) {
-    XEventEmitter.instance.emit(ChildNavigationStart(target: target));
+  NavigatedRoute navigate(String target) {
+    EventEmitter.instance.emit(ChildNavigationStart(target: target));
     var navigatedRoute = _activatedRouteBuilder.build(target);
 
     // adds child routers
@@ -64,7 +63,7 @@ class XChildRouter implements BaseRouter {
 
     _delegate.render(navigatedRoute);
 
-    XEventEmitter.instance.emit(
+    EventEmitter.instance.emit(
       ChildNavigationEnd(
         target: target,
         navigatedRoute: navigatedRoute,

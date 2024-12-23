@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:x_router/src/route_pattern/x_route_pattern.dart';
+import 'package:x_router/src/route_pattern/route_pattern.dart';
 
 import 'matchers.dart';
 
@@ -7,49 +7,48 @@ void main() {
   group('Route Pattern', () {
     test('should format silly paths to prevent typos', () {
       const pattern = '/test/route';
-      expect(XRoutePattern('test/route').path, equals(pattern));
-      expect(XRoutePattern('test/route/').path, equals(pattern));
-      expect(XRoutePattern(' /test/route/ ').path, equals(pattern));
-      expect(XRoutePattern('/test/route/').path, equals(pattern));
-      expect(XRoutePattern('test/route ').path, equals(pattern));
-      expect(XRoutePattern('//test/route/').path, equals(pattern));
-      expect(XRoutePattern('/not/route').path, isNot(pattern));
-      expect(XRoutePattern(' /not/route').path, isNot(pattern));
+      expect(RoutePattern('test/route').path, equals(pattern));
+      expect(RoutePattern('test/route/').path, equals(pattern));
+      expect(RoutePattern(' /test/route/ ').path, equals(pattern));
+      expect(RoutePattern('/test/route/').path, equals(pattern));
+      expect(RoutePattern('test/route ').path, equals(pattern));
+      expect(RoutePattern('//test/route/').path, equals(pattern));
+      expect(RoutePattern('/not/route').path, isNot(pattern));
+      expect(RoutePattern(' /not/route').path, isNot(pattern));
     });
 
     test('should create path with relative url', () {
-      expect(XRoutePattern.maybeRelative('./rel', '/home/route/third').path,
+      expect(RoutePattern.maybeRelative('./rel', '/home/route/third').path,
           equals('/home/route/rel'));
-      expect(XRoutePattern.maybeRelative('../rel', '/home/route/third').path,
+      expect(RoutePattern.maybeRelative('../rel', '/home/route/third').path,
           equals('/home/rel'));
-      expect(XRoutePattern.maybeRelative('../../rel', '/home/route/third').path,
+      expect(RoutePattern.maybeRelative('../../rel', '/home/route/third').path,
           equals('/rel'));
-      expect(XRoutePattern.maybeRelative('/rel', '/home/route').path,
+      expect(RoutePattern.maybeRelative('/rel', '/home/route').path,
           equals('/rel'));
-      expect(
-          XRoutePattern.maybeRelative('./rel', '/home').path, equals('/rel'));
+      expect(RoutePattern.maybeRelative('./rel', '/home').path, equals('/rel'));
     });
 
     group('parse', () {
       test('should match exact route', () {
         const pattern = '/test/route';
-        expect(XRoutePattern(pattern).parse(pattern), const IsMatch());
-        expect(XRoutePattern('/').parse('/'), const IsMatch());
-        expect(XRoutePattern(pattern).parse('/'), const IsNotMatch());
-        expect(XRoutePattern(pattern).parse('/test/route/longer'),
+        expect(RoutePattern(pattern).parse(pattern), const IsMatch());
+        expect(RoutePattern('/').parse('/'), const IsMatch());
+        expect(RoutePattern(pattern).parse('/'), const IsNotMatch());
+        expect(RoutePattern(pattern).parse('/test/route/longer'),
             const IsNotMatch());
-        expect(XRoutePattern(pattern).parse('/not/same'), const IsNotMatch());
-        expect(XRoutePattern('/').parse('/not'), const IsNotMatch());
+        expect(RoutePattern(pattern).parse('/not/same'), const IsNotMatch());
+        expect(RoutePattern('/').parse('/not'), const IsNotMatch());
       });
 
       test('should match exact route with typos', () {
         expect(
-            XRoutePattern('/test/route').parse('test/route'), const IsMatch());
+            RoutePattern('/test/route').parse('test/route'), const IsMatch());
         expect(
-            XRoutePattern('/test/route').parse('test/route/'), const IsMatch());
-        expect(XRoutePattern('/test/route').parse(' /test/route/  '),
+            RoutePattern('/test/route').parse('test/route/'), const IsMatch());
+        expect(RoutePattern('/test/route').parse(' /test/route/  '),
             const IsMatch());
-        expect(XRoutePattern('test/route').parse(' //test/route/ '),
+        expect(RoutePattern('test/route').parse(' //test/route/ '),
             const IsMatch());
       });
 
@@ -57,32 +56,32 @@ void main() {
         const pattern = '/test/route';
 
         expect(
-          XRoutePattern('/').parse('/any/route', matchChildren: true),
+          RoutePattern('/').parse('/any/route', matchChildren: true),
           const IsMatch(),
         );
 
         expect(
-          XRoutePattern(pattern).parse('test/route', matchChildren: true),
+          RoutePattern(pattern).parse('test/route', matchChildren: true),
           const IsMatch(),
         );
         expect(
-          XRoutePattern(pattern).parse('/test/route/more', matchChildren: true),
+          RoutePattern(pattern).parse('/test/route/more', matchChildren: true),
           const IsMatch(),
         );
         expect(
-          XRoutePattern(pattern).parse('/another/route', matchChildren: true),
+          RoutePattern(pattern).parse('/another/route', matchChildren: true),
           const IsNotMatch(),
         );
         expect(
-          XRoutePattern(pattern).parse('/', matchChildren: true),
+          RoutePattern(pattern).parse('/', matchChildren: true),
           const IsNotMatch(),
         );
         expect(
-          XRoutePattern(pattern).parse('/test', matchChildren: true),
+          RoutePattern(pattern).parse('/test', matchChildren: true),
           const IsNotMatch(),
         );
         expect(
-          XRoutePattern(pattern).parse('test/another', matchChildren: true),
+          RoutePattern(pattern).parse('test/another', matchChildren: true),
           const IsNotMatch(),
         );
       });
@@ -90,7 +89,7 @@ void main() {
       test('should generate path parameters', () {
         const pattern = '/teams/:teamId/users/:userId';
         final params =
-            XRoutePattern(pattern).parse('/teams/x/users/y').pathParameters;
+            RoutePattern(pattern).parse('/teams/x/users/y').pathParameters;
         expect(params['teamId'], equals('x'));
         expect(params['userId'], equals('y'));
         expect(params.length, equals(2));
@@ -98,7 +97,7 @@ void main() {
 
       test('should generate query parameters', () {
         const pattern = '/teams/:teamId/users/:userId';
-        final params = XRoutePattern(pattern)
+        final params = RoutePattern(pattern)
             .parse('/teams/x/users/y?sortBy=creationDate')
             .queryParameters;
         expect(params['sortBy'], equals('creationDate'));
@@ -107,7 +106,7 @@ void main() {
 
       test('result should give result of partial match path', () {
         const pattern = '/teams/:teamId';
-        final result = XRoutePattern(pattern)
+        final result = RoutePattern(pattern)
             .parse('/teams/x/users/y', matchChildren: true);
         expect(result.path, equals('/teams/x/users/y'));
         expect(result.matchingPath, equals('/teams/x'));
@@ -118,7 +117,7 @@ void main() {
       test('result should give result matching path for incomplete paths', () {
         const pattern = '/teams/:teamId';
         final result =
-            XRoutePattern(pattern).parse('/teams', matchChildren: true);
+            RoutePattern(pattern).parse('/teams', matchChildren: true);
         expect(result.path, equals('/teams'));
         expect(result.matchingPath, equals('/teams'));
         expect(result.patternPath, equals('/teams/:teamId'));
@@ -127,19 +126,19 @@ void main() {
     });
 
     test('Should be a match despite query params', () {
-      expect(XRoutePattern('/test').parse('/test?sort=creationDate'),
+      expect(RoutePattern('/test').parse('/test?sort=creationDate'),
           const IsMatch());
     });
 
     test('Should reverse params', () {
       const params = {'id': '3', 'otherId': '4'};
-      expect(XRoutePattern('/route/:id').addParameters(params),
-          equals('/route/3'));
-      expect(XRoutePattern('/route/:id/other/:otherId').addParameters(params),
+      expect(
+          RoutePattern('/route/:id').addParameters(params), equals('/route/3'));
+      expect(RoutePattern('/route/:id/other/:otherId').addParameters(params),
           equals('/route/3/other/4'));
-      expect(XRoutePattern('/route/:id/not/:not').addParameters(params),
+      expect(RoutePattern('/route/:id/not/:not').addParameters(params),
           equals('/route/3/not/:not'));
-      expect(XRoutePattern('/').addParameters(params), equals('/'));
+      expect(RoutePattern('/').addParameters(params), equals('/'));
     });
   });
 }

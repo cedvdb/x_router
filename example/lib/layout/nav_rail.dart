@@ -16,10 +16,10 @@ class NavRail extends StatefulWidget {
 }
 
 class _NavRailState extends State<NavRail> {
-  final _tabsIndex = <XRoutePattern, int>{
-    XRoutePattern(RouteLocations.dashboard): 0,
-    XRoutePattern(RouteLocations.products): 1,
-    XRoutePattern(RouteLocations.favorites): 2,
+  final _tabsIndex = <RoutePattern, int>{
+    RoutePattern(RouteLocations.dashboard): 0,
+    RoutePattern(RouteLocations.products): 1,
+    RoutePattern(RouteLocations.favorites): 2,
   };
   StreamSubscription? navSubscription;
 
@@ -60,7 +60,7 @@ class _NavRailState extends State<NavRail> {
 
   /// when a tab is clicked, navigate to the target location
   _navigate(int index) {
-    router.goTo(_findRoutePath(index));
+    router.go(_findRoutePath(index));
   }
 
   /// finds the url path given a tab index

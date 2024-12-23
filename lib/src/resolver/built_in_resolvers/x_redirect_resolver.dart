@@ -1,11 +1,11 @@
 import 'package:x_router/src/resolver/x_resolver.dart';
-import 'package:x_router/src/route_pattern/x_route_pattern.dart';
+import 'package:x_router/src/route_pattern/route_pattern.dart';
 
 import '../x_resolver_actions.dart';
 
 class XRedirectResolver with XResolver {
-  final XRoutePattern from;
-  final XRoutePattern to;
+  final RoutePattern from;
+  final RoutePattern to;
   final bool matchChildren;
 
   /// when this is true the redirect happens
@@ -16,8 +16,8 @@ class XRedirectResolver with XResolver {
     required String to,
     this.when,
     this.matchChildren = false,
-  })  : to = XRoutePattern(to),
-        from = XRoutePattern(from);
+  })  : to = RoutePattern(to),
+        from = RoutePattern(from);
 
   @override
   Future<XResolverAction> resolve(String target) async {

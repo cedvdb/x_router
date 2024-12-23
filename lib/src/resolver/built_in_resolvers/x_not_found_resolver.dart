@@ -1,5 +1,5 @@
 import 'package:x_router/src/resolver/x_resolver.dart';
-import 'package:x_router/src/route/x_route.dart';
+import 'package:x_router/src/route/route.dart';
 
 import '../x_resolver_actions.dart';
 

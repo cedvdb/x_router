@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:x_router/src/exceptions/x_router_exception.dart';
+import 'package:x_router/src/exceptions.dart';
 import 'package:x_router/src/router/base_router.dart';
 import 'package:x_router/src/router/x_child_router_store.dart';
 import 'package:x_router/x_router.dart';

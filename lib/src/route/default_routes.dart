@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'x_route.dart';
+import 'route.dart';
 
 /// When no matching route was found
 class XNotFoundRoute extends XRoute {

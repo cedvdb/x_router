@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:x_router/src/route/x_page_builder.dart';
+import 'package:x_router/src/route/page_builder.dart';
 
 class XRouterResolveResult with EquatableMixin {
   final String target;

@@ -1,11 +1,30 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 
-abstract class XRouterEvent with EquatableMixin {
+/// Keeps track of the router state
+class EventEmitter {
+  EventEmitter._();
+
+  // not a fan of singleton pattern but since this is kind of a logger it works well
+  /// singleton
+  static final EventEmitter instance = EventEmitter._();
+
+  /// Streams all router events
+  late final Stream<RouterEvent> eventStream =
+      _eventController.stream.asBroadcastStream();
+  final StreamController<RouterEvent> _eventController = StreamController();
+
+  /// adds an event to the event stream
+  void emit(RouterEvent event) => _eventController.add(event);
+}
+
+sealed class RouterEvent with EquatableMixin {
   final String target;
-  const XRouterEvent({required this.target});
+  const RouterEvent({required this.target});
 
   @override
   String toString() => '$runtimeType(target: $target)';
@@ -15,14 +34,13 @@ abstract class XRouterEvent with EquatableMixin {
 }
 
 // navigation events
-
-class NavigationEvent extends XRouterEvent {
+abstract class NavigationEvent extends RouterEvent {
   const NavigationEvent({required super.target});
 }
 
 class NavigationStart extends NavigationEvent {
   final Map<String, String>? params;
-  final XNavigatedRoute? removeHistoryThrough;
+  final NavigatedRoute? removeHistoryThrough;
 
   const NavigationStart({
     required super.target,
@@ -38,8 +56,8 @@ class NavigationStart extends NavigationEvent {
 }
 
 class NavigationEnd extends NavigationEvent {
-  final XNavigatedRoute navigatedRoute;
-  final XNavigatedRoute? previous;
+  final NavigatedRoute navigatedRoute;
+  final NavigatedRoute? previous;
   const NavigationEnd({
     required super.target,
     required this.navigatedRoute,
@@ -54,16 +72,16 @@ class NavigationEnd extends NavigationEvent {
       'NavigationEnd(target: $target, activatedRoute: $navigatedRoute, previousRoute: $previous)';
 }
 
-abstract class ChildNavigationEvent extends XRouterEvent {
+abstract class ChildNavigationEvent extends RouterEvent {
   const ChildNavigationEvent({required super.target});
 }
 
-class ChildNavigationStart extends XRouterEvent {
+class ChildNavigationStart extends RouterEvent {
   const ChildNavigationStart({required super.target});
 }
 
-class ChildNavigationEnd extends XRouterEvent {
-  final XNavigatedRoute navigatedRoute;
+class ChildNavigationEnd extends RouterEvent {
+  final NavigatedRoute navigatedRoute;
   const ChildNavigationEnd(
       {required super.target, required this.navigatedRoute});
   @override
@@ -73,7 +91,7 @@ class ChildNavigationEnd extends XRouterEvent {
 
 // url parsing events
 
-abstract class UrlParsingEvent extends XRouterEvent {
+abstract class UrlParsingEvent extends RouterEvent {
   const UrlParsingEvent({required super.target});
 }
 
@@ -99,7 +117,7 @@ class UrlParsingEnd extends UrlParsingEvent {
 
 // resolving event
 
-abstract class ResolvingEvent extends XRouterEvent {
+abstract class ResolvingEvent extends RouterEvent {
   const ResolvingEvent({required super.target});
 }
 
@@ -119,7 +137,7 @@ class ResolvingEnd extends ResolvingEvent {
 
 // build events
 
-abstract class BuildEvent extends XRouterEvent {
+abstract class BuildEvent extends RouterEvent {
   const BuildEvent({required super.target});
 }
 
@@ -130,7 +148,7 @@ class BuildStart extends BuildEvent {
 }
 
 class BuildEnd extends BuildEvent {
-  final XNavigatedRoute activatedRoute;
+  final NavigatedRoute activatedRoute;
 
   const BuildEnd({
     required this.activatedRoute,

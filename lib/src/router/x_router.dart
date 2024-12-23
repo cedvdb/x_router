@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:x_router/src/delegate/x_delegate.dart';
-import 'package:x_router/src/delegate/x_route_information_parser.dart';
-import 'package:x_router/src/events/x_event_emitter.dart';
-import 'package:x_router/src/history/router_history.dart';
+import 'package:x_router/src/delegate.dart';
+import 'package:x_router/src/information_parser.dart';
+import 'package:x_router/src/history.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route.dart';
 import 'package:x_router/src/navigated_route/x_navigated_route_builder.dart';
 import 'package:x_router/src/resolver/x_router_resolver.dart';
@@ -12,7 +11,7 @@ import 'package:x_router/src/resolver/x_router_resolver_result.dart';
 import 'package:x_router/src/router/x_child_router.dart';
 import 'package:x_router/x_router.dart';
 
-import '../route/x_page_builder.dart';
+import '../route/page_builder.dart';
 import 'base_router.dart';
 import 'x_child_router_store.dart';
 
@@ -30,7 +29,10 @@ import 'x_child_router_store.dart';
 /// One instance of XRouter should be created by an application.
 ///
 /// To navigate use one of:
-///   - goTo
+///   - go
+///   - push
+///   - goNamed
+///   - pushName
 ///   - replace
 ///   - back
 ///   - pop (This is usually handled by flutter)
@@ -41,15 +43,15 @@ class XRouter implements BaseRouter {
   final List<XResolver> resolvers;
 
   /// emits the different steps of the navigation
-  final XEventEmitter _eventEmitter = XEventEmitter.instance;
+  final EventEmitter _eventEmitter = EventEmitter.instance;
 
   /// streams all router event
-  Stream<XRouterEvent> get eventStream => _eventEmitter.eventStream;
+  Stream<RouterEvent> get eventStream => _eventEmitter.eventStream;
 
   /// chronological history
-  final _history = XRouterHistory();
+  final _history = History();
 
-  XRouterHistory get history => _history;
+  History get history => _history;
 
   /// For flutter Router: responsible of resolving a string path to (maybe) another
   /// data representation.
@@ -58,13 +60,13 @@ class XRouter implements BaseRouter {
   RouteInformationParser<String> get informationParser => _informationParser;
 
   /// renderer
-  late final _delegate = XRouterDelegate(onNewPath: goTo);
+  late final _delegate = XRouterDelegate(onNewPath: go);
   @override
   RouterDelegate<String> get delegate => _delegate;
 
   late final _informationProvider = PlatformRouteInformationProvider(
     initialRouteInformation: RouteInformation(
-      location: history.isEmpty ? null : history.currentUrl,
+      uri: history.isEmpty ? null : Uri.parse(history.currentUrl),
     ),
   );
   @override
@@ -96,19 +98,18 @@ class XRouter implements BaseRouter {
     this.resolvers = const [],
   });
 
-  /// goes to a location and adds it to the history
+  /// Go to a location and adds it to the history
   ///
   /// The poppableStack is generated with the url, if the url is /route1/route2
   /// the poppableStack will be [Route1Page, Route2Page]
-  Future<XNavigatedRoute> goTo(String target, {Map<String, String>? params}) {
+  Future<NavigatedRoute> go(String target, {Map<String, String>? params}) {
     return _navigate(target, params);
   }
 
   /// replace the current history route
   ///
-  /// The page stack follows the same process as [goTo]
-  Future<XNavigatedRoute> replace(String target,
-      {Map<String, String>? params}) {
+  /// The page stack follows the same process as [go]
+  Future<NavigatedRoute> replace(String target, {Map<String, String>? params}) {
     return _navigate(
       target,
       params,
@@ -116,8 +117,8 @@ class XRouter implements BaseRouter {
     );
   }
 
-  /// goes back chronologically
-  Future<XNavigatedRoute?> back() async {
+  /// Go back chronologically
+  Future<NavigatedRoute?> back() async {
     final previousRoute = _history.previousRoute;
     if (previousRoute != null) {
       return _navigate(
@@ -130,17 +131,17 @@ class XRouter implements BaseRouter {
   }
 
   /// alias for goTo(currentUrl)
-  Future<XNavigatedRoute> refresh() {
+  Future<NavigatedRoute> refresh() {
     return _navigate(
       _history.currentRoute.effectivePath,
       _history.currentRoute.pathParams,
     );
   }
 
-  Future<XNavigatedRoute> _navigate(
+  Future<NavigatedRoute> _navigate(
     String target,
     Map<String, String>? params, {
-    XNavigatedRoute? removeHistoryThrough,
+    NavigatedRoute? removeHistoryThrough,
   }) async {
     _eventEmitter.emit(NavigationStart(target: target));
     final parsed = _parseUrl(target, params);
@@ -177,7 +178,7 @@ class XRouter implements BaseRouter {
   String _parseUrl(String target, Map<String, String>? params) {
     _eventEmitter.emit(UrlParsingStart(target: target, params: params));
     // if url starts with ./ then it's relative to current url
-    final parser = XRoutePattern.maybeRelative(target, _history.currentUrl);
+    final parser = RoutePattern.maybeRelative(target, _history.currentUrl);
     final parsed = parser.addParameters(params);
     _eventEmitter.emit(UrlParsingEnd(target: target, parsed: parsed));
     return parsed;
@@ -198,7 +199,7 @@ class XRouter implements BaseRouter {
   /// if [builderOverride] is present, the builder of activated
   /// route will be [builderOverride] instead of the XRoute builder
   /// This is to allow pages to be in a loading state
-  XNavigatedRoute _buildNavigatedRoute(
+  NavigatedRoute _buildNavigatedRoute(
     String target, {
     XPageBuilder? builderOverride,
   }) {
@@ -210,7 +211,7 @@ class XRouter implements BaseRouter {
   }
 
   /// renders page stack on screen
-  void _render(XNavigatedRoute activatedRoute) {
+  void _render(NavigatedRoute activatedRoute) {
     _delegate.render(activatedRoute);
   }
 
